@@ -4,7 +4,6 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Globe, Smartphone, Laptop, Wrench, Link as LinkIcon, RefreshCw, ArrowRight, ChevronsRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 
 // Data for the multi-step form
@@ -33,7 +32,7 @@ const projectData = {
        { id: 'dashboard', title: 'डैशबोर्ड/पोर्टल', budget: '₹60K - ₹1L', timeline: '6-9 सप्ताह' },
     ],
     custom: [
-       { id: 'ai', title: 'AI/ML एकीकरण', budget: '₹1.5L+', timeline: '10+ सप्ताह' },
+       { id: 'ai', title: 'AI/ML एकीकरण', budget: '₹1L+', timeline: '10+ सप्ताह' },
        { id: 'iot', title: 'IoT सॉल्यूशन', budget: '₹2L+', timeline: '12+ सप्ताह' },
        { id: 'blockchain', title: 'ब्लॉकचेन ऐप', budget: '₹2.5L+', timeline: '14+ सप्ताह' },
     ],
@@ -79,11 +78,12 @@ export function SuggestionForm() {
   };
 
   const getStepTitle = () => {
+    const typeTitle = projectData.types.find(t => t.id === selections.type)?.title;
     switch (step) {
       case 1:
         return 'चरण 1: प्रोजेक्ट प्रकार चुनें';
       case 2:
-        return `चरण 2: '${projectData.types.find(t => t.id === selections.type)?.title}' चुनें`;
+        return `चरण 2: '${typeTitle}' चुनें`;
       case 3:
         return 'चरण 3: अपना अनुमान देखें';
       default:
