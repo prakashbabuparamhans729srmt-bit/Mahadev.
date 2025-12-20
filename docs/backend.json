@@ -1,0 +1,390 @@
+{
+  "entities": {
+    "Client": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Client",
+      "type": "object",
+      "description": "Represents a client of Hajaro Grahako.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Client entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the client."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the client."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the client.",
+          "format": "email"
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone number of the client."
+        },
+        "companyName": {
+          "type": "string",
+          "description": "The name of the client's company."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "phone"
+      ]
+    },
+    "Project": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Project",
+      "type": "object",
+      "description": "Represents a project undertaken by Hajaro Grahako for a client.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Project entity."
+        },
+        "clientId": {
+          "type": "string",
+          "description": "Reference to Client. (Relationship: Client 1:N Project)"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the project."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the project."
+        },
+        "startDate": {
+          "type": "string",
+          "description": "The start date of the project.",
+          "format": "date-time"
+        },
+        "endDate": {
+          "type": "string",
+          "description": "The end date of the project.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the project (e.g., 'In Progress', 'Completed', 'On Hold')."
+        },
+        "budget": {
+          "type": "number",
+          "description": "The budget allocated to the project."
+        },
+        "serviceTier": {
+          "type": "string",
+          "description": "The service tier selected for the project (Basic, Standard, Premium, Enterprise)."
+        }
+      },
+      "required": [
+        "id",
+        "clientId",
+        "name",
+        "description",
+        "startDate",
+        "endDate",
+        "status",
+        "budget",
+        "serviceTier"
+      ]
+    },
+    "TeamMember": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "TeamMember",
+      "type": "object",
+      "description": "Represents a team member working at Hajaro Grahako.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the TeamMember entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the team member."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the team member."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the team member.",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the team member within the company."
+        },
+        "bio": {
+          "type": "string",
+          "description": "A short biography of the team member."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "role"
+      ]
+    },
+    "ProjectTimeline": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ProjectTimeline",
+      "type": "object",
+      "description": "Represents a timeline entry for a specific project.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the ProjectTimeline entity."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Reference to Project. (Relationship: Project 1:N ProjectTimeline)"
+        },
+        "date": {
+          "type": "string",
+          "description": "The date of the timeline event.",
+          "format": "date-time"
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the timeline event."
+        }
+      },
+      "required": [
+        "id",
+        "projectId",
+        "date",
+        "description"
+      ]
+    },
+    "Invoice": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Invoice",
+      "type": "object",
+      "description": "Represents an invoice for a project.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Invoice entity."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Reference to Project. (Relationship: Project 1:N Invoice)"
+        },
+        "invoiceDate": {
+          "type": "string",
+          "description": "The date the invoice was issued.",
+          "format": "date-time"
+        },
+        "amount": {
+          "type": "number",
+          "description": "The amount due on the invoice."
+        },
+        "dueDate": {
+          "type": "string",
+          "description": "The date the invoice is due.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The status of the invoice (e.g., 'Paid', 'Unpaid', 'Overdue')."
+        }
+      },
+      "required": [
+        "id",
+        "projectId",
+        "invoiceDate",
+        "amount",
+        "dueDate",
+        "status"
+      ]
+    },
+    "Message": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Message",
+      "type": "object",
+      "description": "Represents a message exchanged between a client and the Hajaro Grahako team.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Message entity."
+        },
+        "projectId": {
+          "type": "string",
+          "description": "Reference to Project. (Relationship: Project 1:N Message)"
+        },
+        "senderId": {
+          "type": "string",
+          "description": "Reference to either Client or TeamMember, indicating the sender of the message."
+        },
+        "senderType": {
+          "type": "string",
+          "description": "Indicates whether the sender is a 'Client' or a 'TeamMember'."
+        },
+        "messageDate": {
+          "type": "string",
+          "description": "The date and time the message was sent.",
+          "format": "date-time"
+        },
+        "content": {
+          "type": "string",
+          "description": "The content of the message."
+        }
+      },
+      "required": [
+        "id",
+        "projectId",
+        "senderId",
+        "senderType",
+        "messageDate",
+        "content"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/clients/{clientId}",
+        "definition": {
+          "entityName": "Client",
+          "schema": {
+            "$ref": "#/backend/entities/Client"
+          },
+          "description": "Stores client information. Accessible only to authenticated users with appropriate roles.",
+          "params": [
+            {
+              "name": "clientId",
+              "description": "The unique identifier for the client."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/projects/{projectId}",
+        "definition": {
+          "entityName": "Project",
+          "schema": {
+            "$ref": "#/backend/entities/Project"
+          },
+          "description": "Stores project details. Accessible to team members and associated clients. Includes denormalized 'clientId' for authorization independence.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "The unique identifier for the project."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/projects/{projectId}/timeline/{timelineId}",
+        "definition": {
+          "entityName": "ProjectTimeline",
+          "schema": {
+            "$ref": "#/backend/entities/ProjectTimeline"
+          },
+          "description": "Stores timeline entries for each project. Includes denormalized 'clientId' from the parent 'Project' document for authorization independence.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "The unique identifier for the project."
+            },
+            {
+              "name": "timelineId",
+              "description": "The unique identifier for the timeline entry."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/projects/{projectId}/invoices/{invoiceId}",
+        "definition": {
+          "entityName": "Invoice",
+          "schema": {
+            "$ref": "#/backend/entities/Invoice"
+          },
+          "description": "Stores invoices for each project. Includes denormalized 'clientId' from the parent 'Project' document for authorization independence.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "The unique identifier for the project."
+            },
+            {
+              "name": "invoiceId",
+              "description": "The unique identifier for the invoice."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/projects/{projectId}/messages/{messageId}",
+        "definition": {
+          "entityName": "Message",
+          "schema": {
+            "$ref": "#/backend/entities/Message"
+          },
+          "description": "Stores messages for each project. Includes denormalized 'clientId' from the parent 'Project' document for authorization independence.",
+          "params": [
+            {
+              "name": "projectId",
+              "description": "The unique identifier for the project."
+            },
+            {
+              "name": "messageId",
+              "description": "The unique identifier for the message."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/team_members/{teamMemberId}",
+        "definition": {
+          "entityName": "TeamMember",
+          "schema": {
+            "$ref": "#/backend/entities/TeamMember"
+          },
+          "description": "Stores team member information. Accessible only to authenticated admin users.",
+          "params": [
+            {
+              "name": "teamMemberId",
+              "description": "The unique identifier for the team member."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/roles_admin/{userId}",
+        "definition": {
+          "entityName": "role",
+          "schema": {
+            "$ref": "#/backend/entities/Client"
+          },
+          "description": "Documents in this collection grant admin roles. Existence implies admin.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "User ID to grant admin."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This Firestore structure is designed to support the HG Hub application, focusing on secure and scalable data management for clients, projects, team members, and related entities. The structure emphasizes Authorization Independence through denormalization, enabling robust security rules without relying on hierarchical `get()` calls.  It also incorporates Structural Segregation, ensuring that collections contain documents with similar security postures, which greatly simplifies security rules. Furthermore, standardized Access Modeling using path-based ownership for private user data and membership maps for collaborative data is used. \n\nSpecifically, Authorization Independence is achieved by denormalizing relevant authorization information into subcollections where necessary, such as client IDs within project-related collections. This allows security rules to validate access based on the presence of the client ID in the document itself, eliminating the need to traverse up the hierarchy and improves the performance and reliability of the app. This design supports QAPs by enabling secure list operations based on client or team member roles, and by segregating different types of data (e.g., client-specific vs. team-specific data) into separate collections with distinct security requirements."
+  }
+}
