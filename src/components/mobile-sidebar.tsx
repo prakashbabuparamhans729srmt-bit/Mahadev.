@@ -38,10 +38,8 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
       >
         <SheetHeader className="flex-row items-center justify-between p-4 border-b">
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onClose} asChild>
-              <Link href="/">
-                <ArrowLeft />
-              </Link>
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <ArrowLeft />
             </Button>
             <Icons.logo className="h-6 w-6 text-primary" />
             <span className="font-bold font-headline">Hajaro Grahako</span>
