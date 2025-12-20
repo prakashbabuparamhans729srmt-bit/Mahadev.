@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -43,9 +43,12 @@ import {
   Camera,
   Vr,
   Settings,
+  Menu,
 } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { AiScoper } from '@/components/ai-scoper';
+import { MobileSidebar } from '@/components/mobile-sidebar';
+
 
 const projects = [
   {
@@ -92,6 +95,8 @@ const upcoming = [
 
 export default function DevPortalDashboard() {
   const { user } = useUser();
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+
 
   const totalProgress = useMemo(() => {
     const total = projects.reduce((acc, p) => acc + p.progress, 0);
@@ -100,9 +105,21 @@ export default function DevPortalDashboard() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-sm">
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card px-6">
-        <div className="flex items-center gap-4">
-          <h1 className="text-xl font-bold font-headline">
+       <MobileSidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+      />
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card px-4 md:px-6">
+        <div className="flex items-center gap-2">
+            <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setSidebarOpen(true)}
+          >
+            <Menu />
+          </Button>
+          <h1 className="text-lg md:text-xl font-bold font-headline">
             🏢 Hajaro Grahako - डेवलपमेंट पोर्टल
           </h1>
         </div>
