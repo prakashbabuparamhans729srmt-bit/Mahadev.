@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import {
@@ -109,7 +109,7 @@ export default function FileManagerPage() {
                        <div className="flex items-center justify-end gap-2">
                             {file.type === 'video' ? <Button variant="ghost" size="icon"><Play/></Button> : <Button variant="ghost" size="icon"><Eye/></Button>}
                             <Button variant="ghost" size="icon"><Download/></Button>
-                            {file.type.includes('fig') && <Button variant="ghost" size="icon"><Edit2/></Button>}
+                            {file.type.includes('figma') && <Button variant="ghost" size="icon"><Edit2/></Button>}
                        </div>
                     </TableCell>
                   </TableRow>
@@ -139,7 +139,7 @@ export default function FileManagerPage() {
                                 <Button variant="outline" size="icon"><ArrowRight className="h-4 w-4"/></Button>
                              </div>
                              <div className="flex gap-2">
-                                <Button variant="outline" size="sm" className="text-red-500 border-red-500/50 hover:bg-red-500/10 hover:text-red-600">
+                                <Button variant="outline" size="sm" className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive">
                                     <Trash2 className="mr-2 h-4 w-4"/> हटाएं
                                 </Button>
                                 <Button variant="outline" size="sm">
