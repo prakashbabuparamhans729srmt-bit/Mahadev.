@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Loader2, Sparkles, CheckCircle, Globe, Smartphone, Laptop, CloudCog } from 'lucide-react';
+import { Loader2, Sparkles, CheckCircle, Globe, Smartphone, Laptop, CloudCog, Wrench, Link as LinkIcon } from 'lucide-react';
 import type { FormState } from './actions';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
@@ -19,23 +19,43 @@ type SuggestionFormProps = {
 const projectTypes = [
   {
     id: "Website Development",
-    title: "वेबसाइट डेवलपमेंट",
+    title: "वेबसाइट",
     icon: <Globe className="h-8 w-8 text-accent" />,
+    subcategories: ["कॉर्पोरेट", "ई-कॉमर्स", "ब्लॉग", "पोर्टफोलियो"],
+    price: "₹15K - ₹80K",
+    timeline: "2-4 सप्ताह",
   },
   {
     id: "Mobile App",
     title: "मोबाइल ऐप",
     icon: <Smartphone className="h-8 w-8 text-accent" />,
+    subcategories: ["iOS", "Android", "हाइब्रिड", "गेम्स"],
+    price: "₹30K - ₹1.5L",
+    timeline: "4-8 सप्ताह",
   },
   {
     id: "Web App",
     title: "वेब ऐप",
     icon: <Laptop className="h-8 w-8 text-accent" />,
+    subcategories: ["SaaS", "ERP/CRM", "डैशबोर्ड", "कस्टम सॉल्यूशन"],
+    price: "₹50K - ₹3L",
+    timeline: "6-12 सप्ताह",
   },
    {
     id: "Custom Solution",
     title: "कस्टम सॉल्यूशन",
-    icon: <CloudCog className="h-8 w-8 text-accent" />,
+    icon: <Wrench className="h-8 w-8 text-accent" />,
+    subcategories: ["AI/ML", "IoT", "ब्लॉकचेन", "AR/VR"],
+    price: "₹1L+",
+    timeline: "8+ सप्ताह",
+  },
+  {
+    id: "Other",
+    title: "अन्य",
+    icon: <LinkIcon className="h-8 w-8 text-accent" />,
+    subcategories: ["रिडिज़ाइन", "सपोर्ट", "मार्केटिंग", "SEO"],
+    price: "कॉन्ट्रैक्ट आधारित",
+    timeline: "",
   },
 ];
 
@@ -68,7 +88,7 @@ export function SuggestionForm({ handleSuggestion }: SuggestionFormProps) {
 
 
   return (
-    <Card className="w-full max-w-2xl shadow-2xl">
+    <Card className="w-full max-w-4xl shadow-2xl">
       {state.isSuccess && state.suggestion ? (
         <CardContent className="p-6">
             <div className="flex flex-col items-center text-center space-y-4">
@@ -102,27 +122,35 @@ export function SuggestionForm({ handleSuggestion }: SuggestionFormProps) {
       ) : (
         <form action={formAction}>
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">अपनी आवश्यकताएं बताएं</CardTitle>
-            <CardDescription>हम आपके लिए सबसे अच्छा प्लान सुझाएंगे।</CardDescription>
+            <CardTitle className="font-headline text-2xl">चरण 1: प्रोजेक्ट प्रकार चुनें</CardTitle>
+            <CardDescription>अपनी यात्रा शुरू करने के लिए एक श्रेणी चुनें।</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-3">
-              <Label className="text-base font-semibold">चरण 1: प्रोजेक्ट प्रकार चुनें</Label>
               <Input type="hidden" name="projectType" value={selectedProjectType ?? ''} />
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
                 {projectTypes.map((type) => (
                   <Card 
                     key={type.id}
                     onClick={() => setSelectedProjectType(type.id)}
                     className={cn(
-                      "cursor-pointer text-center p-4 transition-all duration-200",
+                      "cursor-pointer text-center p-4 transition-all duration-200 flex flex-col justify-between",
                       selectedProjectType === type.id 
                         ? "ring-2 ring-primary border-primary bg-primary/5" 
                         : "hover:shadow-md hover:-translate-y-1"
                     )}
                   >
-                    <div className="flex justify-center items-center mb-2">{type.icon}</div>
-                    <p className="font-semibold text-sm">{type.title}</p>
+                    <div>
+                      <div className="flex justify-center items-center mb-2">{type.icon}</div>
+                      <p className="font-bold text-md mb-2">{type.title}</p>
+                      <ul className="text-xs text-muted-foreground space-y-1">
+                        {type.subcategories.map(sub => <li key={sub}>• {sub}</li>)}
+                      </ul>
+                    </div>
+                    <div className="mt-4">
+                        <p className="font-semibold text-xs text-primary">{type.price}</p>
+                        {type.timeline && <p className="text-xs text-muted-foreground mt-1">⏱️ {type.timeline}</p>}
+                    </div>
                   </Card>
                 ))}
               </div>
@@ -131,16 +159,16 @@ export function SuggestionForm({ handleSuggestion }: SuggestionFormProps) {
             {selectedProjectType && (
               <div className="space-y-4 animate-in fade-in-50 duration-500">
                 <div className="space-y-2">
-                  <Label htmlFor="requiredFeatures">चरण 2: आवश्यक सुविधाएँ बताएं</Label>
+                  <Label htmlFor="requiredFeatures" className="text-base font-semibold">चरण 2: आवश्यक सुविधाएँ बताएं</Label>
                   <Textarea id="requiredFeatures" name="requiredFeatures" placeholder="जैसे: ग्राहक पोर्टल, प्रोजेक्ट ट्रैकिंग, AI एकीकरण..." required />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="budget">चरण 3: आपका बजट क्या है?</Label>
+                    <Label htmlFor="budget" className="font-semibold">चरण 3: आपका बजट क्या है?</Label>
                     <Input id="budget" name="budget" placeholder="जैसे: ₹15-35K" required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="timeline">चरण 4: आपकी समय-सीमा क्या है?</Label>
+                    <Label htmlFor="timeline" className="font-semibold">चरण 4: आपकी समय-सीमा क्या है?</Label>
                     <Input id="timeline" name="timeline" placeholder="जैसे: 2-4 सप्ताह" required />
                   </div>
                 </div>
