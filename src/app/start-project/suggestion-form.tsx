@@ -1,6 +1,6 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useFormStatus } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -28,7 +28,7 @@ function SubmitButton() {
 
 export function SuggestionForm({ handleSuggestion }: SuggestionFormProps) {
   const initialState: FormState = { message: '', isSuccess: false };
-  const [state, formAction] = useFormState(handleSuggestion, initialState);
+  const [state, formAction] = useActionState(handleSuggestion, initialState);
   const { toast } = useToast();
   
   useEffect(() => {
