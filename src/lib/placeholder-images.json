@@ -1,3 +1,46 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "portfolio-1",
+      "description": "ई-कॉमर्स वेबसाइट",
+      "imageUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxlY29tbWVyY2UlMjB3ZWJzaXRlfGVufDB8fHx8MTc2NjEzNDIwNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "ecommerce website"
+    },
+    {
+      "id": "portfolio-2",
+      "description": "कॉर्पोरेट वेब ऐप",
+      "imageUrl": "https://images.unsplash.com/photo-1758411898847-c5f669bed02f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxkYXNoYm9hcmQlMjBhcHB8ZW58MHx8fHwxNzY2MTcwMTE3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dashboard app"
+    },
+    {
+      "id": "portfolio-3",
+      "description": "ट्रैवल मोबाइल ऐप",
+      "imageUrl": "https://images.unsplash.com/photo-1528033978085-52f315289665?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0cmF2ZWwlMjBhcHB8ZW58MHx8fHwxNzY2MjA1NTY3fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "travel app"
+    },
+    {
+      "id": "portfolio-4",
+      "description": "कस्टम एनालिटिक्स सॉल्यूशन",
+      "imageUrl": "https://images.unsplash.com/photo-1666875753105-c63a6f3bdc86?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhbmFseXRpY3MlMjBkYXNoYm9hcmR8ZW58MHx8fHwxNzY2MTQxNTkxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "analytics dashboard"
+    },
+    {
+      "id": "testimonial-1",
+      "description": "Client 1",
+      "imageUrl": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwcm9mZXNzaW9uYWwlMjBoZWFkc2hvdHxlbnwwfHx8fDE3NjYxNTM1NTl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "professional headshot"
+    },
+    {
+      "id": "testimonial-2",
+      "description": "Client 2",
+      "imageUrl": "https://images.unsplash.com/photo-1535295972055-1c762f4483e5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxzbWlsaW5nJTIwcGVyc29ufGVufDB8fHx8MTc2NjE0MDMxMnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "smiling person"
+    },
+    {
+      "id": "testimonial-3",
+      "description": "Client 3",
+      "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb3Jwb3JhdGUlMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjYyMDU1Njd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "corporate portrait"
+    }
+  ]
 }
