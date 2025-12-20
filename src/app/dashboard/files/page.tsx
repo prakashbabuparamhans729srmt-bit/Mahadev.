@@ -55,7 +55,7 @@ const getFileIcon = (type: string) => {
 
 export default function FileManagerPage() {
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background">
+    <div className="flex min-h-full w-full flex-col bg-background">
       <main className="flex-1 space-y-6 p-6">
         <div className="flex items-center justify-between">
             <h1 className="text-xl font-bold font-headline flex items-center gap-2">

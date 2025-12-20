@@ -5,6 +5,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Menu, Rocket, X, LogOut, LayoutDashboard, User } from "lucide-react";
 import { signOut } from "firebase/auth";
+import { useRouter } from 'next/navigation';
 
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -31,11 +32,13 @@ const navLinks = [
 
 function UserNav() {
   const auth = useAuth();
+  const router = useRouter();
   const { user, isUserLoading } = useUser();
 
   const handleLogout = async () => {
     if (auth) {
         await signOut(auth);
+        router.push('/');
     }
   };
 

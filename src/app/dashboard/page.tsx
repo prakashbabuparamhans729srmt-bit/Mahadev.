@@ -102,7 +102,7 @@ export default function DevPortalDashboard() {
   }, []);
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background text-sm">
+    <div className="flex min-h-full w-full flex-col bg-background text-sm">
       <main className="flex-1 space-y-6 p-6">
         <div className='flex justify-between items-center'>
              <h1 className="text-2xl font-bold font-headline">
@@ -232,13 +232,6 @@ export default function DevPortalDashboard() {
           </div>
         </div>
       </main>
-      
-       <footer className="sticky bottom-0 z-40 w-full border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="container h-14 flex items-center justify-between gap-4 text-sm text-muted-foreground">
-            <p>🔔 नई सूचना: "प्रोजेक्ट #1042 का डिज़ाइन स्वीकृत"</p>
-             <Button variant="ghost" size="sm">[3 नई]</Button>
-        </div>
-      </footer>
     </div>
   );
 }

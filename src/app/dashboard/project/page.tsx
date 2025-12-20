@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Link from 'next/link';
@@ -129,7 +130,7 @@ const chat = [
 export default function ProjectDetailsPage() {
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
+    <div className="flex min-h-full w-full flex-col bg-background text-foreground">
       
       <main className="flex-1 space-y-6 p-6">
         <div className="flex items-center justify-between">
@@ -389,15 +390,6 @@ export default function ProjectDetailsPage() {
           </CardFooter>
         </Card>
       </main>
-
-      <footer className="sticky bottom-0 z-40 w-full border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="container h-14 flex items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>🔄 रियल-टाइम अपडेट: "राहुल ने नया कोड पुश किया"</p>
-          <Button variant="ghost" size="sm">
-            <Eye className="mr-2 h-4 w-4" /> देखें
-          </Button>
-        </div>
-      </footer>
     </div>
   );
 }
