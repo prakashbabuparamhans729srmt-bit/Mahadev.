@@ -1,10 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useUser } from '@/firebase';
-import { signOut } from 'firebase/auth';
-import { useAuth } from '@/firebase';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,259 +14,240 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
 import {
-  Loader2,
-  PlusSquare,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Bell,
-  LayoutDashboard,
-  MessageSquare,
-  Folder,
-  Settings,
-  ArrowRight,
-  Calendar,
+  Plus,
+  BarChart,
+  Code,
+  Layers,
+  Database,
+  TestTube,
   Eye,
-  CreditCard,
-  Ticket,
-  User as UserIcon,
-  Edit2,
+  Calendar,
+  MessageSquare,
+  Wand2,
+  Download,
+  Mail,
+  Pencil,
+  RefreshCw,
+  Folder,
+  Smartphone,
+  Laptop,
+  Paintbrush,
+  Camera,
+  Vr,
+  Settings,
 } from 'lucide-react';
-import { Icons } from '@/components/icons';
-import { Badge } from '@/components/ui/badge';
+import { useUser } from '@/firebase';
 import { AiScoper } from '@/components/ai-scoper';
 
-function DevPortalHeader() {
-  const auth = useAuth();
+const projects = [
+  {
+    name: 'ई-कॉमर्स',
+    icon: <Smartphone className="h-6 w-6 text-purple-500" />,
+    progress: 75,
+    color: 'purple',
+  },
+  {
+    name: 'वेब स्टोर',
+    icon: <Folder className="h-6 w-6 text-blue-500" />,
+    progress: 40,
+    color: 'blue',
+  },
+  {
+    name: 'ERP सिस्टम',
+    icon: <Laptop className="h-6 w-6 text-green-500" />,
+    progress: 90,
+    color: 'green',
+  },
+  {
+    name: 'डेटा विज़ुअल',
+    icon: <BarChart className="h-6 w-6 text-yellow-500" />,
+    progress: 25,
+    color: 'yellow',
+  },
+  {
+    name: 'कॉरपोरेट',
+    icon: <Folder className="h-6 w-6 text-red-500" />,
+    progress: 60,
+    color: 'red',
+  },
+];
+
+const chat = [
+    { name: 'राहुल', message: 'डिज़ाइन अपडेट कब आएगा?' },
+    { name: 'प्रिया', message: 'फाइनल प्रूफ अपलोड कर दिया है' }
+]
+
+const upcoming = [
+    { date: '20/04', time: '11:00 AM', event: 'क्लाइंट मीटिंग'},
+    { date: '22/04', time: '3:00 PM', event: 'कोड रिव्यू'}
+]
+
+export default function DevPortalDashboard() {
   const { user } = useUser();
-  const router = useRouter();
 
-  const handleLogout = async () => {
-    if (auth) {
-      await signOut(auth);
-      router.push('/');
-    }
-  };
+  const totalProgress = useMemo(() => {
+    const total = projects.reduce((acc, p) => acc + p.progress, 0);
+    return Math.round(total / projects.length);
+  }, []);
 
   return (
-    <header className="flex h-16 items-center border-b bg-card px-6 sticky top-0 z-30">
-      <Link
-        href="/dashboard"
-        className="flex items-center gap-2 font-semibold"
-      >
-        <Icons.logo className="h-6 w-6 text-primary" />
-        <span className="font-headline text-lg">HG Hub</span>
-      </Link>
-      <div className="ml-auto flex items-center gap-4">
-        <span className="text-sm text-muted-foreground">स्वागत है, राजेश!</span>
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <Bell className="h-5 w-5" />
-          <span className="sr-only">Toggle notifications</span>
-        </Button>
-        <Avatar className="h-9 w-9">
-          <AvatarImage
-            src={user?.photoURL ?? ''}
-            alt={user?.displayName ?? 'User'}
-          />
-          <AvatarFallback>
-            {user?.email?.[0]?.toUpperCase() ?? 'A'}
-          </AvatarFallback>
-        </Avatar>
-      </div>
-    </header>
-  );
-}
+    <div className="flex min-h-screen w-full flex-col bg-background text-sm">
+      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card px-6">
+        <div className="flex items-center gap-4">
+          <h1 className="text-xl font-bold font-headline">
+            🏢 Hajaro Grahako - डेवलपमेंट पोर्टल
+          </h1>
+        </div>
+        <div className="flex items-center gap-4">
+          <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+            <Link href="#" className="text-foreground">📊 डैशबोर्ड</Link>
+            <Link href="#" className="text-muted-foreground transition-colors hover:text-foreground">🔍 प्रोजेक्ट्स</Link>
+            <Link href="#" className="text-muted-foreground transition-colors hover:text-foreground">💬 चैट</Link>
+            <Link href="/dashboard/files" className="text-muted-foreground transition-colors hover:text-foreground">📁 फाइल्स</Link>
+            <Link href="#" className="text-muted-foreground transition-colors hover:text-foreground">⚙️ सेटिंग्स</Link>
+          </nav>
+           <Avatar className="h-9 w-9">
+            <AvatarImage src={user?.photoURL ?? ''} alt={user?.displayName ?? 'User'} />
+            <AvatarFallback>{user?.email?.[0]?.toUpperCase() ?? 'A'}</AvatarFallback>
+          </Avatar>
+        </div>
+      </header>
 
-export default function DashboardPage() {
-  const { user, isUserLoading } = useUser();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [user, isUserLoading, router]);
-
-  if (isUserLoading || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex min-h-screen w-full flex-col bg-background">
-      <DevPortalHeader />
-      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
+      <main className="flex-1 space-y-6 p-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="font-headline text-xl">
-              📈 मेरे प्रोजेक्ट्स
+            <CardTitle className="font-headline text-lg">
+              🎯 सक्रिय प्रोजेक्ट्स
             </CardTitle>
-            <Button size="sm">
-              <PlusSquare className="mr-2 h-4 w-4" /> नया
+            <Button size="sm" variant="outline">
+              <Plus className="mr-2 h-4 w-4" /> नया
             </Button>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 gap-4 text-center sm:grid-cols-2 md:grid-cols-3">
-              <Card className="p-4">
-                <CardHeader className="p-2">
-                  <CardTitle className="text-base font-semibold">
-                    प्रोजेक्ट #1012
-                  </CardTitle>
-                  <CardDescription>ई-कॉमर्स वेबसाइट</CardDescription>
-                </CardHeader>
-                <CardContent className="p-2 text-sm text-muted-foreground">
-                  <p>स्थिति: ✅ पूर्ण</p>
-                  <p>बजट: ₹65,000</p>
-                  <p>समय: 5 सप्ताह</p>
-                </CardContent>
-                <CardFooter className="flex justify-center gap-2 p-2">
-                  <Button variant="outline" size="icon" asChild>
-                    <Link href="/dashboard/project">
-                      <Eye />
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <Folder />
-                  </Button>
-                </CardFooter>
-              </Card>
-              <Card className="p-4 border-primary">
-                <CardHeader className="p-2">
-                  <CardTitle className="text-base font-semibold">
-                    प्रोजेक्ट #1042
-                  </CardTitle>
-                  <CardDescription>ERP सिस्टम</CardDescription>
-                </CardHeader>
-                <CardContent className="p-2 text-sm text-muted-foreground">
-                  <p>स्थिति: 🚧 प्रगति में</p>
-                  <p>बजट: ₹1,75,000</p>
-                  <p>समय: चल रहा (8/12) सप्ताह</p>
-                </CardContent>
-                <CardFooter className="flex justify-center gap-2 p-2">
-                  <Button variant="outline" size="icon" asChild>
-                    <Link href="/dashboard/project">
-                      <Eye />
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <MessageSquare />
-                  </Button>
-                </CardFooter>
-              </Card>
-              <Card className="p-4">
-                <CardHeader className="p-2">
-                  <CardTitle className="text-base font-semibold">
-                    प्रोजेक्ट #1067
-                  </CardTitle>
-                  <CardDescription>मोबाइल ऐप</CardDescription>
-                </CardHeader>
-                <CardContent className="p-2 text-sm text-muted-foreground">
-                  <p>स्थिति: 📅 योजना में</p>
-                  <p>बजट: ₹95,000</p>
-                  <p>समय: प्रारंभिक</p>
-                </CardContent>
-                <CardFooter className="flex justify-center gap-2 p-2">
-                  <Button variant="outline" size="icon" asChild>
-                    <Link href="/dashboard/project">
-                      <Eye />
-                    </Link>
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <Edit2 />
-                  </Button>
-                </CardFooter>
-              </Card>
+            <div className="grid grid-cols-2 gap-4 text-center sm:grid-cols-3 md:grid-cols-5">
+              {projects.map((p) => (
+                <Link href="/dashboard/project" key={p.name}>
+                  <Card className="flex flex-col items-center justify-center p-4 transition-all hover:shadow-md hover:-translate-y-1">
+                    {p.icon}
+                    <p className="mt-2 text-sm font-semibold">{p.name}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{p.progress}%</p>
+                  </Card>
+                </Link>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-headline text-lg">
-                💰 इनवॉइस
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <p>#INV-1012: ₹65,000 <Badge variant="secondary" className="bg-green-100 text-green-800">✅ भुगतान</Badge></p>
-              <p>#INV-1042: ₹87,500 <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">⏳ 50% भु॰</Badge></p>
-              <p>#INV-1067: ₹25,000 <Badge variant="secondary" className="bg-blue-100 text-blue-800">📅 10 May</Badge></p>
-              <Button variant="link" className="p-0 h-auto">
-                सभी देखें <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-headline text-lg">💬 संदेश</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-                <p>राहुल: "डिज़ाइन अप॰ प्रस्तुत"</p>
-                <p>प्रिया: "क्वेरी का जवाब दिया"</p>
-                <p>समर्थन: "टिकेट #452 हल किया"</p>
-              <Button variant="link" className="p-0 h-auto">
-                सभी देखें <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle className="font-headline text-lg">📁 फाइल्स</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-                <p>प्रोजेक्ट 1012: 15 फाइलें</p>
-                <p>प्रोजेक्ट 1042: 42 फाइलें</p>
-                <p>साझा: 8 फाइलें</p>
-              <Button variant="link" className="p-0 h-auto">
-                एक्सप्लोर <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-
-        <AiScoper />
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-lg">
-              ⚙️ त्वरित क्रियाएं
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
-            <Button variant="outline">
-              <Folder className="mr-2 h-4 w-4" /> नई फाइल अपलोड
-            </Button>
-            <Button variant="outline">
-              <MessageSquare className="mr-2 h-4 w-4" /> नया संदेश
-            </Button>
-            <Button variant="outline">
-              <PlusSquare className="mr-2 h-4 w-4" /> नया प्रोजेक्ट
-            </Button>
-            <Button variant="outline">
-              <CreditCard className="mr-2 h-4 w-4" /> भुगतान करें
-            </Button>
-            <Button variant="outline">
-              <Ticket className="mr-2 h-4 w-4" /> सपोर्ट टिकेट
-            </Button>
-            <Button variant="outline">
-              <UserIcon className="mr-2 h-4 w-4" /> प्रोफाइल
-            </Button>
-          </CardContent>
-        </Card>
-      </main>
-      <footer className="sticky bottom-0 z-40 mt-auto w-full border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
-        <div className="container flex h-14 items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>🔔 3 नई सूचनाएं</p>
-          <p>💰 अगला भुगतान: ₹87,500 (15 मई)</p>
-          <div className="flex items-center gap-2">
-            <p>⏳ प्रोजेक्ट #1042:</p>
-            <Progress value={68} className="w-24 h-2" />
-            <span>68%</span>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="md:col-span-1 flex flex-col gap-6">
+            <AiScoper />
+             <Card>
+                 <CardHeader>
+                    <CardTitle className="font-headline text-base flex items-center">🎨 डिज़ाइन प्रीव्यू</CardTitle>
+                 </CardHeader>
+                 <CardContent className="flex flex-col items-center gap-4">
+                    <div className="w-full aspect-square bg-secondary rounded-lg flex items-center justify-center">
+                        <p className="text-muted-foreground">3D मोड प्रीव्यू</p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 w-full">
+                        <Button variant="outline" size="sm"><Smartphone className="h-4 w-4"/> मोबाइल</Button>
+                        <Button variant="outline" size="sm"><Laptop className="h-4 w-4"/> डेस्कटॉप</Button>
+                        <Button variant="outline" size="sm"><Vr className="h-4 w-4"/> AR देखें</Button>
+                    </div>
+                 </CardContent>
+             </Card>
           </div>
+          <div className="md:col-span-2 flex flex-col gap-6">
+             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-base flex items-center">💬 ताजा चैट</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {chat.map(c => (
+                            <div key={c.name}>
+                                <p className="font-semibold text-sm">👤 {c.name}:</p>
+                                <p className="text-xs text-muted-foreground">"{c.message}"</p>
+                            </div>
+                        ))}
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="link" size="sm" className="p-0">💬 सभी देखें</Button>
+                    </CardFooter>
+                 </Card>
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline text-base flex items-center">📅 अपकमिंग</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        {upcoming.map(u => (
+                            <div key={u.event}>
+                                <p className="font-semibold text-sm">🗓️ {u.date}:</p>
+                                <p className="text-xs text-muted-foreground">{u.event} @ {u.time}</p>
+                            </div>
+                        ))}
+                    </CardContent>
+                    <CardFooter>
+                        <Button variant="link" size="sm" className="p-0">📅 कैलेंडर</Button>
+                    </CardFooter>
+                 </Card>
+             </div>
+             <Card>
+                <CardHeader>
+                    <CardTitle className="font-headline text-base flex items-center">🔄 रियल-टाइम कोड ट्रैकर</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        <div>
+                            <div className="flex justify-between mb-1">
+                                <span className="font-semibold">प्रोजेक्ट: "ग्लोबल ई-कॉमर्स"</span>
+                                <span className="text-muted-foreground">{totalProgress}%</span>
+                            </div>
+                            <Progress value={totalProgress} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-xs">
+                             <div>
+                                <p>फ्रंटएंड</p>
+                                <Progress value={80} className="h-2 mt-1" />
+                             </div>
+                             <div>
+                                <p>बैकएंड</p>
+                                <Progress value={90} className="h-2 mt-1" />
+                             </div>
+                             <div>
+                                <p>डेटाबेस</p>
+                                <Progress value={70} className="h-2 mt-1" />
+                             </div>
+                             <div>
+                                <p>टेस्टिंग</p>
+                                <Progress value={40} className="h-2 mt-1" />
+                             </div>
+                        </div>
+                    </div>
+                </CardContent>
+                <CardFooter>
+                    <Button variant="outline" size="sm"><Eye className="mr-2 h-4 w-4"/> लाइव कोड देखें</Button>
+                    <Button variant="outline" size="sm" className="ml-2"><BarChart className="mr-2 h-4 w-4"/> विस्तृत रिपोर्ट</Button>
+                </CardFooter>
+             </Card>
+          </div>
+        </div>
+      </main>
+      
+       <footer className="sticky bottom-0 z-40 w-full border-t bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60">
+        <div className="container h-14 flex items-center justify-between gap-4 text-sm text-muted-foreground">
+            <p>🔔 नई सूचना: "प्रोजेक्ट #1042 का डिज़ाइन स्वीकृत"</p>
+             <Button variant="ghost" size="sm">[3 नई]</Button>
         </div>
       </footer>
     </div>
   );
 }
-
-    
