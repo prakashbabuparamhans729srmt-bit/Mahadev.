@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Menu, Phone, X, LogOut, LayoutDashboard, User } from "lucide-react";
+import { Menu, Rocket, X, LogOut, LayoutDashboard, User } from "lucide-react";
 import { signOut } from "firebase/auth";
 
 import { Icons } from "@/components/icons";
@@ -89,7 +89,6 @@ function UserNav() {
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const { user } = useUser();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -112,6 +111,12 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
+           <Button asChild className="hidden md:flex bg-accent text-accent-foreground hover:bg-accent/90">
+             <Link href="/start-project">
+              <Rocket className="mr-2 h-4 w-4" />
+               प्रोजेक्ट शुरू करें
+             </Link>
+           </Button>
           <div className="hidden md:flex items-center gap-4">
             <UserNav />
           </div>
@@ -137,6 +142,13 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <Link
+                href="/start-project"
+                onClick={() => setIsMenuOpen(false)}
+                className="font-medium text-accent hover:text-accent/90"
+              >
+                प्रोजेक्ट शुरू करें
+              </Link>
              <div className="pt-4 border-t border-border/40">
               <UserNav />
             </div>

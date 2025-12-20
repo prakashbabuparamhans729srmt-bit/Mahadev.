@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { useFormStatus } from 'react-dom';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -8,9 +8,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { Loader2, Sparkles, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Loader2, Sparkles, CheckCircle } from 'lucide-react';
 import type { FormState } from './actions';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 type SuggestionFormProps = {
