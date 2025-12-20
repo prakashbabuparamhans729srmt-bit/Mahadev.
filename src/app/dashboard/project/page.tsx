@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -48,7 +49,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { MobileSidebar } from '@/components/mobile-sidebar';
 import { useState } from 'react';
 
 const project = {
@@ -127,42 +127,24 @@ const chat = [
 ];
 
 export default function ProjectDetailsPage() {
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-foreground">
-      <MobileSidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card px-4 md:px-6">
-        <div className="flex items-center gap-2 md:gap-4">
-          <Link href="/dashboard" className="hidden md:inline-flex">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft />
-            </Button>
-          </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu />
-          </Button>
-          <h1 className="text-lg md:text-xl font-bold font-headline flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-primary" />
-            <span className="hidden md:inline">प्रोजेक्ट {project.id}: </span>"
-            {project.name}"
-          </h1>
-        </div>
-        <Button variant="ghost" size="icon">
-          <Star />
-          <span className="sr-only">Favorite</span>
-        </Button>
-      </header>
-
+      
       <main className="flex-1 space-y-6 p-6">
+        <div className="flex items-center justify-between">
+            <h1 className="text-xl md:text-2xl font-bold font-headline flex items-center gap-2">
+                <Briefcase className="h-5 w-5 text-primary" />
+                <span className="hidden md:inline">प्रोजेक्ट {project.id}: </span>"
+                {project.name}"
+            </h1>
+            <Button variant="ghost" size="icon">
+                <Star />
+                <span className="sr-only">Favorite</span>
+            </Button>
+        </div>
+
+
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="font-headline text-lg flex items-center">

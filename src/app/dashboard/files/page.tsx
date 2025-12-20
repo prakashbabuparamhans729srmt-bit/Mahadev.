@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -55,24 +56,16 @@ const getFileIcon = (type: string) => {
 export default function FileManagerPage() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-background">
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card px-6">
-        <div className="flex items-center gap-4">
-          <Link href="/dashboard">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft />
-            </Button>
-          </Link>
-          <h1 className="text-xl font-bold font-headline flex items-center gap-2">
-            <Folder className="h-5 w-5 text-primary" />
-            फ़ाइल मैनेजर - प्रोजेक्ट #1042
-          </h1>
-        </div>
-        <Button>
-          <Upload className="mr-2 h-4 w-4" /> अपलोड
-        </Button>
-      </header>
-
       <main className="flex-1 space-y-6 p-6">
+        <div className="flex items-center justify-between">
+            <h1 className="text-xl font-bold font-headline flex items-center gap-2">
+                <Folder className="h-5 w-5 text-primary" />
+                फ़ाइल मैनेजर - प्रोजेक्ट #1042
+            </h1>
+             <Button>
+                <Upload className="mr-2 h-4 w-4" /> अपलोड
+            </Button>
+        </div>
         <Card>
             <CardHeader className="border-b pb-4">
                 <div className="flex items-center justify-between">

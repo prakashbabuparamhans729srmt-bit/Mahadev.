@@ -44,10 +44,6 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             <Icons.logo className="h-6 w-6 text-primary" />
             <span className="font-bold font-headline">Hajaro Grahako</span>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="h-6 w-6" />
-            <span className="sr-only">Close</span>
-          </Button>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6">

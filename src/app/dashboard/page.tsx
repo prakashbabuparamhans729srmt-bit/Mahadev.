@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useMemo, useState } from 'react';
@@ -47,7 +48,6 @@ import {
 } from 'lucide-react';
 import { useUser } from '@/firebase';
 import { AiScoper } from '@/components/ai-scoper';
-import { MobileSidebar } from '@/components/mobile-sidebar';
 
 
 const projects = [
@@ -95,8 +95,6 @@ const upcoming = [
 
 export default function DevPortalDashboard() {
   const { user } = useUser();
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
-
 
   const totalProgress = useMemo(() => {
     const total = projects.reduce((acc, p) => acc + p.progress, 0);
@@ -105,40 +103,16 @@ export default function DevPortalDashboard() {
 
   return (
     <div className="flex min-h-screen w-full flex-col bg-background text-sm">
-       <MobileSidebar
-        isOpen={isSidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-      <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b bg-card px-4 md:px-6">
-        <div className="flex items-center gap-2">
-            <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setSidebarOpen(true)}
-          >
-            <Menu />
-          </Button>
-          <h1 className="text-lg md:text-xl font-bold font-headline">
-            🏢 Hajaro Grahako - डेवलपमेंट पोर्टल
-          </h1>
-        </div>
-        <div className="flex items-center gap-4">
-          <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
-            <Link href="#" className="text-foreground">📊 डैशबोर्ड</Link>
-            <Link href="#" className="text-muted-foreground transition-colors hover:text-foreground">🔍 प्रोजेक्ट्स</Link>
-            <Link href="#" className="text-muted-foreground transition-colors hover:text-foreground">💬 चैट</Link>
-            <Link href="/dashboard/files" className="text-muted-foreground transition-colors hover:text-foreground">📁 फाइल्स</Link>
-            <Link href="#" className="text-muted-foreground transition-colors hover:text-foreground">⚙️ सेटिंग्स</Link>
-          </nav>
-           <Avatar className="h-9 w-9">
-            <AvatarImage src={user?.photoURL ?? ''} alt={user?.displayName ?? 'User'} />
-            <AvatarFallback>{user?.email?.[0]?.toUpperCase() ?? 'A'}</AvatarFallback>
-          </Avatar>
-        </div>
-      </header>
-
       <main className="flex-1 space-y-6 p-6">
+        <div className='flex justify-between items-center'>
+             <h1 className="text-2xl font-bold font-headline">
+                🏢 डैशबोर्ड
+            </h1>
+            <p className="text-muted-foreground text-sm">
+                नमस्ते, {user?.displayName ?? 'ग्राहक'}!
+            </p>
+        </div>
+       
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="font-headline text-lg">
