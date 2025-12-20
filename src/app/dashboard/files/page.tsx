@@ -62,8 +62,9 @@ export default function FileManagerPage() {
               <ArrowLeft />
             </Button>
           </Link>
-          <h1 className="text-xl font-bold font-headline">
-            📁 फ़ाइल मैनेजर - प्रोजेक्ट #1042
+          <h1 className="text-xl font-bold font-headline flex items-center gap-2">
+            <Folder className="h-5 w-5 text-primary" />
+            फ़ाइल मैनेजर - प्रोजेक्ट #1042
           </h1>
         </div>
         <Button>
@@ -78,9 +79,17 @@ export default function FileManagerPage() {
                     <div className="text-sm text-muted-foreground">
                         पथ: प्रोजेक्ट्स &gt; 1042 &gt; डिज़ाइन &gt; फाइनल
                     </div>
-                     <div className="relative flex items-center">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="खोजें..." className="pl-9" />
+                     <div className="flex items-center gap-2">
+                        <div className="relative flex items-center">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input placeholder="खोजें..." className="pl-9" />
+                        </div>
+                        <Button variant="outline" size="icon">
+                            <List className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                            <LayoutGrid className="h-4 w-4" />
+                        </Button>
                     </div>
                 </div>
             </CardHeader>
@@ -107,9 +116,9 @@ export default function FileManagerPage() {
                     <TableCell>{file.modified}</TableCell>
                     <TableCell className="text-right">
                        <div className="flex items-center justify-end gap-2">
-                            {file.type === 'video' ? <Button variant="ghost" size="icon"><Play/></Button> : <Button variant="ghost" size="icon"><Eye/></Button>}
-                            <Button variant="ghost" size="icon"><Download/></Button>
-                            {file.type.includes('figma') && <Button variant="ghost" size="icon"><Edit2/></Button>}
+                            {file.type === 'video' ? <Button variant="ghost" size="icon"><Play className="h-4 w-4" /></Button> : <Button variant="ghost" size="icon"><Eye className="h-4 w-4" /></Button>}
+                            <Button variant="ghost" size="icon"><Download className="h-4 w-4" /></Button>
+                            {file.type.includes('figma') && <Button variant="ghost" size="icon"><Edit2 className="h-4 w-4" /></Button>}
                        </div>
                     </TableCell>
                   </TableRow>
