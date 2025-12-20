@@ -8,11 +8,12 @@ import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 
 const navLinks = [
-  { href: "#services", label: "सेवाएं" },
-  { href: "#pricing", label: "मूल्य" },
-  { href: "#portfolio", label: "पोर्टफोलियो" },
-  { href: "#process", label: "प्रक्रिया" },
-  { href: "#testimonials", label: "हमारे बारे में" },
+  { href: "/#services", label: "सेवाएं" },
+  { href: "/#pricing", label: "मूल्य" },
+  { href: "/#portfolio", label: "पोर्टफोलियो" },
+  { href: "/#process", label: "प्रक्रिया" },
+  { href: "/#testimonials", label: "हमारे बारे में" },
+  { href: "/contact", label: "संपर्क करें" },
 ];
 
 export default function Header() {
@@ -42,8 +43,8 @@ export default function Header() {
           <Button variant="ghost" size="icon" className="hidden md:inline-flex">
              <Phone className="h-4 w-4" />
           </Button>
-           <Button className="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-accent/90">
-              संपर्क करें
+           <Button asChild className="hidden md:inline-flex bg-accent text-accent-foreground hover:bg-accent/90">
+              <Link href="/contact">संपर्क करें</Link>
             </Button>
         </div>
 
@@ -67,8 +68,8 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-              संपर्क करें
+            <Button asChild className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
+              <Link href="/contact">संपर्क करें</Link>
             </Button>
           </div>
         </div>

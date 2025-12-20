@@ -82,7 +82,7 @@ export default function PricingSection() {
               </CardContent>
               <CardFooter>
                 <Button asChild className={`w-full ${tier.highlight ? 'bg-accent text-accent-foreground hover:bg-accent/90' : ''}`} variant={tier.highlight ? "default" : "outline"}>
-                   <Link href="/start-project">{tier.cta}</Link>
+                   <Link href="/contact">{tier.cta}</Link>
                 </Button>
               </CardFooter>
             </Card>

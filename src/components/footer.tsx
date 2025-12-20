@@ -23,18 +23,19 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold tracking-wider uppercase">सेवाएं</h3>
               <ul className="mt-4 space-y-2">
-                <li><Link href="#services" className="text-sm text-muted-foreground hover:text-foreground">वेबसाइट डेवलपमेंट</Link></li>
-                <li><Link href="#services" className="text-sm text-muted-foreground hover:text-foreground">मोबाइल ऐप्स</Link></li>
-                <li><Link href="#services" className="text-sm text-muted-foreground hover:text-foreground">वेब ऐप</Link></li>
-                <li><Link href="#services" className="text-sm text-muted-foreground hover:text-foreground">कस्टम सॉल्यूशंस</Link></li>
+                <li><Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground">वेबसाइट डेवलपमेंट</Link></li>
+                <li><Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground">मोबाइल ऐप्स</Link></li>
+                <li><Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground">वेब ऐप</Link></li>
+                <li><Link href="/#services" className="text-sm text-muted-foreground hover:text-foreground">कस्टम सॉल्यूशंस</Link></li>
               </ul>
             </div>
             <div>
               <h3 className="font-semibold tracking-wider uppercase">कंपनी</h3>
               <ul className="mt-4 space-y-2">
-                <li><Link href="#testimonials" className="text-sm text-muted-foreground hover:text-foreground">हमारे बारे में</Link></li>
-                <li><Link href="#portfolio" className="text-sm text-muted-foreground hover:text-foreground">पोर्टफोलियो</Link></li>
-                <li><Link href="#pricing" className="text-sm text-muted-foreground hover:text-foreground">मूल्य निर्धारण</Link></li>
+                <li><Link href="/#testimonials" className="text-sm text-muted-foreground hover:text-foreground">हमारे बारे में</Link></li>
+                <li><Link href="/#portfolio" className="text-sm text-muted-foreground hover:text-foreground">पोर्टफोलियो</Link></li>
+                <li><Link href="/#pricing" className="text-sm text-muted-foreground hover:text-foreground">मूल्य निर्धारण</Link></li>
+                <li><Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground">संपर्क करें</Link></li>
               </ul>
             </div>
             <div>
