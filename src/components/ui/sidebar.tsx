@@ -115,6 +115,11 @@ const SidebarProvider = React.forwardRef<
     // We add a state so that we can do data-state="expanded" or "collapsed".
     // This makes it easier to style the sidebar with Tailwind classes.
     const state = open ? "expanded" : "collapsed"
+    
+    React.useEffect(() => {
+      document.body.dataset.sidebarState = state
+    }, [state]);
+
 
     const contextValue = React.useMemo<SidebarContext>(
       () => ({

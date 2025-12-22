@@ -89,3 +89,14 @@ body {
     @apply w-full py-12 md:py-24 lg:py-32;
   }
 }
+
+@layer components {
+  @media (min-width: 768px) {
+    body[data-sidebar-state='expanded'] .main-content {
+      margin-left: 16rem;
+    }
+    body[data-sidebar-state='collapsed'] .main-content {
+      margin-left: 3rem;
+    }
+  }
+}
