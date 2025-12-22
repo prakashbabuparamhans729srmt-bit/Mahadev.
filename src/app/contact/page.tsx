@@ -1,5 +1,6 @@
 
 import Footer from '@/components/footer';
+import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,9 +9,10 @@ import { Mail, Phone, MessageSquare } from 'lucide-react';
 export default function ContactPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      <Header />
       <main className="flex-1">
         <section className="w-full py-12 md:py-24 lg:py-32 border-b">
-          <div className="px-4 md:px-6">
+          <div className="container px-4 md:px-6">
             <div className="grid gap-12 lg:grid-cols-2">
               <div className="space-y-6">
                 <h1 className="font-headline text-3xl font-bold tracking-tighter text-primary sm:text-4xl md:text-5xl">

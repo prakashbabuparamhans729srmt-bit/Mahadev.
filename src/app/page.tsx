@@ -6,10 +6,12 @@ import PortfolioSection from '@/components/sections/portfolio';
 import ProcessSection from '@/components/sections/process';
 import TestimonialsSection from '@/components/sections/testimonials';
 import Footer from '@/components/footer';
+import Header from '@/components/header';
 
 export default function Home() {
   return (
     <div className="flex flex-col min-h-[100dvh] bg-background">
+      <Header />
       <main className="flex-1">
         <HeroSection />
         <ServicesSection />
