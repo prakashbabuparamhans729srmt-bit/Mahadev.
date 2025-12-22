@@ -4,7 +4,7 @@ import { Icons } from "@/components/icons";
 export default function Footer() {
   return (
     <footer className="border-t">
-      <div className="container py-12">
+      <div className="py-12 px-4 md:px-6">
         <div className="grid gap-8 md:grid-cols-3">
           <div className="flex flex-col gap-4">
             <Link href="/" className="flex items-center space-x-2">
