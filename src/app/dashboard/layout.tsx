@@ -69,7 +69,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-background">
-        <Sidebar collapsible="icon" side="left" variant="sidebar" className="border-r-0 shadow-lg">
+        <Sidebar collapsible="icon" side="left" variant="sidebar" className="border-r-0 shadow-lg group-hover:w-[--sidebar-width] data-[state=expanded]:w-[--sidebar-width] data-[state=collapsed]:w-[--sidebar-width-icon]">
           <SidebarContent className="flex flex-col p-0">
             <SidebarGroup className="p-2">
               <div className="flex items-center gap-3 p-2 group-data-[state=collapsed]:group-hover:justify-start group-data-[state=collapsed]:justify-center group-data-[state=collapsed]:p-0">
@@ -169,7 +169,7 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex-1 flex flex-col h-screen overflow-hidden">
+        <div className="flex-1 flex flex-col">
             <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
                 <SidebarTrigger className="md:hidden" />
                 <div className="flex-1">
@@ -184,7 +184,7 @@ export default function DashboardLayout({
                   </Link>
                 </Button>
             </header>
-            <main className="flex-1 overflow-y-auto">
+            <main className="flex-1">
                 {children}
             </main>
         </div>
@@ -192,6 +192,3 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
-
-
-    
