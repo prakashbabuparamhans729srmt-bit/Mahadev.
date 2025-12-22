@@ -130,9 +130,7 @@ const chat = [
 export default function ProjectDetailsPage() {
 
   return (
-    <div className="flex min-h-full w-full flex-col bg-background text-foreground">
-      
-      <main className="flex-1 space-y-6 p-6">
+    <div className="flex-1 space-y-6 p-6">
         <div className="flex items-center justify-between">
             <h1 className="text-xl md:text-2xl font-bold font-headline flex items-center gap-2">
                 <Briefcase className="h-5 w-5 text-primary" />
@@ -389,7 +387,6 @@ export default function ProjectDetailsPage() {
             </Button>
           </CardFooter>
         </Card>
-      </main>
     </div>
   );
 }
