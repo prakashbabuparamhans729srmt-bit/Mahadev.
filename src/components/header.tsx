@@ -117,7 +117,7 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-           <Button asChild className="hidden md:flex bg-accent text-accent-foreground hover:bg-accent/90">
+           <Button asChild className="hidden md:flex">
              <Link href="/start-project">
               <Rocket className="mr-2 h-4 w-4" />
                प्रोजेक्ट शुरू करें
@@ -151,7 +151,7 @@ export default function Header() {
             <Link
                 href="/start-project"
                 onClick={() => setIsMenuOpen(false)}
-                className="font-medium text-accent hover:text-accent/90"
+                className="font-medium text-primary hover:text-primary/90"
               >
                 प्रोजेक्ट शुरू करें
               </Link>

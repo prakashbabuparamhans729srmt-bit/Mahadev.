@@ -17,7 +17,7 @@ export default function HeroSection() {
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row">
-              <Button asChild size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90 shadow-lg transition-transform duration-200 hover:scale-105">
+              <Button asChild size="lg" className="shadow-lg transition-transform duration-200 hover:scale-105">
                 <Link href="/start-project">
                   <Rocket className="mr-2 h-5 w-5" />
                   प्रोजेक्ट शुरू करें
