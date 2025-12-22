@@ -23,7 +23,7 @@ export function HelpAssistant() {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 mr-4 mb-2" side="top" align="end">
-        <div className="grid gap-4">
+        <div className="grid gap-4 min-h-[400px]">
           <div className="space-y-2">
             <h4 className="font-medium leading-none">सहायता केंद्र</h4>
             <p className="text-sm text-muted-foreground">
