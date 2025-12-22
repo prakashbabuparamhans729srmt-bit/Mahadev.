@@ -30,7 +30,7 @@ export default function RootLayout({
         <Toaster />
         <Button asChild className="fixed bottom-4 right-4 h-14 w-14 rounded-full shadow-lg" size="icon">
           <Link href="/contact">
-            <HelpCircle className="h-7 w-7" />
+            <HelpCircle className="h-8 w-8" />
             <span className="sr-only">Help Assistant</span>
           </Link>
         </Button>
