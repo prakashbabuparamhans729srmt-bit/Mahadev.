@@ -70,7 +70,7 @@ export default function DashboardLayout({
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-secondary/30">
-        <Sidebar collapsible="icon" side="left" variant="sidebar" className="border-r-0 shadow-lg">
+        <Sidebar collapsible="icon" side="left" variant="sidebar" className="border-r-0 shadow-lg peer">
           <SidebarContent className="p-0">
             <SidebarGroup className="p-2">
               <div className="flex items-center gap-3 p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center">
@@ -157,7 +157,7 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset>
+        <div className="flex-1">
           <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
             <SidebarTrigger className="md:hidden">
               <PanelLeft />
@@ -175,7 +175,7 @@ export default function DashboardLayout({
           <main className="flex-1 overflow-y-auto">
             {children}
           </main>
-          </SidebarInset>
+          </div>
       </div>
     </SidebarProvider>
   );
