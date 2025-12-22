@@ -155,8 +155,8 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <SidebarInset className="max-h-screen overflow-y-auto">
-          <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b bg-card/80 p-4 backdrop-blur-sm md:h-16">
+        <div className="flex flex-1 flex-col">
+          <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
             <SidebarTrigger className="md:hidden">
               <PanelLeft />
             </SidebarTrigger>
@@ -170,8 +170,10 @@ export default function DashboardLayout({
               <Settings />
             </Button>
           </header>
-          <div className="flex-1">{children}</div>
-        </SidebarInset>
+          <main className="flex-1 overflow-y-auto">
+            {children}
+          </main>
+        </div>
       </div>
     </SidebarProvider>
   );

@@ -102,8 +102,8 @@ export default function DevPortalDashboard() {
   }, []);
 
   return (
-    <div className="flex min-h-full w-full flex-col bg-background text-sm">
-      <main className="flex-1 space-y-6 p-6">
+    <div className="container mx-auto p-4 md:p-6 lg:p-8">
+      <div className="flex flex-col gap-6">
         <div className='flex justify-between items-center'>
              <h1 className="text-2xl font-bold font-headline">
                 🏢 डैशबोर्ड
@@ -231,7 +231,7 @@ export default function DevPortalDashboard() {
              </Card>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
