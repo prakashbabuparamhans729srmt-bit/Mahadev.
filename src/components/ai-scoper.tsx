@@ -5,10 +5,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   ProjectScopeInputSchema,
-  scopeProject,
   type ProjectScopeInput,
   type ProjectScopeOutput,
-} from '@/ai/flows/scope-project';
+} from '@/ai/flows/scope-project.types';
+import { scopeProject } from '@/ai/flows/scope-project';
 import {
   Dialog,
   DialogContent,
