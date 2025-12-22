@@ -171,10 +171,10 @@ export default function DashboardLayout({
               <Settings />
             </Button>
           </header>
-          <main className="flex-1 overflow-y-auto">
+          <main>
             {children}
           </main>
-          </div>
+        </div>
       </div>
     </SidebarProvider>
   );
