@@ -9,7 +9,7 @@ body,
   width: 100%;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: hidden; /* Prevents scrollbars on the body */
 }
 
 body {
@@ -18,6 +18,7 @@ body {
 
 .main-content {
   width: 100%;
+  height: 100%;
 }
 
 .app-container {
@@ -100,6 +101,7 @@ body {
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
   }
   body {
     @apply bg-background text-foreground;
