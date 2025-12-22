@@ -68,82 +68,84 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6">
-      <h1 className="text-2xl font-bold font-headline">सेटिंग्स</h1>
+    <div className="p-4 md:p-6 lg:p-8">
+      <div className="space-y-6">
+        <h1 className="text-2xl font-bold font-headline">सेटिंग्स</h1>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <User className="mr-2" />
-            प्रोफ़ाइल
-          </CardTitle>
-          <CardDescription>
-            अपनी व्यक्तिगत जानकारी को प्रबंधित करें।
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="displayName">नाम</Label>
-            <Input
-              id="displayName"
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="आपका पूरा नाम"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">ईमेल</Label>
-            <Input id="email" value={user?.email || ''} disabled />
-          </div>
-          <Button onClick={handleProfileSave} disabled={isSaving}>
-            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            बदलाव सहेजें
-          </Button>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Palette className="mr-2" />
-            दिखावट
-          </CardTitle>
-          <CardDescription>
-            ऐप की दिखावट को अपनी पसंद के अनुसार बदलें।
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <RadioGroup value={theme} onValueChange={handleThemeChange}>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="light" id="light" />
-              <Label htmlFor="light">लाइट मोड</Label>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <User className="mr-2" />
+              प्रोफ़ाइल
+            </CardTitle>
+            <CardDescription>
+              अपनी व्यक्तिगत जानकारी को प्रबंधित करें।
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="displayName">नाम</Label>
+              <Input
+                id="displayName"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="आपका पूरा नाम"
+              />
             </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="dark" id="dark" />
-              <Label htmlFor="dark">डार्क मोड</Label>
+            <div className="space-y-2">
+              <Label htmlFor="email">ईमेल</Label>
+              <Input id="email" value={user?.email || ''} disabled />
             </div>
-          </RadioGroup>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <Shield className="mr-2" />
-            सुरक्षा
-          </CardTitle>
-          <CardDescription>
-            अपना पासवर्ड बदलें और खाता सुरक्षा प्रबंधित करें।
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-            <Button variant="outline">पासवर्ड बदलें</Button>
-            <Button variant="destructive">
-                <LogOut className="mr-2 h-4 w-4"/>
-                सभी डिवाइस से लॉग आउट करें
+            <Button onClick={handleProfileSave} disabled={isSaving}>
+              {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              बदलाव सहेजें
             </Button>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Palette className="mr-2" />
+              दिखावट
+            </CardTitle>
+            <CardDescription>
+              ऐप की दिखावट को अपनी पसंद के अनुसार बदलें।
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <RadioGroup value={theme} onValueChange={handleThemeChange}>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="light" id="light" />
+                <Label htmlFor="light">लाइट मोड</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="dark" id="dark" />
+                <Label htmlFor="dark">डार्क मोड</Label>
+              </div>
+            </RadioGroup>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Shield className="mr-2" />
+              सुरक्षा
+            </CardTitle>
+            <CardDescription>
+              अपना पासवर्ड बदलें और खाता सुरक्षा प्रबंधित करें।
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+              <Button variant="outline">पासवर्ड बदलें</Button>
+              <Button variant="destructive">
+                  <LogOut className="mr-2 h-4 w-4"/>
+                  सभी डिवाइस से लॉग आउट करें
+              </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
