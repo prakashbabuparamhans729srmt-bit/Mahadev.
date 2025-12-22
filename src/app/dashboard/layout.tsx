@@ -161,7 +161,7 @@ export default function DashboardLayout({
               <PanelLeft />
             </SidebarTrigger>
             <div className="flex-1">
-              {/* Breadcrumbs or Page Title can go here */}
+              <SidebarTrigger className="hidden md:block" />
             </div>
             <Button variant="ghost" size="icon">
               <MessageSquare />
