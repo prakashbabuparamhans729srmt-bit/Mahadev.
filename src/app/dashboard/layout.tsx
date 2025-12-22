@@ -156,7 +156,7 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="main-content flex-1 transition-all duration-300 ease-in-out">
+        <div className="main-content flex-1">
           <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
             <SidebarTrigger className="md:hidden">
               <PanelLeft />
