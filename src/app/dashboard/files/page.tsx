@@ -44,12 +44,12 @@ const versions = [
 
 const getFileIcon = (type: string) => {
   switch (type) {
-    case 'folder': return <Folder className="h-5 w-5 text-yellow-500" />;
-    case 'figma': return <FileText className="h-5 w-5 text-purple-500" />;
-    case 'pdf': return <FileText className="h-5 w-5 text-red-500" />;
-    case 'image': return <FileImage className="h-5 w-5 text-blue-500" />;
-    case 'video': return <FileVideo className="h-5 w-5 text-green-500" />;
-    default: return <FileText className="h-5 w-5 text-gray-500" />;
+    case 'folder': return <Folder className="h-5 w-5 text-primary" />;
+    case 'figma': return <FileText className="h-5 w-5 text-primary/80" />;
+    case 'pdf': return <FileText className="h-5 w-5 text-red-400" />;
+    case 'image': return <FileImage className="h-5 w-5 text-blue-400" />;
+    case 'video': return <FileVideo className="h-5 w-5 text-green-400" />;
+    default: return <FileText className="h-5 w-5 text-muted-foreground" />;
   }
 };
 

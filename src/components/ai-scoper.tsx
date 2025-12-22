@@ -83,7 +83,7 @@ export function AiScoper() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button variant="outline">
           <Wand2 className="mr-2 h-4 w-4" />
           AI प्रोजेक्ट स्कोप जनरेटर
         </Button>
