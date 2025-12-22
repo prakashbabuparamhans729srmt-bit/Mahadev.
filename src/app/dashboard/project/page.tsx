@@ -130,7 +130,8 @@ const chat = [
 export default function ProjectDetailsPage() {
 
   return (
-    <div className="w-full space-y-6 p-6">
+    <div className="p-4 md:p-6 lg:p-8">
+      <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
             <h1 className="text-xl md:text-2xl font-bold font-headline flex items-center gap-2">
                 <Briefcase className="h-5 w-5 text-primary" />
@@ -387,6 +388,7 @@ export default function ProjectDetailsPage() {
             </Button>
           </CardFooter>
         </Card>
+      </div>
     </div>
   );
 }
