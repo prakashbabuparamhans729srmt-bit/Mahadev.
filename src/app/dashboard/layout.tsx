@@ -145,6 +145,19 @@ export default function DashboardLayout({
             </SidebarMenu>
             <SidebarGroup className="mt-auto p-2">
                 <SidebarMenu>
+                     <SidebarMenuItem>
+                        <SidebarMenuButton
+                        asChild
+                        isActive={isActive('/dashboard/settings')}
+                        tooltip="सेटिंग्स"
+                        size="lg"
+                        >
+                        <Link href="/dashboard/settings">
+                            <Settings />
+                            <span className="group-data-[collapsible=icon]:hidden">सेटिंग्स</span>
+                        </Link>
+                        </SidebarMenuButton>
+                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton onClick={handleLogout} tooltip="लॉग आउट"  size="lg">
                            <LogOut />
@@ -156,7 +169,7 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="main-content flex-1 flex flex-col h-screen">
+        <div className="flex-1 flex flex-col h-screen">
             <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
                 <SidebarTrigger className="md:hidden" />
                 <div className="flex-1">
@@ -165,8 +178,10 @@ export default function DashboardLayout({
                 <Button variant="ghost" size="icon">
                 <MessageSquare />
                 </Button>
-                <Button variant="ghost" size="icon">
-                <Settings />
+                <Button variant="ghost" size="icon" asChild>
+                  <Link href="/dashboard/settings">
+                    <Settings />
+                  </Link>
                 </Button>
             </header>
             <main className="flex-1 overflow-y-auto">
@@ -177,3 +192,4 @@ export default function DashboardLayout({
     </SidebarProvider>
   );
 }
+
