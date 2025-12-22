@@ -101,7 +101,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard">
                     <BarChart2 />
-                    <span>प्रोजेक्ट डैशबोर्ड</span>
+                    <span className="group-data-[collapsible=icon]:hidden">प्रोजेक्ट डैशबोर्ड</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -110,10 +110,11 @@ export default function DashboardLayout({
                   asChild
                   isActive={isActive('/dashboard/project')}
                   tooltip="प्रोजेक्ट"
+                   size="lg"
                 >
                   <Link href="/dashboard/project">
                     <Users />
-                    <span>प्रोजेक्ट विवरण</span>
+                    <span className="group-data-[collapsible=icon]:hidden">प्रोजेक्ट विवरण</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -122,32 +123,33 @@ export default function DashboardLayout({
                   asChild
                   isActive={isActive('/dashboard/files')}
                   tooltip="फाइल्स"
+                   size="lg"
                 >
                   <Link href="/dashboard/files">
                     <File />
-                    <span>फाइल्स</span>
+                    <span className="group-data-[collapsible=icon]:hidden">फाइल्स</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="बिलिंग" disabled>
+                <SidebarMenuButton tooltip="बिलिंग" disabled  size="lg">
                   <Wallet />
-                  <span>बिलिंग और इनवॉइस</span>
+                  <span className="group-data-[collapsible=icon]:hidden">बिलिंग और इनवॉइस</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="सपोर्ट" disabled>
+                <SidebarMenuButton tooltip="सपोर्ट" disabled  size="lg">
                   <HelpCircle />
-                  <span>सपोर्ट टिकेट</span>
+                  <span className="group-data-[collapsible=icon]:hidden">सपोर्ट टिकेट</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
             <SidebarGroup className="mt-auto p-2">
                 <SidebarMenu>
                     <SidebarMenuItem>
-                        <SidebarMenuButton onClick={handleLogout} tooltip="लॉग आउट">
+                        <SidebarMenuButton onClick={handleLogout} tooltip="लॉग आउट"  size="lg">
                            <LogOut />
-                           <span>लॉग आउट</span>
+                           <span className="group-data-[collapsible=icon]:hidden">लॉग आउट</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -170,7 +172,7 @@ export default function DashboardLayout({
               <Settings />
             </Button>
           </header>
-          <main className="flex-1 overflow-y-auto">
+          <main className="flex-1 overflow-y-auto p-6">
             {children}
           </main>
         </div>
