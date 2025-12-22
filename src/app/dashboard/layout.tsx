@@ -73,7 +73,7 @@ export default function DashboardLayout({
         <Sidebar collapsible="icon" side="left" variant="sidebar" className="border-r-0 shadow-lg">
           <SidebarContent className="p-0">
             <SidebarGroup className="p-2">
-              <div className="flex items-center gap-3 p-2">
+              <div className="flex items-center gap-3 p-2 group-data-[collapsible=icon]:p-0 group-data-[collapsible=icon]:justify-center">
                 <Avatar className="h-10 w-10">
                   <AvatarImage
                     src={user?.photoURL ?? ''}
