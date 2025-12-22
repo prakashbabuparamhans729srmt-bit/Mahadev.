@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Popover,
   PopoverContent,
@@ -7,12 +8,44 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { HelpCircle, Search, BookOpen, MessageSquare, ArrowRight } from 'lucide-react';
-import Link from 'next/link';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { HelpCircle, Send, Cpu, Bot, User } from 'lucide-react';
+import { assistantFlow } from '@/ai/flows/assistant-flow';
+
+type Message = {
+  role: 'user' | 'assistant';
+  content: string;
+};
 
 export function HelpAssistant() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [input, setInput] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSend = async () => {
+    if (!input.trim()) return;
+
+    const userMessage: Message = { role: 'user', content: input };
+    setMessages((prev) => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      const response = await assistantFlow({ query: input, history: messages });
+      const assistantMessage: Message = { role: 'assistant', content: response.answer };
+      setMessages((prev) => [...prev, assistantMessage]);
+    } catch (error) {
+      const errorMessage: Message = { role: 'assistant', content: "माफ़ कीजिए, कुछ गड़बड़ हो गई। कृपया फिर से प्रयास करें।" };
+      setMessages((prev) => [...prev, errorMessage]);
+      console.error("AI Assistant Error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
-    <Popover>
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Button
           className="fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full shadow-lg transition-transform duration-200 hover:scale-110 hover:shadow-2xl"
@@ -22,33 +55,80 @@ export function HelpAssistant() {
           <span className="sr-only">Help Assistant</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 mr-4 mb-2" side="top" align="end">
-        <div className="grid gap-4 min-h-[400px]">
-          <div className="space-y-2">
-            <h4 className="font-medium leading-none">सहायता केंद्र</h4>
-            <p className="text-sm text-muted-foreground">
-              आपको किसकी ज़रूरत है?
+      <PopoverContent className="w-96 mr-4 mb-2 p-0 border-0 shadow-2xl rounded-2xl" side="top" align="end">
+        <div className="flex flex-col h-[60vh] max-h-[700px] bg-card rounded-2xl">
+          <div className="p-4 border-b text-center bg-secondary/30 rounded-t-2xl">
+            <h4 className="font-bold leading-none flex items-center justify-center">
+              <Cpu className="mr-2 text-primary" />
+              AI सहायक
+            </h4>
+            <p className="text-sm text-muted-foreground mt-1">
+              मैं आपकी कैसे मदद कर सकता हूँ?
             </p>
           </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="खोजें..." className="pl-9" />
-          </div>
-          <div className="grid gap-2">
-             <Link href="/#faq" passHref>
-                <Button variant="ghost" className="w-full justify-start">
-                    <BookOpen className="mr-2 h-4 w-4" />
-                    FAQs और नॉलेज बेस
-                    <ArrowRight className="ml-auto h-4 w-4" />
-                </Button>
-            </Link>
-             <Link href="/contact" passHref>
-                <Button variant="ghost" className="w-full justify-start">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    हमसे संपर्क करें
-                    <ArrowRight className="ml-auto h-4 w-4" />
-                </Button>
-            </Link>
+          
+          <ScrollArea className="flex-1 p-4">
+            <div className="space-y-4">
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex items-start gap-3 ${message.role === 'user' ? 'justify-end' : ''}`}
+                >
+                  {message.role === 'assistant' && (
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                      <Bot size={20} />
+                    </div>
+                  )}
+                  <div
+                    className={`max-w-xs rounded-2xl p-3 text-sm ${
+                      message.role === 'user'
+                        ? 'bg-primary text-primary-foreground rounded-br-none'
+                        : 'bg-secondary rounded-bl-none'
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                   {message.role === 'user' && (
+                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-secondary text-secondary-foreground flex items-center justify-center">
+                      <User size={20} />
+                    </div>
+                  )}
+                </div>
+              ))}
+               {isLoading && (
+                <div className="flex items-start gap-3">
+                   <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                      <Bot size={20} />
+                    </div>
+                  <div className="max-w-xs rounded-2xl p-3 text-sm bg-secondary rounded-bl-none flex items-center">
+                    <div className="h-2 w-2 bg-muted-foreground rounded-full animate-pulse delay-0"></div>
+                    <div className="h-2 w-2 bg-muted-foreground rounded-full animate-pulse delay-150 ml-1"></div>
+                    <div className="h-2 w-2 bg-muted-foreground rounded-full animate-pulse delay-300 ml-1"></div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+
+          <div className="p-4 border-t">
+            <div className="relative">
+              <Input
+                placeholder="एक संदेश लिखें..."
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                disabled={isLoading}
+                className="pr-12 rounded-full"
+              />
+              <Button
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
+                onClick={handleSend}
+                disabled={isLoading}
+              >
+                <Send size={18} />
+              </Button>
+            </div>
           </div>
         </div>
       </PopoverContent>
