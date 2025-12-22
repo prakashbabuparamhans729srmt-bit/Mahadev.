@@ -68,11 +68,11 @@ export default function DashboardLayout({
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-secondary/30">
-        <Sidebar collapsible="icon" side="left" variant="sidebar" className="border-r-0 shadow-lg fixed">
+      <div className="flex min-h-screen bg-background">
+        <Sidebar collapsible="icon" side="left" variant="sidebar" className="border-r-0 shadow-lg">
           <SidebarContent className="flex flex-col p-0">
             <SidebarGroup className="p-2">
-              <div className="flex items-center gap-3 p-2 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0">
+              <div className="flex items-center gap-3 p-2 group-data-[state=collapsed]:group-hover:justify-start group-data-[state=collapsed]:justify-center group-data-[state=collapsed]:p-0">
                 <Avatar className="h-10 w-10">
                   <AvatarImage
                     src={user?.photoURL ?? ''}
@@ -82,7 +82,7 @@ export default function DashboardLayout({
                     {user?.email?.[0]?.toUpperCase() ?? 'A'}
                   </AvatarFallback>
                 </Avatar>
-                <div className="text-sm group-data-[collapsible=icon]:hidden overflow-hidden">
+                <div className="text-sm group-data-[state=collapsed]:group-hover:flex group-data-[state=collapsed]:hidden overflow-hidden">
                   <p className="font-semibold truncate">
                     {user?.displayName ?? 'ग्राहक'}
                   </p>
@@ -100,7 +100,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard">
                     <BarChart2 />
-                    <span className="group-data-[collapsible=icon]:hidden">प्रोजेक्ट डैशबोर्ड</span>
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">प्रोजेक्ट डैशबोर्ड</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -113,7 +113,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard/project">
                     <Users />
-                    <span className="group-data-[collapsible=icon]:hidden">प्रोजेक्ट विवरण</span>
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">प्रोजेक्ट विवरण</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -126,20 +126,20 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard/files">
                     <File />
-                    <span className="group-data-[collapsible=icon]:hidden">फाइल्स</span>
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">फाइल्स</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="बिलिंग" disabled  size="lg">
                   <Wallet />
-                  <span className="group-data-[collapsible=icon]:hidden">बिलिंग और इनवॉइस</span>
+                  <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">बिलिंग और इनवॉइस</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="सपोर्ट" disabled  size="lg">
                   <HelpCircle />
-                  <span className="group-data-[collapsible=icon]:hidden">सपोर्ट टिकेट</span>
+                  <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">सपोर्ट टिकेट</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -154,14 +154,14 @@ export default function DashboardLayout({
                         >
                         <Link href="/dashboard/settings">
                             <Settings />
-                            <span className="group-data-[collapsible=icon]:hidden">सेटिंग्स</span>
+                            <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">सेटिंग्स</span>
                         </Link>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton onClick={handleLogout} tooltip="लॉग आउट"  size="lg">
                            <LogOut />
-                           <span className="group-data-[collapsible=icon]:hidden">लॉग आउट</span>
+                           <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">लॉग आउट</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -169,7 +169,7 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="flex-1 flex flex-col h-screen">
+        <div className="flex-1 flex flex-col h-screen overflow-hidden">
             <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
                 <SidebarTrigger className="md:hidden" />
                 <div className="flex-1">
@@ -193,3 +193,5 @@ export default function DashboardLayout({
   );
 }
 
+
+    
