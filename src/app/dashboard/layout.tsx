@@ -1,6 +1,7 @@
 
 'use client';
 
+import { useEffect } from 'react';
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +41,12 @@ export default function DashboardLayout({
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
 
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [isUserLoading, user, router]);
+
   const handleLogout = async () => {
     if (auth) {
       await signOut(auth);
@@ -49,18 +56,9 @@ export default function DashboardLayout({
 
   const isActive = (path: string) => pathname === path;
 
-  if (isUserLoading) {
+  if (isUserLoading || !user) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    router.push('/login');
-    return (
-       <div className="flex min-h-screen items-center justify-center bg-background">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
