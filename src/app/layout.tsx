@@ -28,7 +28,7 @@ export default function RootLayout({
           {children}
         </FirebaseClientProvider>
         <Toaster />
-        <Button asChild className="fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full shadow-lg" size="icon">
+        <Button asChild className="fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full shadow-lg transition-transform duration-200 hover:scale-110 hover:shadow-2xl" size="icon">
           <Link href="/contact">
             <HelpCircle className="h-9 w-9" />
             <span className="sr-only">Help Assistant</span>
