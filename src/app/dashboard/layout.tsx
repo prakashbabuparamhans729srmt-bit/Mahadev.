@@ -93,38 +93,41 @@ export default function DashboardLayout({
             </SidebarGroup>
             <SidebarMenu className="p-2">
               <SidebarMenuItem>
-                <Link href="/dashboard" legacyBehavior passHref>
-                  <SidebarMenuButton
-                    isActive={isActive('/dashboard')}
-                    tooltip="डैशबोर्ड"
-                    size="lg"
-                  >
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard')}
+                  tooltip="डैशबोर्ड"
+                  size="lg"
+                >
+                  <Link href="/dashboard">
                     <BarChart2 />
                     <span>प्रोजेक्ट डैशबोर्ड</span>
-                  </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/dashboard/project" legacyBehavior passHref>
-                  <SidebarMenuButton
-                    isActive={isActive('/dashboard/project')}
-                    tooltip="प्रोजेक्ट"
-                  >
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/project')}
+                  tooltip="प्रोजेक्ट"
+                >
+                  <Link href="/dashboard/project">
                     <Users />
                     <span>प्रोजेक्ट विवरण</span>
-                  </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/dashboard/files" legacyBehavior passHref>
-                  <SidebarMenuButton
-                    isActive={isActive('/dashboard/files')}
-                    tooltip="फाइल्स"
-                  >
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/files')}
+                  tooltip="फाइल्स"
+                >
+                  <Link href="/dashboard/files">
                     <File />
                     <span>फाइल्स</span>
-                  </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="बिलिंग" disabled>
