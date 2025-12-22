@@ -6,6 +6,7 @@ import {
   SheetContent,
   SheetHeader,
   SheetTitle,
+  SheetDescription
 } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -44,6 +45,10 @@ export function MobileSidebar({ isOpen, onClose }: MobileSidebarProps) {
             <Icons.logo className="h-6 w-6 text-primary" />
             <span className="font-bold font-headline">Hajaro Grahako</span>
           </div>
+           <SheetTitle className="sr-only">Mobile Sidebar</SheetTitle>
+           <SheetDescription className="sr-only">
+            A sidebar for mobile navigation with project details and quick actions.
+          </SheetDescription>
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6">
