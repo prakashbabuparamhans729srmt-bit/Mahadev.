@@ -1,13 +1,12 @@
-import Header from '@/components/header';
+
 import Footer from '@/components/footer';
 import { SuggestionForm } from './suggestion-form';
 
 export default function StartProjectPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <Header />
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-card border-b">
+        <section className="w-full py-12 md:py-24 lg:py-32 border-b">
           <div className="px-4 md:px-6">
             <div className="flex flex-col items-center space-y-8">
               <div className="text-center space-y-4 max-w-3xl">
