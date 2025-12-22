@@ -206,11 +206,9 @@ const Sidebar = React.forwardRef<
             }
             side={side}
           >
-             <SheetHeader className="sr-only">
-              <SheetTitle>Sidebar</SheetTitle>
-              <SheetDescription>
-                Main navigation and content sidebar.
-              </SheetDescription>
+             <SheetHeader className="p-4 border-b">
+                <SheetTitle className="text-lg font-semibold">Menu</SheetTitle>
+                <SheetDescription className="sr-only">Main navigation and content sidebar.</SheetDescription>
             </SheetHeader>
             <div className="flex h-full w-full flex-col">{children}</div>
           </SheetContent>
@@ -334,6 +332,7 @@ const SidebarInset = React.forwardRef<
         "md:peer-data-[side=right]:peer-data-[state=expanded]:mr-[--sidebar-width]",
         "md:peer-data-[side=right]:peer-data-[state=collapsed]:mr-[--sidebar-width-icon]",
         "peer-data-[variant=inset]:min-h-[calc(100svh-theme(spacing.4))] md:peer-data-[variant=inset]:m-2 md:peer-data-[state=collapsed]:peer-data-[variant=inset]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow",
+        "transition-[margin-left] duration-300 ease-in-out",
         className
       )}
       {...props}
@@ -431,7 +430,7 @@ const SidebarGroup = React.forwardRef<
     <div
       ref={ref}
       data-sidebar="group"
-      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+      className={cn("relative flex w-full min-w-0 flex-col", className)}
       {...props}
     />
   )
@@ -533,7 +532,7 @@ const sidebarMenuButtonVariants = cva(
       size: {
         default: "h-8 text-sm",
         sm: "h-7 text-xs",
-        lg: "h-12 text-sm group-data-[collapsible=icon]:!p-0",
+        lg: "h-12 text-sm group-data-[collapsible=icon]:!h-12 group-data-[collapsible=icon]:!w-12 group-data-[collapsible=icon]:justify-center",
       },
     },
     defaultVariants: {
