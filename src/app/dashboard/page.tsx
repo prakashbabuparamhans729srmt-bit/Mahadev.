@@ -42,7 +42,7 @@ import {
   Laptop,
   Paintbrush,
   Camera,
-  Vr,
+  View,
   Settings,
   Menu,
 } from 'lucide-react';
@@ -151,7 +151,7 @@ export default function DevPortalDashboard() {
                     <div className="grid grid-cols-3 gap-2 w-full">
                         <Button variant="outline" size="sm"><Smartphone className="h-4 w-4"/> मोबाइल</Button>
                         <Button variant="outline" size="sm"><Laptop className="h-4 w-4"/> डेस्कटॉप</Button>
-                        <Button variant="outline" size="sm"><Vr className="h-4 w-4"/> AR देखें</Button>
+                        <Button variant="outline" size="sm"><View className="h-4 w-4"/> AR देखें</Button>
                     </div>
                  </CardContent>
              </Card>
