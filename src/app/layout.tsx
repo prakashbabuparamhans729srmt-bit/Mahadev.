@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { Button } from '@/components/ui/button';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, LifeBuoy } from 'lucide-react';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -25,12 +25,12 @@ export default function RootLayout({
       </head>
       <body className="font-body antialiased">
         <FirebaseClientProvider>
-            {children}
+          {children}
         </FirebaseClientProvider>
         <Toaster />
-        <Button asChild className="fixed bottom-4 right-4 h-14 w-14 rounded-full shadow-lg" size="icon">
+        <Button asChild className="fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full shadow-lg" size="icon">
           <Link href="/contact">
-            <HelpCircle className="h-8 w-8" />
+            <HelpCircle className="h-9 w-9" />
             <span className="sr-only">Help Assistant</span>
           </Link>
         </Button>
