@@ -156,22 +156,22 @@ export default function DashboardLayout({
           </SidebarContent>
         </Sidebar>
 
-        <div className="main-content w-full flex flex-col h-screen">
-          <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:h-16 md:px-6 shrink-0">
-            <SidebarTrigger className="md:hidden" />
-            <div className="flex-1">
-              <SidebarTrigger className="hidden md:block" />
-            </div>
-            <Button variant="ghost" size="icon">
-              <MessageSquare />
-            </Button>
-            <Button variant="ghost" size="icon">
-              <Settings />
-            </Button>
-          </header>
-          <main className="flex-1 overflow-y-auto">
-            {children}
-          </main>
+        <div className="main-content flex-1 flex flex-col h-screen">
+            <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:h-16 md:px-6">
+                <SidebarTrigger className="md:hidden" />
+                <div className="flex-1">
+                <SidebarTrigger className="hidden md:block" />
+                </div>
+                <Button variant="ghost" size="icon">
+                <MessageSquare />
+                </Button>
+                <Button variant="ghost" size="icon">
+                <Settings />
+                </Button>
+            </header>
+            <main className="flex-1 overflow-y-auto">
+                {children}
+            </main>
         </div>
       </div>
     </SidebarProvider>
