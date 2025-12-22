@@ -2,6 +2,9 @@ import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { Button } from '@/components/ui/button';
+import { LifeBuoy } from 'lucide-react';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   title: 'HG Hub - Hajaro Grahako',
@@ -25,6 +28,12 @@ export default function RootLayout({
             {children}
         </FirebaseClientProvider>
         <Toaster />
+        <Button asChild className="fixed bottom-4 right-4 h-14 w-14 rounded-full shadow-lg" size="icon">
+          <Link href="/contact">
+            <LifeBuoy className="h-7 w-7" />
+            <span className="sr-only">Help Assistant</span>
+          </Link>
+        </Button>
       </body>
     </html>
   );
