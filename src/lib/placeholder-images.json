@@ -3,7 +3,7 @@
     {
       "id": "hero-carousel-1",
       "description": "Eiffel Tower with blinking lights",
-      "imageUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RqdTR5dGJzN2Rkcm1oZ3h2bDU2dWI1d21wd2o1Z2hycGQ2bnpvaCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/VbtU3h2vSgqA/giphy.gif",
+      "imageUrl": "https://media.giphy.com/media/VbtU3h2vSgqA/giphy.gif",
       "imageHint": "eiffel tower gif"
     },
     {
@@ -45,7 +45,7 @@
     {
       "id": "hero-carousel-8",
       "description": "Old car driving down a deserted road",
-      "imageUrl": "https://images.unsplash.com/photo-1485291571150-772bcfc10da5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxvbGQlMjBjYXIlMjBkZXNlcnQlMjByb2FkfGVufDB8fHx8MTc2NjM5NDA3MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1485291571150-772bcfc10da5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxvbGQlMjBjYXIlMjBkZXNlcnQlMjByb2FkfGVufDB8fHx8fDE3NjYzOTQwNzB8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "old car"
     },
     {
