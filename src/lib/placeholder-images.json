@@ -1,6 +1,54 @@
 {
   "placeholderImages": [
     {
+      "id": "hero-carousel-1",
+      "description": "Abstract technology background",
+      "imageUrl": "https://images.unsplash.com/photo-1562575214-da9fcf59b907?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxhYnN0cmFjdCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzY2MzYyMTA2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract technology"
+    },
+    {
+      "id": "hero-carousel-2",
+      "description": "Modern office space",
+      "imageUrl": "https://images.unsplash.com/photo-1641060272821-df59e2c0b5ed?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxtb2Rlcm4lMjBvZmZpY2V8ZW58MHx8fHwxNzY2NDAyNjIzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "modern office"
+    },
+    {
+      "id": "hero-carousel-3",
+      "description": "Team collaborating on a project",
+      "imageUrl": "https://images.unsplash.com/photo-1531545514256-b1400bc00f31?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8dGVhbSUyMGNvbGxhYm9yYXRpb258ZW58MHx8fHwxNzY2NDU2MjE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "team collaboration"
+    },
+    {
+      "id": "hero-carousel-4",
+      "description": "Creative wireframe sketch",
+      "imageUrl": "https://images.unsplash.com/photo-1593619296822-174a3cb020f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHx3aXJlZnJhbWUlMjBza2V0Y2h8ZW58MHx8fHwxNzY2NDc0OTk0fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "wireframe sketch"
+    },
+    {
+      "id": "hero-carousel-5",
+      "description": "Lines of code on a screen",
+      "imageUrl": "https://images.unsplash.com/photo-1658274474930-bb27a64022c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxjb2RlJTIwc2NyZWVufGVufDB8fHx8MTc2NjQyNjE0N3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "code screen"
+    },
+    {
+      "id": "hero-carousel-6",
+      "description": "Digital data visualization",
+      "imageUrl": "https://images.unsplash.com/photo-1728995025396-b5141e209455?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxkYXRhJTIwdmlzdWFsaXphdGlvbnxlbnwwfHx8fDE3NjY0NjkxOTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "data visualization"
+    },
+    {
+      "id": "hero-carousel-7",
+      "description": "Cityscape at night",
+      "imageUrl": "https://images.unsplash.com/photo-1560307002-306085d5ca4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxuaWdodCUyMGNpdHlzY2FwZXxlbnwwfHx8fDE3NjY0MjYyNzl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "night cityscape"
+    },
+    {
+      "id": "hero-carousel-8",
+      "description": "Geometric pattern design",
+      "imageUrl": "https://images.unsplash.com/photo-1616080808758-b8a2fc2ec5d4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8Z2VvbWV0cmljJTIwcGF0dGVybnxlbnwwfHx8fDE3NjY0Njk5MDJ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "geometric pattern"
+    },
+    {
       "id": "portfolio-1",
       "description": "ई-कॉमर्स वेबसाइट",
       "imageUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxlY29tbWVyY2UlMjB3ZWJzaXRlfGVufDB8fHx8MTc2NjEzNDIwNXww&ixlib=rb-4.1.0&q=80&w=1080",
