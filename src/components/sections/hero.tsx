@@ -13,7 +13,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function HeroSection() {
   const plugin = React.useRef(
-    Autoplay({ delay: 3000, stopOnInteraction: true })
+    Autoplay({ delay: 2000, stopOnInteraction: true })
   );
   
   const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-carousel-"));
@@ -21,7 +21,7 @@ export default function HeroSection() {
   return (
     <section className="bg-card border-b">
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+        <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
           <div className="flex flex-col justify-center space-y-4 py-12 md:py-24 lg:py-32">
             <div className="space-y-2">
                <div className="space-y-4">
@@ -60,7 +60,7 @@ export default function HeroSection() {
           <div className="flex items-center justify-center py-12 lg:py-0">
              <Carousel
               plugins={[plugin.current]}
-              className="w-full max-w-md"
+              className="w-full max-w-xl"
               onMouseEnter={plugin.current.stop}
               onMouseLeave={plugin.current.reset}
             >
@@ -87,3 +87,4 @@ export default function HeroSection() {
     </section>
   );
 }
+
