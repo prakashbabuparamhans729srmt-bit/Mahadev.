@@ -21,7 +21,7 @@ export default function HeroSection() {
   return (
     <section className="bg-card border-b">
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 md:grid-cols-2 md:gap-12 items-center">
+        <div className="grid gap-6 lg:grid-cols-2 md:gap-12 items-center">
           <div className="flex flex-col justify-center space-y-4 py-12 md:py-24">
             <div className="space-y-4">
               <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none italic">
@@ -42,7 +42,7 @@ export default function HeroSection() {
               </Button>
               <Button asChild size="lg" variant="outline" className="shadow-lg transition-transform duration-200 hover:scale-105">
                 <Link href="#services">
-                  हमारी सेवाएं देखें
+                   हमारी सेवाएं देखें
                 </Link>
               </Button>
             </div>
@@ -77,3 +77,4 @@ export default function HeroSection() {
     </section>
   );
 }
+
