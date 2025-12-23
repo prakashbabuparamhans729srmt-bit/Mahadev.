@@ -8,7 +8,6 @@ import TestimonialsSection from '@/components/sections/testimonials';
 import CtaSection from '@/components/sections/cta';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
-import ImageCarouselSection from '@/components/sections/image-carousel';
 
 export default function Home() {
   return (
@@ -16,7 +15,6 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <ImageCarouselSection />
         <ServicesSection />
         <PortfolioSection />
         <ProcessSection />
