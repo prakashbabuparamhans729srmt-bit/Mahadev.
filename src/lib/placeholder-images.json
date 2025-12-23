@@ -49,6 +49,18 @@
       "imageHint": "abstract design"
     },
     {
+      "id": "hero-carousel-9",
+      "description": "App development on a laptop",
+      "imageUrl": "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb2JpbGUlMjBhcHAlMjBkZXZlbG9wbWVudHxlbnwwfHx8fDE3MjU1NDAwMDB8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "app development"
+    },
+    {
+      "id": "hero-carousel-10",
+      "description": "Business analytics dashboard",
+      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkYXRhJTIwYW5hbHl0aWNzfGVufDB8fHx8MTc2NjEzNDUxMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "data analytics"
+    },
+    {
       "id": "portfolio-1",
       "description": "ई-कॉमर्स वेबसाइट",
       "imageUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxlY29tbWVyY2UlMjB3ZWJzaXRlfGVufDB8fHx8MTc2NjEzNDIwNXww&ixlib=rb-4.1.0&q=80&w=1080",
