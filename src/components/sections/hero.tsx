@@ -8,7 +8,7 @@ import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function HeroSection() {
-    const heroImage = PlaceHolderImages.find(img => img.id === 'hero-carousel-1');
+    const heroImage = PlaceHolderImages.find(img => img.id === 'hero-carousel-9');
   
     return (
     <section className="w-full py-12 md:py-24 lg:py-32">
@@ -58,4 +58,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
