@@ -105,3 +105,20 @@ body {
     @apply w-full py-12 md:py-24 lg:py-32;
   }
 }
+
+@layer utilities {
+  .animate-blinking-glow {
+    animation: blinking-glow 2.5s ease-in-out infinite;
+  }
+
+  @keyframes blinking-glow {
+    0%, 100% {
+      text-shadow: 0 0 5px hsl(var(--accent)), 0 0 10px hsl(var(--accent) / 0.8);
+      opacity: 1;
+    }
+    50% {
+      text-shadow: 0 0 10px hsl(var(--accent)), 0 0 20px hsl(var(--accent) / 0.6), 0 0 30px hsl(var(--accent) / 0.4);
+      opacity: 0.9;
+    }
+  }
+}

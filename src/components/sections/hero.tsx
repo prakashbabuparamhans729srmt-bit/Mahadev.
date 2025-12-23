@@ -24,7 +24,7 @@ export default function HeroSection() {
           <div className="space-y-4">
             <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none italic">
               <span className="block">डिजिटल</span>
-              <span className="block text-accent">उत्कृष्टता</span>
+              <span className="block text-accent animate-blinking-glow">उत्कृष्टता</span>
               <span className="block">का भविष्य</span>
             </h1>
             <p className="mt-4 max-w-[600px] mx-auto text-neutral-200 md:text-lg">
