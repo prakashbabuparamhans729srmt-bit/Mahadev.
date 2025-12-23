@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "hero-carousel-1",
-      "description": "Abstract technology background",
-      "imageUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzNoZzdpcGs4M2R0NmpiaHhlamM4bGJlYWFvYXc1NHhjcjVqZTh3cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT9Igzo5Y09sYg3g4w/giphy.gif",
-      "imageHint": "app development gif"
+      "description": "Eiffel Tower with blinking lights",
+      "imageUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RqdTR5dGJzN2Rkcm1oZ3h2bDU2dWI1d21wd2o1Z2hycGQ2bnpvaCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/VbtU3h2vSgqA/giphy.gif",
+      "imageHint": "eiffel tower gif"
     },
     {
       "id": "hero-carousel-2",
