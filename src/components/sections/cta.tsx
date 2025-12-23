@@ -11,7 +11,7 @@ export default function CtaSection() {
         <div className="grid lg:grid-cols-2 gap-12 xl:gap-24 items-center">
           <div className="flex flex-col justify-center space-y-6">
             <div className="space-y-4">
-              <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none">
+              <h1 className="font-headline text-6xl font-bold tracking-tighter sm:text-7xl xl:text-8xl/none italic">
                 <span className="block text-foreground">चलो कुछ</span>
                 <span className="block text-accent">बेहतरीन</span>
                 <span className="block text-foreground">बनाएं।</span>
