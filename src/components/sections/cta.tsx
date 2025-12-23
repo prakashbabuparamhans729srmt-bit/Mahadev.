@@ -21,17 +21,6 @@ export default function CtaSection() {
                 ही अपनी यात्रा शुरू करें।
               </p>
             </div>
-            <div className="flex items-center gap-4 pt-4">
-              <div className="flex items-center justify-center h-14 w-14 rounded-full bg-accent/10">
-                <Phone className="h-7 w-7 text-accent" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">कॉल करें</p>
-                <p className="text-lg font-semibold text-foreground">
-                  +91 98765 43210
-                </p>
-              </div>
-            </div>
           </div>
           <div className="bg-secondary/30 p-8 rounded-2xl shadow-2xl">
             <form className="space-y-6">
