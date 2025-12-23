@@ -43,7 +43,7 @@ export default function HeroSection() {
               </Button>
             </div>
           </div>
-          <div className="relative hidden lg:block">
+          <div className="relative">
             <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-full h-full bg-gradient-to-r from-primary/20 to-accent/20 rounded-full blur-3xl animate-pulse"></div>
             </div>
