@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Globe, Smartphone, Laptop, CloudCog } from "lucide-react";
 
@@ -45,7 +46,7 @@ export default function ServicesSection() {
             </p>
           </div>
         </div>
-        <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-4 mt-12">
+        <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 md:gap-8 lg:max-w-none lg:grid-cols-4 mt-12">
           {services.map((service) => (
             <Card key={service.title} className="text-center shadow-md hover:shadow-xl transition-shadow duration-300">
               <CardHeader className="items-center">
