@@ -18,7 +18,7 @@ export default function HeroSection() {
         data-ai-hint="paris street night"
         priority
       />
-      <div className="absolute inset-0 bg-black/60" />
+      <div className="absolute inset-0 bg-black/60 animate-pulsing-bg" />
       <div className="relative z-10 container px-4 md:px-6">
         <div className="flex flex-col justify-center items-center space-y-4">
           <div className="space-y-4">

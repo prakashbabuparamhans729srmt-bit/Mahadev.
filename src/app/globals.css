@@ -121,4 +121,17 @@ body {
       opacity: 0.9;
     }
   }
+
+  .animate-pulsing-bg {
+    animation: pulsing-bg 3s ease-in-out infinite;
+  }
+
+  @keyframes pulsing-bg {
+    0%, 100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
 }
