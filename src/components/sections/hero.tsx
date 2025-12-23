@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Rocket } from "lucide-react";
@@ -10,7 +11,7 @@ export default function HeroSection() {
           <div className="flex flex-col justify-center space-y-4 py-12 md:py-24 lg:py-32">
             <div className="space-y-8">
               <div>
-                <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none">
+                <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none italic">
                   <span className="block text-foreground">डिजिटल</span>
                   <span className="block text-accent">उत्कृष्टता</span>
                   <span className="block text-foreground">का भविष्य</span>
