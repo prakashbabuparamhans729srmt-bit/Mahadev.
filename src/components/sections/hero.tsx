@@ -14,7 +14,7 @@ export default function HeroSection() {
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16 items-center">
           <div className="flex flex-col justify-center space-y-6">
             <div className="space-y-4">
-              <h1 className="font-headline text-6xl font-bold tracking-tighter sm:text-7xl xl:text-8xl/none italic">
+              <h1 className="font-headline text-7xl font-bold tracking-tighter sm:text-8xl xl:text-9xl/none italic">
                 <span className="block">डिजिटल</span>
                 <span className="block text-accent">उत्कृष्टता</span>
                 <span className="block">का भविष्य</span>
