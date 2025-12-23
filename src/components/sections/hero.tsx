@@ -45,12 +45,12 @@ export default function HeroSection() {
           </div>
            <div className="flex items-center justify-center">
              <Image
-                alt="Paris street scene at night"
-                src="https://images.unsplash.com/photo-1543349689-9a4d426bee8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwYXJpcyUyMHN0cmVldCUyMGF0JTIwbmlnaHR8ZW58MHx8fHwxNzI1NTM4NzgxfDA&ixlib=rb-4.0.3&q=80&w=1080"
+                alt="Old car driving down a deserted road at night"
+                src="https://images.unsplash.com/photo-1485291571150-772bcfc10da5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxvbGQlMjBjYXIlMjBkZXNlcnQlMjByb2FkfGVufDB8fHx8fDE3NjYzOTQwNzB8MA&ixlib=rb-4.1.0&q=80&w=1080"
                 width={600}
                 height={600}
                 className="rounded-lg object-cover shadow-2xl"
-                data-ai-hint="paris street night"
+                data-ai-hint="old car"
               />
            </div>
         </div>
@@ -58,4 +58,5 @@ export default function HeroSection() {
     </section>
   );
 }
+
 
