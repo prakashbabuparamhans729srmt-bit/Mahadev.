@@ -72,7 +72,7 @@ export function useCookieConsent() {
 
   return {
     preferences,
-    hasMadeChoice: isClient ? preferences.hasMadeChoice : true,
+    hasMadeChoice: false, // Always show for demonstration
     setPreferences,
   };
 }
