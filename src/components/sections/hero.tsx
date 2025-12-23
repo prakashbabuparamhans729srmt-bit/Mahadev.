@@ -51,7 +51,6 @@ export default function HeroSection() {
                 height="450"
                 className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
                 data-ai-hint={heroImage.imageHint}
-                unoptimized
             />
           )}
         </div>

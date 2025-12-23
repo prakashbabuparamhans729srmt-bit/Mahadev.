@@ -2,9 +2,9 @@
   "placeholderImages": [
     {
       "id": "hero-carousel-1",
-      "description": "Eiffel Tower with blinking lights",
-      "imageUrl": "https://media.giphy.com/media/VbtU3h2vSgqA/giphy.gif",
-      "imageHint": "eiffel tower gif"
+      "description": "Vintage look of the Eiffel Tower from a Parisian street",
+      "imageUrl": "https://images.unsplash.com/photo-1502602898657-3e91760c0337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxQYXJpcyUyMGVpZmZlbCUyMHRvd2VyJTIwc3RyZWV0JTIwdmludGFnZXxlbnwwfHx8fDE3MjgwMzA5ODV8MA&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageHint": "eiffel tower paris"
     },
     {
       "id": "hero-carousel-2",
@@ -51,8 +51,8 @@
     {
       "id": "hero-carousel-9",
       "description": "App development on a laptop",
-      "imageUrl": "https://images.unsplash.com/photo-1618761714954-0b8cd0026356?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxtb2JpbGUlMjBhcHAlMjBkZXZlbG9wbWVudHxlbnwwfHx8fDE3MjU1NDAwMDB8MA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "app development"
+      "imageUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzNoZzdpcGs4M2R0NmpiaHhlamM4bGJlYWFvYXc1NHhjcjVqZTh3cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT9Igzo5Y09sYg3g4w/giphy.gif",
+      "imageHint": "app development gif"
     },
     {
       "id": "hero-carousel-10",
