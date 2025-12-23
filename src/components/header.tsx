@@ -117,7 +117,7 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-           <Button asChild className="hidden md:flex">
+           <Button asChild className="hidden md:flex animate-fast-blinking-glow">
              <Link href="/start-project">
               <Rocket className="mr-2 h-4 w-4" />
                प्रोजेक्ट शुरू करें
