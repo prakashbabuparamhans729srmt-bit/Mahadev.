@@ -21,7 +21,7 @@ export default function HeroSection() {
   return (
     <section className="bg-card border-b w-full">
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 items-center md:grid-cols-2 min-h-[calc(100vh-4rem)] md:min-h-0 md:h-[calc(100vh-4rem)] max-h-[800px]">
+        <div className="grid gap-6 items-center md:grid-cols-2 h-[550px]">
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-4">
               <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none italic">
