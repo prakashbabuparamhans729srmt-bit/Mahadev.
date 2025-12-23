@@ -1,28 +1,22 @@
 {
   "placeholderImages": [
     {
-      "id": "hero-laptop",
-      "description": "Laptop on a desk with code on screen",
-      "imageUrl": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072",
-      "imageHint": "laptop code"
-    },
-    {
       "id": "hero-carousel-1",
       "description": "Blinking lights of the Eiffel Tower at night",
-      "imageUrl": "https://media.giphy.com/media/l2SpjOaAUaKl7vQ3e/giphy.gif",
+      "imageUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzNoZzdpcGs4M2R0NmpiaHhlamM4bGJlYWFvYXc1NHhjcjVqZTh3cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT9Igzo5Y09sYg3g4w/giphy.gif",
       "imageHint": "eiffel tower night"
     },
     {
       "id": "hero-carousel-2",
-      "description": "Modern office space",
-      "imageUrl": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkb2N1bWVudCUyMGV4YW1wbGV8ZW58MHx8fHwxNzI4MDMxMDMwfDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "modern office"
+      "description": "Mobile app on a phone",
+      "imageUrl": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=2070",
+      "imageHint": "mobile app"
     },
     {
       "id": "hero-carousel-3",
-      "description": "Team collaborating on a project",
-      "imageUrl": "https://images.unsplash.com/photo-1519389950473-47ba0277781c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHx0ZWFtJTIwY29sbGFib3JhdGlvbnxlbnwwfHx8fDE3MjU1MzczNDN8MA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "team collaboration"
+      "description": "Coding on multiple screens",
+      "imageUrl": "https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1974",
+      "imageHint": "coding screens"
     },
     {
       "id": "hero-carousel-4",
@@ -125,6 +119,12 @@
       "description": "Data flow diagram",
       "imageUrl": "https://images.unsplash.com/photo-1543286386-2e6593068625?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkYXRhJTIwZmxvd3xlbnwwfHx8fDE3NjYyOTAwMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "data flow"
+    },
+    {
+      "id": "hero-laptop",
+      "description": "Laptop on a desk with code on screen",
+      "imageUrl": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072",
+      "imageHint": "laptop code"
     },
     {
       "id": "portfolio-1",
