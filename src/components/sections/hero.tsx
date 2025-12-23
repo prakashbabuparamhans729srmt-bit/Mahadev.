@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -44,7 +45,7 @@ export default function HeroSection() {
           </div>
            <div className="flex items-center justify-center">
              <Image
-                alt="Paris street scene"
+                alt="Paris street scene at night"
                 src="https://images.unsplash.com/photo-1543349689-9a4d426bee8e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwYXJpcyUyMHN0cmVldCUyMGF0JTIwbmlnaHR8ZW58MHx8fHwxNzI1NTM4NzgxfDA&ixlib=rb-4.0.3&q=80&w=1080"
                 width={600}
                 height={600}
@@ -57,3 +58,4 @@ export default function HeroSection() {
     </section>
   );
 }
+
