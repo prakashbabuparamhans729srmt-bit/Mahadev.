@@ -19,10 +19,10 @@ export default function HeroSection() {
   const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-carousel-"));
 
   return (
-    <section className="bg-card border-b">
+    <section className="bg-card border-b w-full">
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 md:grid-cols-2 items-center">
-          <div className="flex flex-col justify-center space-y-4 py-12">
+        <div className="grid gap-6 items-center md:grid-cols-2 min-h-[calc(100vh-4rem)] md:min-h-0 md:h-[calc(100vh-4rem)] max-h-[800px]">
+          <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-4">
               <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none italic">
                 <span className="block text-foreground">डिजिटल</span>
@@ -47,7 +47,7 @@ export default function HeroSection() {
               </Button>
             </div>
           </div>
-          <div className="flex items-center justify-center py-12 md:py-0">
+          <div className="w-full h-full flex items-center justify-center">
              <Carousel
               plugins={[plugin.current]}
               className="w-full max-w-xl"
@@ -77,4 +77,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
