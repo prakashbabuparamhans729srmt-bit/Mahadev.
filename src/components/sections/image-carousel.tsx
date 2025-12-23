@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -32,7 +31,7 @@ export default function ImageCarouselSection() {
         >
           <CarouselContent>
             {carouselImages.map((image) => (
-              <CarouselItem key={image.id} className="basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+              <CarouselItem key={image.id} className="basis-full">
                 <div className="p-1">
                   <div className="overflow-hidden rounded-lg aspect-video relative">
                     <Image
