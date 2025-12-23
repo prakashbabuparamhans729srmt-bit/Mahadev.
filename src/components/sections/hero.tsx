@@ -13,7 +13,7 @@ export default function HeroSection() {
     return (
     <section className="w-full py-12 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+        <div className="grid gap-6 lg:grid-cols-[1fr_500px] lg:gap-12 xl:grid-cols-[1fr_600px]">
           <div className="flex flex-col justify-center space-y-4">
             <div className="space-y-4">
                <h1 className="font-headline text-7xl font-bold tracking-tighter sm:text-8xl xl:text-9xl/none italic">
@@ -44,14 +44,16 @@ export default function HeroSection() {
             </div>
           </div>
           {heroImage && (
-             <Image
-                src={heroImage.imageUrl}
-                alt={heroImage.description}
-                width="600"
-                height="450"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
-                data-ai-hint={heroImage.imageHint}
-            />
+             <div className="mx-auto overflow-hidden rounded-xl lg:order-last">
+                <Image
+                    src={heroImage.imageUrl}
+                    alt={heroImage.description}
+                    width="600"
+                    height="750"
+                    className="object-cover w-full h-full"
+                    data-ai-hint={heroImage.imageHint}
+                />
+            </div>
           )}
         </div>
       </div>
