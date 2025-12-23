@@ -50,6 +50,9 @@ export default function HeroSection() {
           <div className="w-full h-full flex items-center justify-center">
              <Carousel
               plugins={[plugin.current]}
+              opts={{
+                loop: true,
+              }}
               className="w-full max-w-xl"
               onMouseEnter={plugin.current.stop}
               onMouseLeave={plugin.current.reset}
