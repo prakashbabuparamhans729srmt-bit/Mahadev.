@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect } from 'react';
@@ -18,18 +17,20 @@ import {
   MessageSquare,
   PanelLeft,
   Settings,
-  Wallet,
-  HelpCircle,
   Users,
+  Briefcase,
+  TrendingUp,
+  CreditCard,
   LogOut,
+  LifeBuoy,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuth, useUser } from '@/firebase';
 import { Button } from '@/components/ui/button';
 import { signOut } from 'firebase/auth';
 import { Loader2 } from 'lucide-react';
+import { Icons } from '@/components/icons';
 
 export default function DashboardLayout({
   children,
@@ -54,7 +55,7 @@ export default function DashboardLayout({
     }
   };
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => pathname.startsWith(path);
 
   if (isUserLoading || !user) {
     return (
@@ -69,97 +70,90 @@ export default function DashboardLayout({
       <div className="flex min-h-screen bg-background">
         <Sidebar collapsible="icon" side="left" variant="sidebar" className="border-r-0 shadow-lg group-hover:w-[--sidebar-width] data-[state=expanded]:w-[--sidebar-width] data-[state=collapsed]:w-[--sidebar-width-icon]">
           <SidebarContent className="flex flex-col p-0">
-            <SidebarGroup className="p-2">
+            <SidebarGroup className="p-2 border-b">
               <div className="flex items-center gap-3 p-2 group-data-[state=collapsed]:group-hover:justify-start group-data-[state=collapsed]:justify-center group-data-[state=collapsed]:p-0">
-                <Avatar className="h-10 w-10">
-                  <AvatarImage
-                    src={user?.photoURL ?? ''}
-                    alt={user?.displayName ?? 'User'}
-                  />
-                  <AvatarFallback>
-                    {user?.email?.[0]?.toUpperCase() ?? 'A'}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-sm group-data-[state=collapsed]:group-hover:flex group-data-[state=collapsed]:hidden overflow-hidden">
-                  <p className="font-semibold truncate">
-                    {user?.displayName ?? 'ग्राहक'}
-                  </p>
-                  <p className="text-muted-foreground text-xs truncate">{user?.email}</p>
+                <Icons.logo className="h-8 w-8 text-primary" />
+                <div className="text-lg font-bold font-headline group-data-[state=collapsed]:group-hover:flex group-data-[state=collapsed]:hidden overflow-hidden">
+                  VyaparSphere
                 </div>
               </div>
             </SidebarGroup>
-            <SidebarMenu className="p-2">
+            <SidebarMenu className="p-2 flex-1">
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive('/dashboard')}
-                  tooltip="डैशबोर्ड"
+                  isActive={pathname === '/dashboard'}
+                  tooltip="Dashboard"
                   size="lg"
                 >
                   <Link href="/dashboard">
                     <BarChart2 />
-                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">प्रोजेक्ट डैशबोर्ड</span>
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Dashboard</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive('/dashboard/project')}
-                  tooltip="प्रोजेक्ट"
+                  isActive={isActive('/dashboard/user-management')}
+                  tooltip="User Management"
                    size="lg"
                 >
-                  <Link href="/dashboard/project">
+                  <Link href="/dashboard/user-management">
                     <Users />
-                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">प्रोजेक्ट विवरण</span>
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">User Management</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive('/dashboard/files')}
-                  tooltip="फाइल्स"
+                  isActive={isActive('/dashboard/project-oversight')}
+                  tooltip="Project Oversight"
                    size="lg"
                 >
-                  <Link href="/dashboard/files">
-                    <File />
-                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">फाइल्स</span>
+                  <Link href="/dashboard/project-oversight">
+                    <Briefcase />
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Project Oversight</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="बिलिंग" disabled  size="lg">
-                  <Wallet />
-                  <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">बिलिंग और इनवॉइस</span>
+                <SidebarMenuButton tooltip="Financials" disabled size="lg">
+                  <CreditCard />
+                  <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Financials</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton tooltip="Analytics" disabled size="lg">
+                  <TrendingUp />
+                  <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Analytics</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="सपोर्ट" disabled  size="lg">
-                  <HelpCircle />
-                  <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">सपोर्ट टिकेट</span>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/settings')}
+                  tooltip="System Settings"
+                   size="lg"
+                >
+                   <Link href="/dashboard/settings">
+                    <Settings />
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">System Settings</span>
+                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
-            <SidebarGroup className="mt-auto p-2">
+            <SidebarGroup className="p-2 border-t">
                 <SidebarMenu>
                      <SidebarMenuItem>
                         <SidebarMenuButton
-                        asChild
-                        isActive={isActive('/dashboard/settings')}
-                        tooltip="सेटिंग्स"
-                        size="lg"
+                          tooltip="Support"
+                          size="lg"
+                          variant="ghost"
                         >
-                        <Link href="/dashboard/settings">
-                            <Settings />
-                            <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">सेटिंग्स</span>
-                        </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton onClick={handleLogout} tooltip="लॉग आउट"  size="lg">
-                           <LogOut />
-                           <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">लॉग आउट</span>
+                          <LifeBuoy />
+                          <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Support</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -173,8 +167,8 @@ export default function DashboardLayout({
                 <div className="flex-1">
                 <SidebarTrigger className="hidden md:block" />
                 </div>
-                <Button variant="ghost" size="icon">
-                <MessageSquare />
+                 <Button onClick={handleLogout} variant="ghost" size="icon">
+                    <LogOut />
                 </Button>
                 <Button variant="ghost" size="icon" asChild>
                   <Link href="/dashboard/settings">
@@ -182,7 +176,7 @@ export default function DashboardLayout({
                   </Link>
                 </Button>
             </header>
-            <main className="flex-1">
+            <main className="flex-1 bg-secondary/30">
                 {children}
             </main>
         </div>

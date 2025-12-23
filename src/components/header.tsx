@@ -69,7 +69,7 @@ function UserNav() {
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.displayName ?? 'Client'}</p>
+            <p className="text-sm font-medium leading-none">{user.displayName ?? 'Admin'}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user.email}
             </p>
@@ -102,7 +102,7 @@ export default function Header() {
         <div className="mr-4 flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Icons.logo className="h-6 w-6 text-primary" />
-            <span className="font-bold font-headline">HG Hub</span>
+            <span className="font-bold font-headline">VyaparSphere</span>
           </Link>
           <nav className="hidden space-x-6 text-sm font-medium md:flex">
             {navLinks.map((link) => (
