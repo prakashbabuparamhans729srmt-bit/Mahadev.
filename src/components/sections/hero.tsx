@@ -38,7 +38,7 @@ export default function HeroSection() {
               </Button>
               <Button asChild size="lg" variant="outline" className="shadow-lg transition-transform duration-200 hover:scale-105">
                 <Link href="#services">
-                  हमारी सेवाएं देखें
+                   हमारी सेवाएं देखें
                 </Link>
               </Button>
             </div>
@@ -58,5 +58,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
-    
