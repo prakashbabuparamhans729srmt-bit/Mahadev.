@@ -61,6 +61,66 @@
       "imageHint": "data analytics"
     },
     {
+      "id": "hero-carousel-11",
+      "description": "Cloud computing infrastructure",
+      "imageUrl": "https://images.unsplash.com/photo-1534972195531-d756b9bfa9f2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxjbG91ZCUyMGNvbXB1dGluZ3xlbnwwfHx8fDE3NjYyODk3MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cloud computing"
+    },
+    {
+      "id": "hero-carousel-12",
+      "description": "Cybersecurity interface",
+      "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjeWJlcnNlY3VyaXR5fGVufDB8fHx8fDE3NjYyODk3NDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "cybersecurity interface"
+    },
+    {
+      "id": "hero-carousel-13",
+      "description": "Project management Gantt chart",
+      "imageUrl": "https://images.unsplash.com/photo-1552664730-d307ca884978?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxwcm9qZWN0JTIwbWFuYWdlbWVudHxlbnwwfHx8fDE3NjYyODk3NzZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "project management"
+    },
+    {
+      "id": "hero-carousel-14",
+      "description": "Artificial intelligence concept",
+      "imageUrl": "https://images.unsplash.com/photo-1535223289827-42f1e9919769?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxhcnRpZmljaWFsJTIwaW50ZWxsaWdlbmNlfGVufDB8fHx8fDE3NjYyODk4MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "artificial intelligence"
+    },
+    {
+      "id": "hero-carousel-15",
+      "description": "Modern server room",
+      "imageUrl": "https://images.unsplash.com/photo-1580894908361-967195033215?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxzZXJ2ZXJzJTIwcm9vbXxlbnwwfHx8fDE3NjYyODk4NDN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "server room"
+    },
+    {
+      "id": "hero-carousel-16",
+      "description": "Digital network connections",
+      "imageUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkaWdpdGFsJTIwbmV0d29ya3xlbnwwfHx8fDE3NjYyODk4ODB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "digital network"
+    },
+    {
+      "id": "hero-carousel-17",
+      "description": "UI/UX design tools on a desk",
+      "imageUrl": "https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxncmFkaWVudCUyMGFic3RyYWN0fGVufDB8fHx8fDE3NjYyODk5MTB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "gradient abstract"
+    },
+    {
+      "id": "hero-carousel-18",
+      "description": "Innovative technology startup",
+      "imageUrl": "https://images.unsplash.com/photo-1573164713988-8665fc963095?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx0ZWNoJTIwc3RhcnR1cHxlbnwwfHx8fDE3NjYyODk5NDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tech startup"
+    },
+    {
+      "id": "hero-carousel-19",
+      "description": "Mobile responsiveness design",
+      "imageUrl": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb2JpbGUlMjByZXNwb25zaXZlfGVufDB8fHx8fDE3NjYyODk5Nzd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "mobile responsive"
+    },
+    {
+      "id": "hero-carousel-20",
+      "description": "Data flow diagram",
+      "imageUrl": "https://images.unsplash.com/photo-1543286386-2e6593068625?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkYXRhJTIwZmxvd3xlbnwwfHx8fDE3NjYyOTAwMDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "data flow"
+    },
+    {
       "id": "portfolio-1",
       "description": "ई-कॉमर्स वेबसाइट",
       "imageUrl": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxlY29tbWVyY2UlMjB3ZWJzaXRlfGVufDB8fHx8MTc2NjEzNDIwNXww&ixlib=rb-4.1.0&q=80&w=1080",
