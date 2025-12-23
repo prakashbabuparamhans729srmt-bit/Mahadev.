@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Check } from "lucide-react";
@@ -47,6 +48,13 @@ export default function PricingSection() {
     <section id="pricing" className="bg-card border-y">
       <div className="px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
+        <div className="space-y-2 mb-8">
+            <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none">
+              <span className="block text-foreground">चलो कुछ</span>
+              <span className="block text-accent">बेहतरीन</span>
+              <span className="block text-foreground">बनाएं।</span>
+            </h1>
+          </div>
           <div className="space-y-2">
             <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm">
               मूल्य निर्धारण प्लान
