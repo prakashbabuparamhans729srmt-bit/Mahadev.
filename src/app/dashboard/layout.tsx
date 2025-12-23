@@ -1,6 +1,5 @@
 'use client';
 
-import { useEffect } from 'react';
 import {
   Sidebar,
   SidebarContent,
@@ -25,11 +24,8 @@ import {
   LifeBuoy,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { useAuth, useUser } from '@/firebase';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { signOut } from 'firebase/auth';
-import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 
 export default function DashboardLayout({
@@ -38,32 +34,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
-  const { user, isUserLoading } = useUser();
-  const auth = useAuth();
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [isUserLoading, user, router]);
-
-  const handleLogout = async () => {
-    if (auth) {
-      await signOut(auth);
-      router.push('/');
-    }
-  };
 
   const isActive = (path: string) => pathname.startsWith(path);
-
-  if (isUserLoading || !user) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
-      </div>
-    );
-  }
 
   return (
     <SidebarProvider>
@@ -74,7 +46,7 @@ export default function DashboardLayout({
               <div className="flex items-center gap-3 p-2 group-data-[state=collapsed]:group-hover:justify-start group-data-[state=collapsed]:justify-center group-data-[state=collapsed]:p-0">
                 <Icons.logo className="h-8 w-8 text-primary" />
                 <div className="text-lg font-bold font-headline group-data-[state=collapsed]:group-hover:flex group-data-[state=collapsed]:hidden overflow-hidden">
-                  VyaparSphere
+                  Hajaro Grahako
                 </div>
               </div>
             </SidebarGroup>
@@ -95,51 +67,52 @@ export default function DashboardLayout({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive('/dashboard/user-management')}
-                  tooltip="User Management"
+                  isActive={isActive('/dashboard/project-oversight')}
+                  tooltip="Projects"
                    size="lg"
                 >
-                  <Link href="/dashboard/user-management">
-                    <Users />
-                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">User Management</span>
+                  <Link href="/dashboard/project-oversight">
+                    <Briefcase />
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Projects</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive('/dashboard/project-oversight')}
-                  tooltip="Project Oversight"
+                  isActive={isActive('/dashboard/messages')}
+                  tooltip="Messages"
                    size="lg"
                 >
-                  <Link href="/dashboard/project-oversight">
-                    <Briefcase />
-                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Project Oversight</span>
+                  <Link href="/dashboard/messages">
+                    <MessageSquare />
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Messages</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Financials" disabled size="lg">
-                  <CreditCard />
-                  <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Financials</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Analytics" disabled size="lg">
-                  <TrendingUp />
-                  <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Analytics</span>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/files')}
+                  tooltip="Files"
+                   size="lg"
+                >
+                  <Link href="/dashboard/files">
+                    <File />
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Files</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/dashboard/settings')}
-                  tooltip="System Settings"
+                  tooltip="Settings"
                    size="lg"
                 >
                    <Link href="/dashboard/settings">
                     <Settings />
-                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">System Settings</span>
+                    <span className="group-data-[state=collapsed]:group-hover:inline-flex group-data-[state=collapsed]:hidden">Settings</span>
                    </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -167,7 +140,7 @@ export default function DashboardLayout({
                 <div className="flex-1">
                 <SidebarTrigger className="hidden md:block" />
                 </div>
-                 <Button onClick={handleLogout} variant="ghost" size="icon">
+                 <Button variant="ghost" size="icon">
                     <LogOut />
                 </Button>
                 <Button variant="ghost" size="icon" asChild>
