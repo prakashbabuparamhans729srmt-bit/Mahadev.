@@ -3,13 +3,13 @@
     {
       "id": "hero-carousel-1",
       "description": "Abstract technology background",
-      "imageUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMHRlY2hub2xvZ3l8ZW58MHx8fHwxNzE3MjE0NzU3fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "abstract technology"
+      "imageUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzNoZzdpcGs4M2R0NmpiaHhlamM4bGJlYWFvYXc1NHhjcjVqZTh3cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT9Igzo5Y09sYg3g4w/giphy.gif",
+      "imageHint": "app development gif"
     },
     {
       "id": "hero-carousel-2",
       "description": "Modern office space",
-      "imageUrl": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxNXx8bW9kZXJuJTIwb2ZmaWNlfGVufDB8fHx8MTcyNTUzNzMwNHww&ixlib=rb-4.0.3&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkb2N1bWVudCUyMGV4YW1wbGV8ZW58MHx8fHwxNzI4MDMxMDMwfDA&ixlib=rb-4.0.3&q=80&w=1080",
       "imageHint": "modern office"
     },
     {

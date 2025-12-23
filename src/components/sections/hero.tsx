@@ -8,7 +8,7 @@ import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function HeroSection() {
-    const heroImage = PlaceHolderImages.find(img => img.id === 'hero-carousel-9');
+    const heroImage = PlaceHolderImages.find(img => img.id === 'hero-carousel-1');
   
     return (
     <section className="w-full py-12 md:py-24 lg:py-32">
@@ -48,9 +48,10 @@ export default function HeroSection() {
                 src={heroImage.imageUrl}
                 alt={heroImage.description}
                 width="600"
-                height="600"
-                className="mx-auto aspect-square overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
+                height="450"
+                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
                 data-ai-hint={heroImage.imageHint}
+                unoptimized
             />
           )}
         </div>
@@ -58,3 +59,5 @@ export default function HeroSection() {
     </section>
   );
 }
+
+    
