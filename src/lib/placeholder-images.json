@@ -1,10 +1,16 @@
 {
   "placeholderImages": [
     {
+      "id": "hero-laptop",
+      "description": "Laptop on a desk with code on screen",
+      "imageUrl": "https://images.unsplash.com/photo-1498050108023-c5249f4df085?q=80&w=2072",
+      "imageHint": "laptop code"
+    },
+    {
       "id": "hero-carousel-1",
-      "description": "Vintage look of the Eiffel Tower from a Parisian street",
-      "imageUrl": "https://images.unsplash.com/photo-1502602898657-3e91760c0337?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxQYXJpcyUyMGVpZmZlbCUyMHRvd2VyJTIwc3RyZWV0JTIwdmludGFnZXxlbnwwfHx8fDE3MjgwMzA5ODV8MA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "eiffel tower paris"
+      "description": "Blinking lights of the Eiffel Tower at night",
+      "imageUrl": "https://media.giphy.com/media/l2SpjOaAUaKl7vQ3e/giphy.gif",
+      "imageHint": "eiffel tower night"
     },
     {
       "id": "hero-carousel-2",
