@@ -12,17 +12,19 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useEffect, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { useUser, useAuth } from '@/firebase';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 
 export default function SignupPage() {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const { toast } = useToast();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,15 +50,21 @@ export default function SignupPage() {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      router.push('/dashboard');
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await sendEmailVerification(userCredential.user);
+      toast({
+        title: 'वेरिफिकेशन ईमेल भेजा गया',
+        description: 'कृपया अपना इनबॉक्स जांचें और अपना खाता वेरिफ़ाई करें।',
+      });
+      router.push('/login');
     } catch (error: any) {
       let message = 'साइनअप विफल। कृपया पुनः प्रयास करें।';
       if (error.code === 'auth/email-already-in-use') {
         message = 'यह ईमेल पहले से ही उपयोग में है।';
       }
       setError(message);
-      setIsPending(false);
+    } finally {
+        setIsPending(false);
     }
   };
 
