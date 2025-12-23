@@ -5,6 +5,7 @@ import PricingSection from '@/components/sections/pricing';
 import PortfolioSection from '@/components/sections/portfolio';
 import ProcessSection from '@/components/sections/process';
 import TestimonialsSection from '@/components/sections/testimonials';
+import CtaSection from '@/components/sections/cta';
 import Footer from '@/components/footer';
 import Header from '@/components/header';
 
@@ -15,10 +16,11 @@ export default function Home() {
       <main className="flex-1">
         <HeroSection />
         <ServicesSection />
-        <PricingSection />
         <PortfolioSection />
         <ProcessSection />
         <TestimonialsSection />
+        <CtaSection />
+        <PricingSection />
       </main>
       <Footer />
     </div>
