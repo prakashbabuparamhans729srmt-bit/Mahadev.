@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { HelpAssistant } from '@/components/help-assistant';
+import { CookieConsent } from '@/components/cookie-consent';
 
 export const metadata: Metadata = {
   title: 'HG Hub - Hajaro Grahako',
@@ -27,6 +28,7 @@ export default function RootLayout({
         </FirebaseClientProvider>
         <Toaster />
         <HelpAssistant />
+        <CookieConsent />
       </body>
     </html>
   );
