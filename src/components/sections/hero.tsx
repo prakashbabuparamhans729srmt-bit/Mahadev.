@@ -3,67 +3,25 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Rocket, Loader2, Video } from "lucide-react";
-import React, { useState, useEffect } from 'react';
-import { generateVideo } from "@/ai/flows/veo-flow";
+import { Rocket } from "lucide-react";
+import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function HeroSection() {
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const createVideo = async () => {
-      try {
-        const image = PlaceHolderImages.find(img => img.id === 'hero-carousel-8');
-        if (!image) {
-          throw new Error('Reference image not found for video generation.');
-        }
-        
-        console.log('Generating video from image:', image.imageUrl);
-        const result = await generateVideo(image.imageUrl);
-
-        if (result.videoUrl) {
-          setVideoUrl(result.videoUrl);
-        } else {
-          throw new Error('Video generation failed to return a URL.');
-        }
-      } catch (e: any) {
-        console.error("Video generation error:", e);
-        setError("वीडियो बनाने में विफल। कृपया बाद में पुनः प्रयास करें।");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    createVideo();
-  }, []);
-
-  return (
+    const heroImage = PlaceHolderImages.find(img => img.id === 'hero-carousel-8');
+  
+    return (
     <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center text-white overflow-hidden">
       <div className="absolute inset-0 z-0">
-        {isLoading && (
-          <div className="w-full h-full bg-black flex flex-col items-center justify-center">
-            <Loader2 className="h-16 w-16 animate-spin text-primary" />
-            <p className="mt-4 text-lg text-muted-foreground">AI अपना जादू चला रहा है...</p>
-          </div>
-        )}
-        {error && (
-          <div className="w-full h-full bg-black flex flex-col items-center justify-center text-center p-4">
-            <Video className="h-16 w-16 text-destructive" />
-            <p className="mt-4 text-lg text-destructive">{error}</p>
-          </div>
-        )}
-        {videoUrl && (
-          <video
-            src={videoUrl}
-            className="w-full h-full object-cover"
-            autoPlay
-            loop
-            muted
-            playsInline
-          />
+        {heroImage && (
+            <Image
+                src={heroImage.imageUrl}
+                alt={heroImage.description}
+                fill
+                className="object-cover"
+                data-ai-hint={heroImage.imageHint}
+                priority
+            />
         )}
         <div className="absolute inset-0 bg-black/60" />
       </div>
@@ -104,3 +62,4 @@ export default function HeroSection() {
     </section>
   );
 }
+
