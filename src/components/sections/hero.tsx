@@ -8,7 +8,7 @@ import Image from "next/image";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function HeroSection() {
-    const heroImage = PlaceHolderImages.find(img => img.id === 'hero-carousel-8');
+    const heroImage = PlaceHolderImages.find(img => img.id === 'hero-carousel-1');
   
     return (
     <section className="relative w-full h-[80vh] min-h-[600px] flex items-center justify-center text-white overflow-hidden">
@@ -62,4 +62,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
