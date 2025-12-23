@@ -45,12 +45,12 @@ export default function HeroSection() {
           </div>
            <div className="flex items-center justify-center">
              <Image
-                alt="Old car driving down a deserted road at night"
-                src="https://images.unsplash.com/photo-1485291571150-772bcfc10da5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxvbGQlMjBjYXIlMjBkZXNlcnQlMjByb2FkfGVufDB8fHx8fDE3NjYzOTQwNzB8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                width={600}
-                height={600}
+                alt="A large, futuristic robot with glowing lights"
+                src="https://images.unsplash.com/photo-1581094794329-c8112a89af10?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxyb2JvdCUyMGdsYXNzZXN8ZW58MHx8fHwxNzI1NTM3NjYwfDA&ixlib=rb-4.0.3&q=80&w=1080"
+                width={800}
+                height={800}
                 className="rounded-lg object-cover shadow-2xl"
-                data-ai-hint="old car"
+                data-ai-hint="futuristic robot"
               />
            </div>
         </div>
@@ -58,5 +58,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
-
