@@ -2,45 +2,45 @@
   "placeholderImages": [
     {
       "id": "hero-carousel-1",
-      "description": "Blinking lights of the Eiffel Tower at night",
-      "imageUrl": "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZzNoZzdpcGs4M2R0NmpiaHhlamM4bGJlYWFvYXc1NHhjcjVqZTh3cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT9Igzo5Y09sYg3g4w/giphy.gif",
-      "imageHint": "eiffel tower night"
+      "description": "Team collaborating on a project",
+      "imageUrl": "https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=2070",
+      "imageHint": "team collaboration"
     },
     {
       "id": "hero-carousel-2",
-      "description": "Mobile app on a phone",
-      "imageUrl": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?q=80&w=2070",
-      "imageHint": "mobile app"
+      "description": "Young team working in a modern office",
+      "imageUrl": "https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=1974",
+      "imageHint": "modern office"
     },
     {
       "id": "hero-carousel-3",
-      "description": "Coding on multiple screens",
-      "imageUrl": "https://images.unsplash.com/photo-1551650975-87deedd944c3?q=80&w=1974",
-      "imageHint": "coding screens"
+      "description": "UI/UX design on a tablet",
+      "imageUrl": "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=1964",
+      "imageHint": "ui ux tablet"
     },
     {
       "id": "hero-carousel-4",
-      "description": "Creative wireframe sketch",
-      "imageUrl": "https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx1aSUyMHV4JTIwZGVzaWdufGVufDB8fHx8MTcyNTUzNzM4MHww&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "wireframe sketch"
+      "description": "Mobile app UI design",
+      "imageUrl": "https://images.unsplash.com/photo-1558655146-9f40138edfeb?q=80&w=1964",
+      "imageHint": "mobile ui"
     },
     {
       "id": "hero-carousel-5",
-      "description": "Lines of code on a screen",
-      "imageUrl": "https://images.unsplash.com/photo-1542831371-29b0f74f9713?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjb2Rpbmd8ZW58MHx8fHwxNzI1NTM3NDA2fDA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "code screen"
+      "description": "Abstract technology background",
+      "imageUrl": "https://images.unsplash.com/photo-1677442136019-21780ecad995?q=80&w=2070",
+      "imageHint": "tech background"
     },
     {
       "id": "hero-carousel-6",
-      "description": "Digital data visualization",
-      "imageUrl": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkYXRhJTIwdmlzdWFsaXphdGlvbnxlbnwwfHx8fDE3MjU1Mzc0MzB8MA&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "data visualization"
+      "description": "Web development on a laptop",
+      "imageUrl": "https://images.unsplash.com/photo-1555949963-aa79dcee981c?q=80&w=2070",
+      "imageHint": "web development"
     },
     {
       "id": "hero-carousel-7",
-      "description": "User interface design process",
-      "imageUrl": "https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHx1aSUyMHV4JTIwZGVzaWdufGVufDB8fHx8MTcyNTUzNzM4MHww&ixlib=rb-4.0.3&q=80&w=1080",
-      "imageHint": "ui ux design"
+      "description": "Global network connections",
+      "imageUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072",
+      "imageHint": "global network"
     },
     {
       "id": "hero-carousel-8",
