@@ -13,7 +13,7 @@ import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 export default function HeroSection() {
   const plugin = React.useRef(
-    Autoplay({ delay: 1000, stopOnInteraction: true })
+    Autoplay({ delay: 3000, stopOnInteraction: true })
   );
   
   const heroImages = PlaceHolderImages.filter(img => img.id.startsWith("hero-carousel-"));
