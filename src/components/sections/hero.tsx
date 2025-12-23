@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -21,26 +20,16 @@ export default function HeroSection() {
   return (
     <section className="bg-card border-b">
       <div className="container px-4 md:px-6">
-        <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
-          <div className="flex flex-col justify-center space-y-4 py-12 md:py-24 lg:py-32">
-            <div className="space-y-2">
-               <div className="space-y-4">
-                <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none italic">
-                  <span className="block text-foreground">डिजिटल</span>
-                  <span className="block text-accent">उत्कृष्टता</span>
-                  <span className="block text-foreground">का भविष्य</span>
-                </h1>
-                <p className="mt-4 max-w-[600px] text-muted-foreground md:text-lg">
-                  हम आपके विज़न को शक्तिशाली सॉफ्टवेयर में बदलते हैं। Hajaro Grahako के साथ अपने डिजिटल सफर को शानदार बनाएं।
-                </p>
-              </div>
-            </div>
+        <div className="grid gap-6 md:grid-cols-2 md:gap-12 items-center">
+          <div className="flex flex-col justify-center space-y-4 py-12 md:py-24">
             <div className="space-y-4">
-               <h2 className="font-headline text-3xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
-                Hajaro Grahako - पूर्ण विकास समाधान
-              </h2>
-              <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                हम आपके विचारों को डिजिटल हकीकत में बदलते हैं। वेबसाइट, मोबाइल ऐप, और कस्टम सॉफ्टवेयर समाधानों के लिए आपके विश्वसनीय पार्टनर।
+              <h1 className="font-headline text-5xl font-bold tracking-tighter sm:text-6xl xl:text-7xl/none italic">
+                <span className="block text-foreground">डिजिटल</span>
+                <span className="block text-accent">उत्कृष्टता</span>
+                <span className="block text-foreground">का भविष्य</span>
+              </h1>
+              <p className="mt-4 max-w-[600px] text-muted-foreground md:text-lg">
+                हम आपके विज़न को शक्तिशाली सॉफ्टवेयर में बदलते हैं। Hajaro Grahako के साथ अपने डिजिटल सफर को शानदार बनाएं।
               </p>
             </div>
             <div className="flex flex-col gap-2 min-[400px]:flex-row pt-4">
@@ -57,7 +46,7 @@ export default function HeroSection() {
               </Button>
             </div>
           </div>
-          <div className="flex items-center justify-center lg:py-0">
+          <div className="flex items-center justify-center">
              <Carousel
               plugins={[plugin.current]}
               className="w-full max-w-xl"
@@ -87,4 +76,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
