@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -52,13 +51,9 @@ export default function AdminDashboard() {
           </h1>
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
-        <Link href="/start-project">
-            <Button
-                className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_hsl(var(--primary)/0.5)]"
-            >
-                <Plus className="mr-2 h-4 w-4" />
-                नया प्रोजेक्ट
-            </Button>
+        <Link href="/start-project" className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 shadow-[0_0_20px_hsl(var(--primary)/0.5)]">
+            <Plus className="h-4 w-4" />
+            नया प्रोजेक्ट
         </Link>
       </div>
 
