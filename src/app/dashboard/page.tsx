@@ -15,7 +15,6 @@ import { Progress } from '@/components/ui/progress';
 import { Plus } from 'lucide-react';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 
@@ -37,8 +36,8 @@ const chartConfig = {
 
 
 const activeProjects = [
-    { id: '#1042', name: 'स्मार्ट ERP सिस्टम', progress: 75 },
-    { id: '#1043', name: 'ई-कॉमर्स पोर्टल', progress: 90 }
+    { id: '#1042', name: 'स्मार्ट ERP सिस्टम', progress: 75, link: '/dashboard/project/%231042' },
+    { id: '#1043', name: 'ई-कॉमर्स पोर्टल', progress: 90, link: '/dashboard/project/%231043' }
 ]
 
 export default function AdminDashboard() {
@@ -54,14 +53,12 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
         <Button
-          asChild
+          onClick={() => router.push('/start-project')}
           size="lg"
           className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8"
         >
-          <Link href="/start-project">
-            <Plus className="h-4 w-4 mr-2" />
-            नया प्रोजेक्ट
-          </Link>
+          <Plus className="h-4 w-4 mr-2" />
+          नया प्रोजेक्ट
         </Button>
       </div>
 
@@ -96,15 +93,13 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-6">
             {activeProjects.map(project => (
-                <Link href="/dashboard/project-oversight" key={project.id}>
-                    <div className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
-                        <div className="flex justify-between items-baseline mb-2">
-                            <h3 className="font-semibold">{project.name}</h3>
-                            <p className="text-xs font-mono text-muted-foreground">{project.id}</p>
-                        </div>
-                        <Progress value={project.progress} className="h-2" />
+                <div key={project.id} onClick={() => router.push(project.link)} className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
+                    <div className="flex justify-between items-baseline mb-2">
+                        <h3 className="font-semibold">{project.name}</h3>
+                        <p className="text-xs font-mono text-muted-foreground">{project.id}</p>
                     </div>
-                </Link>
+                    <Progress value={project.progress} className="h-2" />
+                </div>
             ))}
           </CardContent>
         </Card>
