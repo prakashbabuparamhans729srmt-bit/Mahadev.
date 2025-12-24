@@ -67,15 +67,19 @@ export default function StartProjectPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 max-w-6xl mx-auto">
               {projectTypes.map((type) => (
-                <Card
+                <div
                   key={type.title}
                   onClick={() => handleCardClick(type.link)}
-                  className="flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-primary/20 hover:shadow-lg hover:-translate-y-2"
+                  className="cursor-pointer"
                 >
-                  <div className="mb-6">{type.icon}</div>
-                  <h3 className="text-xl font-bold font-headline mb-2">{type.title}</h3>
-                  <p className="text-muted-foreground text-sm">{type.description}</p>
-                </Card>
+                  <Card
+                    className="flex flex-col items-center justify-center p-8 text-center h-full transition-all duration-300 hover:shadow-primary/20 hover:shadow-lg hover:-translate-y-2"
+                  >
+                    <div className="mb-6">{type.icon}</div>
+                    <h3 className="text-xl font-bold font-headline mb-2">{type.title}</h3>
+                    <p className="text-muted-foreground text-sm flex-1">{type.description}</p>
+                  </Card>
+                </div>
               ))}
             </div>
           </div>
