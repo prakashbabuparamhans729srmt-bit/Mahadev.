@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { Globe, Smartphone, Laptop, Wrench, Link as LinkIcon, RefreshCw, ArrowRight, ChevronsRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 // Data for the multi-step form
 const projectData = {
@@ -50,6 +51,7 @@ export function SuggestionForm() {
     type: null,
     subcategory: null,
   });
+  const { toast } = useToast();
 
   const currentSubcategories = useMemo(() => {
     if (!selections.type) return [];
@@ -76,6 +78,13 @@ export function SuggestionForm() {
     setSelections({ type: null, subcategory: null });
     setStep(1);
   };
+
+  const handleNextStep = () => {
+    toast({
+        title: "सुविधा जल्द ही आ रही है",
+        description: "आवश्यकताएँ दर्ज करने की सुविधा पर काम चल रहा है।",
+    });
+  }
 
   const getStepTitle = () => {
     const typeTitle = projectData.types.find(t => t.id === selections.type)?.title;
@@ -178,7 +187,7 @@ export function SuggestionForm() {
             )}
             
             {step === 3 && (
-                 <Button type="button">
+                 <Button type="button" onClick={handleNextStep}>
                     अगला चरण: आवश्यकताएं
                     <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
