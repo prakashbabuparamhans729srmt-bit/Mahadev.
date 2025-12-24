@@ -1,17 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Search, Wand2, UserCircle, Target } from 'lucide-react';
-import { projectCategories } from '@/lib/project-categories';
-import ProjectCategoryList from '../project-category-list';
+import { projectCategories, categoryIcons } from '@/lib/project-categories';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-
 
 const whoAreYouTags = ["छोटा व्यवसाय", "स्टार्टअप", "फ्रीलांसर", "कलाकार", "शिक्षक", "डॉक्टर"];
 const yourGoalTags = ["उत्पाद बेचना", "सेवाएं देना", "ऑनलाइन पहचान", "बुकिंग प्राप्त करना"];
@@ -21,41 +19,39 @@ export default function WebsiteSelectionPage() {
   const { toast } = useToast();
   const [activeFilter, setActiveFilter] = useState('सब');
   const [searchQuery, setSearchQuery] = useState('');
-  const [filteredCategories, setFilteredCategories] = useState(projectCategories);
 
-  const allFilters = ['सब', 'लोकप्रिय', 'व्यवसाय', 'टेक्नोलॉजी', 'क्रिएटिव', 'स्थानीय'];
+  const handleTagClick = (tag: string) => {
+    toast({
+        title: 'AI चयन जल्द ही आ रहा है',
+        description: ` आपने "${tag}" को चुना। यह सुविधा जल्द ही आपके लिए वेबसाइट के प्रकारों का सुझाव देगी।`,
+    });
+  };
 
-    useEffect(() => {
-        let categories = [...projectCategories];
+  const getFilteredCategories = () => {
+    let categories = [...projectCategories];
 
-        if (activeFilter !== 'सब' && activeFilter !== 'लोकप्रिय') {
-             categories = categories.filter(group => group.group.includes(activeFilter));
-        }
+    if (activeFilter !== 'सब' && activeFilter !== 'लोकप्रिय') {
+        categories = categories.filter(group => group.group.includes(activeFilter));
+    }
 
-        if (searchQuery) {
-            const lowerCaseQuery = searchQuery.toLowerCase();
-            categories = categories.map(group => {
-                const filteredTypes = group.types.filter(type =>
-                    type.name.toLowerCase().includes(lowerCaseQuery) ||
-                    type.features.some(feature => feature.toLowerCase().includes(lowerCaseQuery))
-                );
-                return { ...group, types: filteredTypes };
-            }).filter(group => group.types.length > 0);
-        }
-
-        setFilteredCategories(categories);
-    }, [activeFilter, searchQuery]);
-    
-    const handleTagClick = (tag: string) => {
-        toast({
-            title: 'AI चयन जल्द ही आ रहा है',
-            description: ` आपने "${tag}" को चुना। यह सुविधा जल्द ही आपके लिए वेबसाइट के प्रकारों का सुझाव देगी।`,
-        });
-    };
+    if (searchQuery) {
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        categories = categories.map(group => {
+            const filteredTypes = group.types.filter(type =>
+                type.name.toLowerCase().includes(lowerCaseQuery) ||
+                type.features.some(feature => feature.toLowerCase().includes(lowerCaseQuery))
+            );
+            return { ...group, types: filteredTypes };
+        }).filter(group => group.types.length > 0);
+    }
+    return categories;
+  };
+  
+  const filteredCategories = getFilteredCategories();
+  const isHot = (name: string) => ['ई-कॉमर्स', 'कॉर्पोरेट', 'ब्लॉग', 'शैक्षिक'].includes(name);
 
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-6 bg-background text-foreground">
-      {/* Header */}
       <div className="p-4 bg-card/80 rounded-2xl border border-border/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -74,7 +70,6 @@ export default function WebsiteSelectionPage() {
         </div>
       </div>
 
-      {/* AI Quick Select */}
       <Card className="p-6 bg-card/80 border-border/50 rounded-2xl">
          <h2 className="text-lg font-bold font-headline flex items-center mb-4">
             <Wand2 className="mr-2 text-primary h-5 w-5"/>
@@ -100,8 +95,6 @@ export default function WebsiteSelectionPage() {
         </div>
       </Card>
 
-
-      {/* Search and Filters */}
       <div className="sticky top-4 z-10 p-4 bg-background/80 backdrop-blur-sm rounded-2xl border border-border/50">
         <div className="flex flex-col md:flex-row items-center gap-4">
           <div className="relative flex-1 w-full">
@@ -114,7 +107,7 @@ export default function WebsiteSelectionPage() {
             />
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
-            {allFilters.map((filter) => (
+            {['सब', 'लोकप्रिय', 'व्यवसाय', 'टेक्नोलॉजी', 'क्रिएटिव', 'स्थानीय'].map((filter) => (
               <Button
                 key={filter}
                 variant={activeFilter === filter ? 'default' : 'secondary'}
@@ -129,13 +122,54 @@ export default function WebsiteSelectionPage() {
         </div>
       </div>
 
-      {/* Project cards */}
-      <ProjectCategoryList filteredCategories={filteredCategories} />
+      <div className="space-y-12">
+        {filteredCategories.map((group) => (
+          <div key={group.group}>
+            <h2 className="text-2xl font-bold font-headline mb-6 text-primary">{group.group}</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {group.types.map((type) => (
+                <Card key={type.name} className="bg-card/80 border-border/50 rounded-2xl p-6 flex flex-col justify-between hover:border-primary/50 hover:shadow-lg transition-all duration-300 cursor-pointer">
+                  <div>
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="p-4 bg-secondary rounded-xl">
+                        {categoryIcons[type.name] || categoryIcons['अन्य']}
+                      </div>
+                      {isHot(type.name) && (
+                        <Badge variant="destructive" className="bg-accent text-accent-foreground text-xs">HOT</Badge>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold font-headline mb-2">{type.name}</h3>
+                    <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
+                      {type.features.slice(0, 3).map((feature) => (
+                        <li key={feature}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="mt-6 border-t border-border/30 pt-4 space-y-3">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">बजट</span>
+                      <span className="font-bold text-primary">{type.budget}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">समय</span>
+                      <span className="font-bold">{type.timeline}</span>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ))}
+        {filteredCategories.length === 0 && (
+          <div className="text-center py-20 bg-card/50 rounded-lg">
+              <p className="text-muted-foreground">कोई परिणाम नहीं मिला। कृपया अपनी खोज बदलें।</p>
+          </div>
+        )}
+      </div>
 
-      {/* Footer Navigation */}
       <div className="flex justify-between items-center mt-6">
         <Button variant="ghost" onClick={() => router.back()}>पीछे जाएं</Button>
-        <Button>
+        <Button onClick={() => toast({ title: 'अगला चरण जल्द ही आ रहा है' })}>
           अगला चरण: आवश्यकताएं &gt;
         </Button>
       </div>
