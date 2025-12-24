@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -15,9 +16,9 @@ export interface CookiePreferences {
 const defaultPreferences: CookiePreferences = {
   hasMadeChoice: false,
   necessary: true,
-  performance: false,
-  functional: false,
-  advertising: false,
+  performance: true,
+  functional: true,
+  advertising: true,
 };
 
 export function useCookieConsent() {
@@ -72,7 +73,7 @@ export function useCookieConsent() {
 
   return {
     preferences,
-    hasMadeChoice: false, // Always show for demonstration
+    hasMadeChoice: preferences.hasMadeChoice,
     setPreferences,
   };
 }
