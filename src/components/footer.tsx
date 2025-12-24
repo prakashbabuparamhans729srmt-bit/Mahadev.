@@ -1,7 +1,20 @@
+"use client";
+
 import Link from "next/link";
 import { Icons } from "@/components/icons";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Footer() {
+  const { toast } = useToast();
+
+  const handleLegalLinkClick = (e: React.MouseEvent<HTMLAnchorElement>, page: string) => {
+    e.preventDefault();
+    toast({
+      title: 'पेज उपलब्ध नहीं है',
+      description: `${page} पेज जल्द ही उपलब्ध होगा।`,
+    });
+  }
+
   return (
     <footer className="border-t">
       <div className="py-12 px-4 md:px-6">
@@ -41,8 +54,8 @@ export default function Footer() {
             <div>
               <h3 className="font-semibold tracking-wider uppercase">कानूनी</h3>
               <ul className="mt-4 space-y-2">
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-foreground">सेवा की शर्तें</Link></li>
-                <li><Link href="#" className="text-sm text-muted-foreground hover:text-foreground">गोपनीयता नीति</Link></li>
+                <li><a href="#" onClick={(e) => handleLegalLinkClick(e, 'सेवा की शर्तें')} className="text-sm text-muted-foreground hover:text-foreground">सेवा की शर्तें</a></li>
+                <li><a href="#" onClick={(e) => handleLegalLinkClick(e, 'गोपनीयता नीति')} className="text-sm text-muted-foreground hover:text-foreground">गोपनीयता नीति</a></li>
               </ul>
             </div>
           </div>

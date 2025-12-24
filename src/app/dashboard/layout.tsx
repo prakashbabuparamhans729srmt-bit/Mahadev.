@@ -70,6 +70,13 @@ const notifications = [
 ]
 
 function NotificationsNav() {
+    const { toast } = useToast();
+    const handleAction = (message: string) => {
+        toast({
+            description: message,
+        });
+    }
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -81,11 +88,11 @@ function NotificationsNav() {
             <DropdownMenuContent className="w-96 mr-4" align="end">
                 <DropdownMenuHeader className="flex justify-between items-center">
                     <DropdownMenuLabel className="text-lg font-headline p-0">सूचनाएं</DropdownMenuLabel>
-                    <Button variant="link" size="sm" className="p-0 h-auto">सभी पढ़ें</Button>
+                    <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => handleAction('सभी सूचनाएं पढ़ी हुई के रूप में चिह्नित की गईं।')}>सभी पढ़ें</Button>
                 </DropdownMenuHeader>
                 <DropdownMenuSeparator />
                 {notifications.map((n, i) => (
-                    <DropdownMenuItem key={i} className="flex items-start gap-4 p-4 cursor-pointer">
+                    <DropdownMenuItem key={i} className="flex items-start gap-4 p-4 cursor-pointer" onClick={() => handleAction(`'${n.title}' पर नेविगेट किया जा रहा है...`)}>
                         <div className="bg-secondary p-3 rounded-full">
                            {n.icon}
                         </div>
@@ -315,7 +322,7 @@ export default function DashboardLayout({
             <header className="sticky top-0 z-20 flex h-20 shrink-0 items-center justify-between gap-4 border-b border-border/20 bg-background px-6">
                 <div className="flex items-center gap-4">
                   <SidebarTrigger className="hidden md:flex" />
-                  <Link href="/dashboard">
+                  <Link href="/dashboard" className="md:hidden">
                     <Icons.logo className="h-6 w-6 text-primary" />
                     <span className="sr-only">Refresh Dashboard</span>
                   </Link>
