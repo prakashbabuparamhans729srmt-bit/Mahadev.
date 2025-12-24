@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Card,
   CardContent,
@@ -64,15 +64,19 @@ const initialContacts = [
     }
 ];
 
+const initialMessages = [
+    { role: 'other', name: 'राहुल', text: 'नमस्ते, प्रोजेक्ट अपडेट तैयार है। क्या हम कल सुबह रिव्यू कर सकते हैं?', time: '10:45 AM', avatar: 'R' },
+    { role: 'me', name: 'अमित कुमार', text: 'बढ़िया, रिव्यू करते हैं। मैं 11 बजे फ्री हूँ।', time: '11:00 AM', avatar: 'A' },
+];
+
+
 export default function MessagesPage() {
     const { toast } = useToast();
     const [input, setInput] = useState('');
-    const [messages, setMessages] = useState([
-        { role: 'other', name: 'राहुल', text: 'नमस्ते, प्रोजेक्ट अपडेट तैयार है। क्या हम कल सुबह रिव्यू कर सकते हैं?', time: '10:45 AM', avatar: 'R' },
-        { role: 'me', name: 'अमित कुमार', text: 'बढ़िया, रिव्यू करते हैं। मैं 11 बजे फ्री हूँ।', time: '11:00 AM', avatar: 'A' },
-    ]);
+    const [messages, setMessages] = useState(initialMessages);
     const [searchQuery, setSearchQuery] = useState('');
     const [filteredContacts, setFilteredContacts] = useState(initialContacts);
+    const scrollAreaRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const lowercasedQuery = searchQuery.toLowerCase();
@@ -82,6 +86,15 @@ export default function MessagesPage() {
         );
         setFilteredContacts(filtered);
     }, [searchQuery]);
+
+    useEffect(() => {
+        if (scrollAreaRef.current) {
+            scrollAreaRef.current.scrollTo({
+                top: scrollAreaRef.current.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    }, [messages]);
 
 
     const handleSend = () => {
@@ -119,7 +132,7 @@ export default function MessagesPage() {
                     />
                 </div>
             </div>
-             <div className="flex-1 overflow-y-auto">
+             <ScrollArea className="flex-1">
                 <div className="flex gap-2 p-2 border-b border-border/50">
                     <Button variant="ghost" size="sm" onClick={() => handleAction('सभी संदेश दिखाए जा रहे हैं।')}>सभी</Button>
                     <Button variant="ghost" size="sm" className="relative" onClick={() => handleAction('केवल अपठित संदेश दिखाए जा रहे हैं।')}>
@@ -149,7 +162,7 @@ export default function MessagesPage() {
                         </div>
                     ))}
                 </div>
-            </div>
+            </ScrollArea>
         </div>
 
         {/* Main Chat Area */}
@@ -174,37 +187,39 @@ export default function MessagesPage() {
                         <Button variant="ghost" size="icon" onClick={() => handleAction('अधिक विकल्प दिखाए जा रहे हैं।')}><MoreHorizontal className="h-5 w-5"/></Button>
                     </div>
                 </CardHeader>
-                <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
-                    {messages.map((msg, index) => (
-                        <div key={index} className={`flex items-start gap-3 ${msg.role === 'me' ? 'justify-end' : ''}`}>
-                            {msg.role === 'other' && (
-                                <Avatar className="h-8 w-8">
-                                    <AvatarFallback>{msg.avatar}</AvatarFallback>
-                                </Avatar>
-                            )}
-                            <div>
-                                <div className={`flex items-baseline gap-2 ${msg.role === 'me' ? 'justify-end' : ''}`}>
-                                    <p className="font-semibold text-sm">{msg.name}</p>
-                                    <p className="text-xs text-muted-foreground">{msg.time}</p>
+                <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>
+                    <div className="space-y-6">
+                        {messages.map((msg, index) => (
+                            <div key={index} className={`flex items-start gap-3 ${msg.role === 'me' ? 'justify-end' : ''}`}>
+                                {msg.role === 'other' && (
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarFallback>{msg.avatar}</AvatarFallback>
+                                    </Avatar>
+                                )}
+                                <div>
+                                    <div className={`flex items-baseline gap-2 ${msg.role === 'me' ? 'justify-end' : ''}`}>
+                                        <p className="font-semibold text-sm">{msg.name}</p>
+                                        <p className="text-xs text-muted-foreground">{msg.time}</p>
+                                    </div>
+                                    <div className={`max-w-xs rounded-2xl p-3 mt-1 ${
+                                        msg.role === 'me'
+                                            ? 'bg-primary text-primary-foreground rounded-br-none'
+                                            : 'bg-secondary rounded-bl-none'
+                                    }`}
+                                    >
+                                        {msg.text}
+                                    </div>
                                 </div>
-                                <div className={`max-w-xs rounded-2xl p-3 mt-1 ${
-                                    msg.role === 'me'
-                                        ? 'bg-primary text-primary-foreground rounded-br-none'
-                                        : 'bg-secondary rounded-bl-none'
-                                }`}
-                                >
-                                    {msg.text}
-                                </div>
+                                {msg.role === 'me' && (
+                                    <Avatar className="h-8 w-8">
+                                        <AvatarImage src="https://picsum.photos/seed/1/100/100" />
+                                        <AvatarFallback>{msg.avatar}</AvatarFallback>
+                                    </Avatar>
+                                )}
                             </div>
-                            {msg.role === 'me' && (
-                                <Avatar className="h-8 w-8">
-                                    <AvatarImage src="https://picsum.photos/seed/1/100/100" />
-                                    <AvatarFallback>{msg.avatar}</AvatarFallback>
-                                </Avatar>
-                            )}
-                        </div>
-                    ))}
-                </CardContent>
+                        ))}
+                    </div>
+                </ScrollArea>
                 <div className="p-4 mt-auto">
                     <div className="relative bg-secondary/80 rounded-full">
                         <Input 
