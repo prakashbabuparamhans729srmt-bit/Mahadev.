@@ -1,3 +1,4 @@
+'use client';
 
 import {
   Store, Briefcase, Pencil, GraduationCap, Building, LandPlot, Clapperboard,
