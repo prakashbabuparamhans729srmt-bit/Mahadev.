@@ -45,7 +45,7 @@ export default function ProjectOversightPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {projects.map((project) => (
              <Link href={`/dashboard/project/${encodeURIComponent(project.id)}`} key={project.id}>
-                <Card className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card border border-border/50 h-full flex flex-col">
+                <Card className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card border border-border/50 h-full flex flex-col cursor-pointer">
                     <div className="relative aspect-video">
                         <Image 
                             src={project.imageUrl}
