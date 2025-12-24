@@ -10,6 +10,7 @@ import { useAuth, useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -32,6 +33,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const { toast } = useToast();
   
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -67,6 +69,13 @@ export default function LoginPage() {
       setIsPending(false);
     }
   };
+
+  const handleSocialLogin = (provider: string) => {
+    toast({
+        title: "सुविधा उपलब्ध नहीं है",
+        description: `${provider} से लॉगिन की सुविधा जल्द ही आ रही है।`,
+    });
+  }
 
   if (isUserLoading || user) {
      return (
@@ -105,8 +114,8 @@ export default function LoginPage() {
             <p className="text-muted-foreground text-center mt-2 mb-8">जारी रखने के लिए अपना ईमेल दर्ज करें</p>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-                <Button variant="outline" className="w-full"><GoogleIcon className="mr-2 h-5 w-5"/> Google</Button>
-                <Button variant="outline" className="w-full"><GithubIcon className="mr-2 h-5 w-5"/> GitHub</Button>
+                <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('Google')}><GoogleIcon className="mr-2 h-5 w-5"/> Google</Button>
+                <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('GitHub')}><GithubIcon className="mr-2 h-5 w-5"/> GitHub</Button>
             </div>
 
             <div className="flex items-center my-6">

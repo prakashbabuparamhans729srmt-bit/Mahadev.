@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { useUser, useAuth } from '@/firebase';
-import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -76,6 +76,9 @@ export default function SignupPage() {
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await updateProfile(userCredential.user, {
+        displayName: `${firstName} ${lastName}`.trim(),
+      });
       await sendEmailVerification(userCredential.user);
       toast({
         title: 'वेरिफिकेशन ईमेल भेजा गया',
@@ -92,6 +95,13 @@ export default function SignupPage() {
         setIsPending(false);
     }
   };
+
+  const handleSocialLogin = (provider: string) => {
+    toast({
+        title: "सुविधा उपलब्ध नहीं है",
+        description: `${provider} से साइन अप करने की सुविधा जल्द ही आ रही है।`,
+    });
+  }
 
 
   if (isUserLoading || user) {
@@ -137,8 +147,8 @@ export default function SignupPage() {
             <p className="text-muted-foreground text-center mt-2 mb-8">शुरू करने के लिए नीचे अपना विवरण दर्ज करें</p>
 
             <div className="grid grid-cols-2 gap-4 mb-6">
-                <Button variant="outline" className="w-full"><GoogleIcon className="mr-2 h-5 w-5"/> Google</Button>
-                <Button variant="outline" className="w-full"><GithubIcon className="mr-2 h-5 w-5"/> GitHub</Button>
+                <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('Google')}><GoogleIcon className="mr-2 h-5 w-5"/> Google</Button>
+                <Button variant="outline" className="w-full" onClick={() => handleSocialLogin('GitHub')}><GithubIcon className="mr-2 h-5 w-5"/> GitHub</Button>
             </div>
 
             <div className="flex items-center my-6">
