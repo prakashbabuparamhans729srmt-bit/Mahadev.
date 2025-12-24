@@ -555,7 +555,6 @@ const SidebarMenuButton = React.forwardRef<
         {...props}
       >
         {children}
-        <span className="group-data-[state=collapsed]:group-hover:inline-flex hidden">{children as any}</span>
       </Comp>
     )
 
