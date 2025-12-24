@@ -5,6 +5,7 @@ import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
+import { initializeFirebase } from '@/firebase'; // Import initializeFirebase
 
 // Internal state for user authentication
 interface UserAuthState {
@@ -32,19 +33,29 @@ export const FirebaseContext = createContext<FirebaseContextState | undefined>(u
  */
 export const FirebaseProvider: React.FC<{
   children: ReactNode;
-  firebaseApp: FirebaseApp;
-  firestore: Firestore;
-  auth: Auth;
-}> = ({ children, firebaseApp, firestore, auth }) => {
+}> = ({ children }) => {
+  const [firebaseServices, setFirebaseServices] = useState<{
+    firebaseApp: FirebaseApp;
+    firestore: Firestore;
+    auth: Auth;
+  } | null>(null);
+
   const [userAuthState, setUserAuthState] = useState<UserAuthState>({
     user: null,
     isUserLoading: true, // Start loading until first auth event
     userError: null,
   });
+  
+  useEffect(() => {
+    // Initialize Firebase on the client side
+    const { firebaseApp, firestore, auth } = initializeFirebase();
+    setFirebaseServices({ firebaseApp, firestore, auth });
+  }, []);
+
 
   // Effect to subscribe to Firebase auth state changes
   useEffect(() => {
-    if (!auth) {
+    if (!firebaseServices?.auth) {
       setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Auth service not provided.") });
       return;
     }
@@ -52,7 +63,7 @@ export const FirebaseProvider: React.FC<{
     setUserAuthState({ user: null, isUserLoading: true, userError: null });
 
     const unsubscribe = onAuthStateChanged(
-      auth,
+      firebaseServices.auth,
       (firebaseUser) => {
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
@@ -62,15 +73,15 @@ export const FirebaseProvider: React.FC<{
       }
     );
     return () => unsubscribe();
-  }, [auth]);
+  }, [firebaseServices]);
 
   // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => ({
-    firebaseApp,
-    firestore,
-    auth,
+    firebaseApp: firebaseServices?.firebaseApp || null,
+    firestore: firebaseServices?.firestore || null,
+    auth: firebaseServices?.auth || null,
     ...userAuthState
-  }), [firebaseApp, firestore, auth, userAuthState]);
+  }), [firebaseServices, userAuthState]);
 
   return (
     <FirebaseContext.Provider value={contextValue}>

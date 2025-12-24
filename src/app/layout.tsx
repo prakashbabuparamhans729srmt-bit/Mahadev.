@@ -1,7 +1,7 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
-import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { FirebaseClientProvider } from '@/firebase'; 
 import { HelpAssistant } from '@/components/help-assistant';
 import { CookieConsent } from '@/components/cookie-consent';
 
@@ -15,6 +15,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
     <html lang="hi" className="dark">
       <head>
@@ -25,10 +26,10 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <FirebaseClientProvider>
           {children}
+          <Toaster />
+          <HelpAssistant />
+          <CookieConsent />
         </FirebaseClientProvider>
-        <Toaster />
-        <HelpAssistant />
-        <CookieConsent />
       </body>
     </html>
   );
