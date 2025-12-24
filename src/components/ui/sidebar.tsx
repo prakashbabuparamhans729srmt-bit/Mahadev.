@@ -225,8 +225,9 @@ const Sidebar = React.forwardRef<
       <aside
         ref={ref}
         className={cn(
-            "group hidden md:flex flex-col h-screen bg-sidebar text-sidebar-foreground sticky top-0 transition-all duration-300 ease-in-out",
+            "group hidden md:flex flex-col h-screen bg-sidebar text-sidebar-foreground sticky top-0 transition-all duration-300 ease-in-out z-30",
             "data-[state=expanded]:w-[--sidebar-width] data-[state=collapsed]:w-[--sidebar-width-icon]",
+            "data-[state=collapsed]:hover:w-[--sidebar-width] data-[state=collapsed]:hover:shadow-lg",
             variant === "sidebar" && "border-r",
             variant === "floating" && "m-2 rounded-lg border shadow",
             className
@@ -389,7 +390,7 @@ const SidebarContent = React.forwardRef<
       data-sidebar="content"
       className={cn(
         "flex min-h-0 flex-1 flex-col gap-2 overflow-auto",
-        "group-data-[state=collapsed]:overflow-hidden",
+        "group-data-[state=collapsed]:group-hover:overflow-auto group-data-[state=collapsed]:overflow-hidden",
         className
       )}
       {...props}
@@ -499,6 +500,7 @@ SidebarMenuItem.displayName = "SidebarMenuItem"
 const sidebarMenuButtonVariants = cva(
   "peer/menu-button flex w-full items-center gap-3 overflow-hidden rounded-md p-2 text-left text-sm outline-none ring-sidebar-ring transition-[width,height,padding] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pr-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-primary data-[active=true]:font-medium data-[active=true]:text-sidebar-primary-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground",
   "group-data-[state=collapsed]:size-9 group-data-[state=collapsed]:justify-center group-data-[state=collapsed]:p-2",
+  "group-data-[state=collapsed]:group-hover:w-[--sidebar-width] group-data-[state=collapsed]:group-hover:justify-start group-data-[state=collapsed]:group-hover:p-2",
   {
     variants: {
       variant: {
@@ -535,6 +537,7 @@ const SidebarMenuButton = React.forwardRef<
       size = "default",
       tooltip,
       className,
+      children,
       ...props
     },
     ref
@@ -550,7 +553,10 @@ const SidebarMenuButton = React.forwardRef<
         data-active={isActive}
         className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
         {...props}
-      />
+      >
+        {children}
+        <span className="group-data-[state=collapsed]:group-hover:inline-flex hidden">{children as any}</span>
+      </Comp>
     )
 
     if (!tooltip) {

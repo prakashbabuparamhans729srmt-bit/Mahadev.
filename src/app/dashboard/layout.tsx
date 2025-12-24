@@ -238,8 +238,8 @@ export default function DashboardLayout({
 
         <div className="flex-1 flex flex-col">
             <header className="sticky top-0 z-20 flex h-20 shrink-0 items-center justify-between gap-4 border-b border-border/20 bg-background px-6">
-                <SidebarTrigger className="md:hidden" />
-                 <div className="relative flex-1 max-w-xl">
+                <SidebarTrigger className="max-md:hidden" />
+                <div className="relative flex-1 max-w-xl">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                         placeholder="खोजें..."
