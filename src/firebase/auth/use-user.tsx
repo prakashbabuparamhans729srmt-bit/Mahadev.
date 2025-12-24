@@ -2,12 +2,13 @@
 
 import { useContext } from 'react';
 import { FirebaseContext, type FirebaseContextState } from '@/firebase/provider';
+import type { User } from 'firebase/auth';
 
 // Return type for useUser() - specific to user auth state
 export interface UserHookResult {
-  user: FirebaseContextState['user'];
-  isUserLoading: FirebaseContextState['isUserLoading'];
-  userError: FirebaseContextState['userError'];
+  user: User | null;
+  isUserLoading: boolean;
+  userError: Error | null;
 }
 
 /**
