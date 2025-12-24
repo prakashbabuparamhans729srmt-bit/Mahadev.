@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import {
   ArrowLeft, Upload, Folder, FileText, MoreVertical, Search, Eye, Download, Edit2, Trash2, Play, ArrowRight, List, LayoutGrid
 } from 'lucide-react';
-import { getFileIcon } from '@/lib/file-icons.tsx';
+import { getFileIcon } from '@/lib/file-icons';
 import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
@@ -245,3 +245,5 @@ export default function FileManagerPage() {
     </div>
   );
 }
+
+    
