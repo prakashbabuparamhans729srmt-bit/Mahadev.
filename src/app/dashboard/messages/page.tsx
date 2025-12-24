@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import {
   Card,
   CardContent,
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 
 const contacts = [
     {
@@ -62,6 +64,32 @@ const contacts = [
 ]
 
 export default function MessagesPage() {
+    const { toast } = useToast();
+    const [input, setInput] = useState('');
+    const [messages, setMessages] = useState([
+        { role: 'other', name: 'राहुल', text: 'नमस्ते, प्रोजेक्ट अपडेट तैयार है। क्या हम कल सुबह रिव्यू कर सकते हैं?', time: '10:45 AM', avatar: 'R' },
+        { role: 'me', name: 'अमित कुमार', text: 'बढ़िया, रिव्यू करते हैं। मैं 11 बजे फ्री हूँ।', time: '11:00 AM', avatar: 'A' },
+    ]);
+
+    const handleSend = () => {
+        if (!input.trim()) return;
+        
+        setMessages(prev => [
+            ...prev,
+            { role: 'me', name: 'अमित कुमार', text: input, time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit'}), avatar: 'A' }
+        ]);
+
+        setInput('');
+    };
+
+    const handleAction = (message: string) => {
+        toast({
+            title: "सुविधा उपलब्ध नहीं है",
+            description: message,
+        });
+    }
+
+
   return (
     <div className="h-full flex text-sm">
         {/* Left Sidebar for contacts */}
@@ -75,13 +103,13 @@ export default function MessagesPage() {
             </div>
              <div className="flex-1 overflow-y-auto">
                 <div className="flex gap-2 p-2 border-b border-border/50">
-                    <Button variant="ghost" size="sm">सभी</Button>
-                    <Button variant="ghost" size="sm" className="relative">
+                    <Button variant="ghost" size="sm" onClick={() => handleAction('सभी संदेश दिखाए जा रहे हैं।')}>सभी</Button>
+                    <Button variant="ghost" size="sm" className="relative" onClick={() => handleAction('केवल अपठित संदेश दिखाए जा रहे हैं।')}>
                         अपठित
                         <Badge className="absolute -top-1 -right-2 h-4 w-4 justify-center p-0">2</Badge>
                     </Button>
-                    <Button variant="ghost" size="sm"><Star className="h-4 w-4"/></Button>
-                    <Button variant="ghost" size="sm"><Archive className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleAction('तारांकित संदेश दिखाए जा रहे हैं।')}><Star className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleAction('संग्रहीत संदेश दिखाए जा रहे हैं।')}><Archive className="h-4 w-4"/></Button>
                 </div>
                 <div className="p-2 space-y-1">
                     {contacts.map(contact => (
@@ -124,48 +152,54 @@ export default function MessagesPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon"><Video className="h-5 w-5"/></Button>
-                        <Button variant="ghost" size="icon"><MoreHorizontal className="h-5 w-5"/></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleAction('वीडियो कॉल शुरू हो रही है...')}><Video className="h-5 w-5"/></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleAction('अधिक विकल्प दिखाए जा रहे हैं।')}><MoreHorizontal className="h-5 w-5"/></Button>
                     </div>
                 </CardHeader>
                 <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
-                     <div className="flex items-start gap-3">
-                         <Avatar className="h-8 w-8">
-                            <AvatarFallback>R</AvatarFallback>
-                         </Avatar>
-                         <div>
-                            <div className="flex items-baseline gap-2">
-                                <p className="font-semibold text-sm">राहुल</p>
-                                <p className="text-xs text-muted-foreground">10:45 AM</p>
+                    {messages.map((msg, index) => (
+                        <div key={index} className={`flex items-start gap-3 ${msg.role === 'me' ? 'justify-end' : ''}`}>
+                            {msg.role === 'other' && (
+                                <Avatar className="h-8 w-8">
+                                    <AvatarFallback>{msg.avatar}</AvatarFallback>
+                                </Avatar>
+                            )}
+                            <div>
+                                <div className={`flex items-baseline gap-2 ${msg.role === 'me' ? 'justify-end' : ''}`}>
+                                    <p className="font-semibold text-sm">{msg.name}</p>
+                                    <p className="text-xs text-muted-foreground">{msg.time}</p>
+                                </div>
+                                <div className={`max-w-xs rounded-2xl p-3 mt-1 ${
+                                    msg.role === 'me'
+                                        ? 'bg-primary text-primary-foreground rounded-br-none'
+                                        : 'bg-secondary rounded-bl-none'
+                                }`}
+                                >
+                                    {msg.text}
+                                </div>
                             </div>
-                            <div className="bg-secondary rounded-2xl rounded-tl-none p-3 mt-1 max-w-lg">
-                                नमस्ते, प्रोजेक्ट अपडेट तैयार है। क्या हम कल सुबह रिव्यू कर सकते हैं?
-                            </div>
-                         </div>
-                     </div>
-                     <div className="flex items-start gap-3 justify-end">
-                         <div>
-                            <div className="flex items-baseline gap-2 justify-end">
-                                <p className="font-semibold text-sm">अमित कुमार</p>
-                                <p className="text-xs text-muted-foreground">11:00 AM</p>
-                            </div>
-                            <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-none p-3 mt-1 max-w-lg">
-                                बढ़िया, रिव्यू करते हैं। मैं 11 बजे फ्री हूँ।
-                            </div>
-                         </div>
-                         <Avatar className="h-8 w-8">
-                            <AvatarImage src="https://picsum.photos/seed/1/100/100" />
-                            <AvatarFallback>A</AvatarFallback>
-                         </Avatar>
-                     </div>
+                            {msg.role === 'me' && (
+                                <Avatar className="h-8 w-8">
+                                    <AvatarImage src="https://picsum.photos/seed/1/100/100" />
+                                    <AvatarFallback>{msg.avatar}</AvatarFallback>
+                                </Avatar>
+                            )}
+                        </div>
+                    ))}
                 </CardContent>
                 <div className="p-4 mt-auto">
                     <div className="relative bg-secondary/80 rounded-full">
-                        <Input placeholder="अपना संदेश यहाँ टाइप करें..." className="bg-transparent border-none rounded-full h-12 pr-24 pl-12" />
-                        <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8">
+                        <Input 
+                            placeholder="अपना संदेश यहाँ टाइप करें..." 
+                            className="bg-transparent border-none rounded-full h-12 pr-24 pl-12" 
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                        />
+                        <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8" onClick={() => handleAction('फ़ाइल अटैचमेंट की सुविधा जल्द ही आ रही है।')}>
                             <Paperclip />
                         </Button>
-                        <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-primary hover:bg-primary/90">
+                        <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-primary hover:bg-primary/90" onClick={handleSend}>
                             <Send />
                         </Button>
                     </div>

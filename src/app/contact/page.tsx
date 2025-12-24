@@ -1,12 +1,28 @@
+'use client';
 
 import Footer from '@/components/footer';
 import Header from '@/components/header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import { Mail, Phone, MessageSquare } from 'lucide-react';
+import { type FormEvent } from 'react';
 
 export default function ContactPage() {
+  const { toast } = useToast();
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    toast({
+      title: "संदेश भेजा गया!",
+      description: "आपकी पूछताछ प्राप्त हो गई है। हम जल्द ही आपसे संपर्क करेंगे।",
+    });
+    // Here you would typically handle form submission, e.g., send data to a server.
+    // For this example, we'll just reset the form.
+    (e.target as HTMLFormElement).reset();
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header />
@@ -41,7 +57,7 @@ export default function ContactPage() {
                 </div>
               </div>
               <div className="flex flex-col justify-center">
-                <form className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   <Input type="text" placeholder="आपका नाम" className="w-full" required />
                   <Input type="email" placeholder="आपका ईमेल" className="w-full" required />
                   <Textarea placeholder="आपका संदेश..." className="w-full" rows={5} required />

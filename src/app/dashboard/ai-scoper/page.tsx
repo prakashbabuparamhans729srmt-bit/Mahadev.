@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import {
   ProjectScopeInputSchema,
   type ProjectScopeInput,
@@ -36,12 +37,9 @@ import {
   Download,
   Mail,
   Pencil,
-  FileBox,
-  Clock,
   Cpu,
 } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 function ScopeResultDialog({
   result,
@@ -56,6 +54,33 @@ function ScopeResultDialog({
   onReset: () => void;
   description: string;
 }) {
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleCreateProject = () => {
+    // In a real app, this would create a project in the database.
+    // For now, we'll just navigate to a generic project page.
+    toast({
+      title: 'प्रोजेक्ट बनाया गया!',
+      description: 'आपको प्रोजेक्ट विवरण पेज पर रीडायरेक्ट किया जा रहा है।',
+    });
+    // Let's pass some data via query params for demonstration
+    const query = new URLSearchParams({
+        name: "नया AI आधारित प्रोजेक्ट",
+        budget: result.estimatedBudget,
+        timeline: result.estimatedTimeline
+    }).toString();
+    
+    router.push(`/dashboard/project/new-ai-project?${query}`);
+  };
+  
+  const handleAction = (message: string) => {
+    toast({
+        title: 'सुविधा उपलब्ध नहीं है',
+        description: message,
+    });
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
@@ -129,15 +154,15 @@ function ScopeResultDialog({
               📄 स्वचालित प्रस्ताव तैयार:
             </h3>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => handleAction('प्रस्ताव को कस्टमाइज़ करने की सुविधा जल्द ही आ रही है।')}>
                 <Pencil className="mr-2 h-4 w-4" />
                 कस्टमाइज़ करें
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => handleAction('PDF डाउनलोड करने की सुविधा जल्द ही आ रही है।')}>
                 <Download className="mr-2 h-4 w-4" />
                 PDF डाउनलोड
               </Button>
-              <Button variant="outline">
+              <Button variant="outline" onClick={() => handleAction('क्लाइंट को ईमेल भेजने की सुविधा जल्द ही आ रही है।')}>
                 <Mail className="mr-2 h-4 w-4" />
                 क्लाइंट को भेजें
               </Button>
@@ -148,9 +173,7 @@ function ScopeResultDialog({
             <Button variant="ghost" onClick={onReset}>
               ⬅️ नया स्कोप
             </Button>
-            <DialogClose asChild>
-              <Button>✅ प्रोजेक्ट शुरू करें</Button>
-            </DialogClose>
+            <Button onClick={handleCreateProject}>✅ प्रोजेक्ट शुरू करें</Button>
           </DialogFooter>
         </div>
       </DialogContent>

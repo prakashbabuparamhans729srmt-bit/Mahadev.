@@ -1,14 +1,13 @@
-
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase';
 import { updateProfile } from 'firebase/auth';
-import { Loader2, User, Shield, Bell, CreditCard } from 'lucide-react';
+import { Loader2, User, Shield, Bell, CreditCard, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -16,21 +15,39 @@ export default function SettingsPage() {
   const { user, isUserLoading } = useUser();
   const [displayName, setDisplayName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [photoURL, setPhotoURL] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user) {
       setDisplayName(user.displayName || 'अमित कुमार');
+      setPhotoURL(user.photoURL);
     }
   }, [user]);
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            setPhotoURL(e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+    }
+  };
 
   const handleProfileSave = async () => {
     if (!user) return;
     setIsSaving(true);
     try {
-      await updateProfile(user, { displayName });
+      await updateProfile(user, { displayName, photoURL });
       toast({
         title: 'प्रोफ़ाइल अपडेट की गई',
-        description: 'आपका नाम सफलतापूर्वक सहेज लिया गया है।',
+        description: 'आपकी प्रोफ़ाइल सफलतापूर्वक सहेज ली गई है।',
       });
     } catch (error) {
       toast({
@@ -51,21 +68,30 @@ export default function SettingsPage() {
     );
   }
 
+  const handleTabChange = (value: string) => {
+    if (value !== 'profile') {
+        toast({
+            title: "सुविधा जल्द ही आ रही है",
+            description: `"${value}" टैब अभी उपलब्ध नहीं है।`,
+        });
+    }
+  }
+
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <h1 className="text-3xl font-bold font-headline mb-8">सेटिंग्स</h1>
-      <Tabs defaultValue="profile" orientation="vertical" className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-10">
+      <Tabs defaultValue="profile" onValueChange={handleTabChange} orientation="vertical" className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-10">
         <TabsList className="flex-col h-auto justify-start items-stretch gap-2 bg-transparent p-0 border-none">
           <TabsTrigger value="profile" className="justify-start p-4 text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">
             <User className="mr-3"/> प्रोफ़ाइल
           </TabsTrigger>
-          <TabsTrigger value="security" className="justify-start p-4 text-base" disabled>
+          <TabsTrigger value="security" className="justify-start p-4 text-base">
              <Shield className="mr-3"/> सुरक्षा
           </TabsTrigger>
-           <TabsTrigger value="billing" className="justify-start p-4 text-base" disabled>
+           <TabsTrigger value="billing" className="justify-start p-4 text-base">
             <CreditCard className="mr-3"/> बिलिंग
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="justify-start p-4 text-base" disabled>
+          <TabsTrigger value="notifications" className="justify-start p-4 text-base">
             <Bell className="mr-3"/> नोटिफिकेशन्स
           </TabsTrigger>
         </TabsList>
@@ -73,10 +99,16 @@ export default function SettingsPage() {
         <TabsContent value="profile" className="mt-0">
             <div className="bg-card/50 rounded-2xl p-8">
                  <div className="flex flex-col items-center text-center">
-                    <Avatar className="h-24 w-24 mb-4 border-4 border-primary/50">
-                        <AvatarImage src={user?.photoURL ?? "https://picsum.photos/seed/1/200/200"} alt={displayName} />
-                        <AvatarFallback>{displayName?.[0]}</AvatarFallback>
-                    </Avatar>
+                    <div className="relative group">
+                        <Avatar className="h-24 w-24 mb-4 border-4 border-primary/50">
+                            <AvatarImage src={photoURL ?? "https://picsum.photos/seed/1/200/200"} alt={displayName} />
+                            <AvatarFallback>{displayName?.[0]}</AvatarFallback>
+                        </Avatar>
+                        <button onClick={handleAvatarClick} className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Camera className="text-white h-8 w-8" />
+                        </button>
+                        <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
+                    </div>
                     <h2 className="text-2xl font-bold font-headline">{displayName}</h2>
                     <p className="text-primary">प्रीमियम सदस्यता - राजेश इंडस्ट्रीज</p>
                 </div>

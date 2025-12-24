@@ -1,32 +1,22 @@
-
 'use client';
 
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import {
-  ArrowLeft,
-  Upload,
-  Folder,
-  FileText,
-  FileArchive,
-  FileVideo,
-  FileImage,
-  MoreVertical,
-  Search,
-  Eye,
-  Download,
-  Edit2,
-  Trash2,
-  Play,
-  ArrowRight,
-  List,
-  LayoutGrid,
+  ArrowLeft, Upload, Folder, FileText, MoreVertical, Search, Eye, Download, Edit2, Trash2, Play, ArrowRight, List, LayoutGrid
 } from 'lucide-react';
+import { getFileIcon } from '@/lib/file-icons';
+import { useToast } from '@/hooks/use-toast';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
-const files = [
+
+const initialFiles = [
   { name: 'डिज़ाइन_स्केच', type: 'folder', size: '--', modified: '15/04/24' },
   { name: 'homepage.fig', type: 'figma', size: '2.4 MB', modified: '16/04/24' },
   { name: 'dashboard.fig', type: 'figma', size: '3.1 MB', modified: '17/04/24' },
@@ -40,20 +30,44 @@ const versions = [
     { version: 'v1.2', date: '20/04/24', author: 'अमित', comment: '"कलर करेक्शन"' },
     { version: 'v1.1', date: '19/04/24', author: 'प्रिया', comment: '"लोगो अपडेट"' },
     { version: 'v1.0', date: '18/04/24', author: 'राहुल', comment: '"प्रारंभिक ड्राफ्ट"' },
-]
-
-const getFileIcon = (type: string) => {
-  switch (type) {
-    case 'folder': return <Folder className="h-5 w-5 text-primary" />;
-    case 'figma': return <FileText className="h-5 w-5 text-primary/80" />;
-    case 'pdf': return <FileText className="h-5 w-5 text-red-400" />;
-    case 'image': return <FileImage className="h-5 w-5 text-blue-400" />;
-    case 'video': return <FileVideo className="h-5 w-5 text-green-400" />;
-    default: return <FileText className="h-5 w-5 text-muted-foreground" />;
-  }
-};
+];
 
 export default function FileManagerPage() {
+    const { toast } = useToast();
+    const [files, setFiles] = useState(initialFiles);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const handleUploadClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            toast({
+                title: 'फ़ाइल चयनित',
+                description: `${file.name} अपलोड के लिए तैयार है।`,
+            });
+            // Here you would typically handle the file upload
+        }
+    };
+
+    const handleAction = (message: string) => {
+        toast({
+            title: 'कार्रवाई',
+            description: message,
+        });
+    };
+    
+    const handleDelete = (fileName: string) => {
+        setFiles(files.filter(f => f.name !== fileName));
+        toast({
+            title: 'फ़ाइल हटाई गई',
+            description: `${fileName} को सफलतापूर्वक हटा दिया गया है।`,
+            variant: 'destructive',
+        });
+    };
+
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <div className="flex flex-col gap-6">
@@ -62,9 +76,10 @@ export default function FileManagerPage() {
                 <Folder className="h-5 w-5 text-primary" />
                 फ़ाइल मैनेजर - प्रोजेक्ट #1042
             </h1>
-             <Button>
+             <Button onClick={handleUploadClick}>
                 <Upload className="mr-2 h-4 w-4" /> अपलोड
             </Button>
+            <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
         </div>
         <Card>
             <CardHeader className="border-b pb-4">
@@ -77,10 +92,10 @@ export default function FileManagerPage() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                             <Input placeholder="खोजें..." className="pl-9" />
                         </div>
-                        <Button variant="outline" size="icon">
+                        <Button variant="outline" size="icon" onClick={() => handleAction('सूची दृश्य सक्रिय।')}>
                             <List className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" onClick={() => handleAction('ग्रिड दृश्य जल्द ही आ रहा है।')}>
                             <LayoutGrid className="h-4 w-4" />
                         </Button>
                     </div>
@@ -108,10 +123,28 @@ export default function FileManagerPage() {
                     <TableCell>{file.size}</TableCell>
                     <TableCell>{file.modified}</TableCell>
                     <TableCell className="text-right">
-                       <div className="flex items-center justify-end gap-2">
-                            {file.type === 'video' ? <Button variant="ghost" size="icon"><Play className="h-4 w-4" /></Button> : <Button variant="ghost" size="icon"><Eye className="h-4 w-4" /></Button>}
-                            <Button variant="ghost" size="icon"><Download className="h-4 w-4" /></Button>
-                            {file.type.includes('figma') && <Button variant="ghost" size="icon"><Edit2 className="h-4 w-4" /></Button>}
+                       <div className="flex items-center justify-end gap-1">
+                            <Button variant="ghost" size="icon" onClick={() => handleAction(`प्रीव्यू '${file.name}'`)}><Eye className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleAction(`डाउनलोड हो रहा है '${file.name}'`)}><Download className="h-4 w-4" /></Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                                        <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>क्या आप निश्चित हैं?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        यह क्रिया पूर्ववत नहीं की जा सकती। यह स्थायी रूप से '{file.name}' फ़ाइल को हटा देगा।
+                                    </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>रद्द करें</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDelete(file.name)}>हटाएं</AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                        </div>
                     </TableCell>
                   </TableRow>
@@ -125,26 +158,38 @@ export default function FileManagerPage() {
             <div className="lg:col-span-2">
                  <Card>
                     <CardHeader>
-                        <CardTitle className="font-headline text-lg">🖼️ फोटो प्रीव्यू:</CardTitle>
+                        <CardTitle className="font-headline text-lg">🖼️ फोटो प्रीव्यू: color_palette.png</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
-                        <div className="grid grid-cols-5 gap-2">
-                            {Array.from({length: 5}).map((_, i) => (
-                                <div key={i} className="aspect-square bg-secondary rounded-md flex items-center justify-center text-muted-foreground">
-                                    {i+1}/5
-                                </div>
-                            ))}
+                        <div className="aspect-video bg-secondary rounded-md flex items-center justify-center text-muted-foreground overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1593693397649-3ca9c877a192?q=80&w=800" alt="Color Palette" className="w-full h-full object-cover" />
                         </div>
                          <div className="flex justify-between items-center">
                              <div className="flex gap-2">
-                                <Button variant="outline" size="icon"><ArrowLeft className="h-4 w-4"/></Button>
-                                <Button variant="outline" size="icon"><ArrowRight className="h-4 w-4"/></Button>
+                                <Button variant="outline" size="icon" onClick={() => handleAction('पिछली छवि लोड हो रही है।')}><ArrowLeft className="h-4 w-4"/></Button>
+                                <Button variant="outline" size="icon" onClick={() => handleAction('अगली छवि लोड हो रही है।')}><ArrowRight className="h-4 w-4"/></Button>
                              </div>
                              <div className="flex gap-2">
-                                <Button variant="outline" size="sm" className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive">
-                                    <Trash2 className="mr-2 h-4 w-4"/> हटाएं
-                                </Button>
-                                <Button variant="outline" size="sm">
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="outline" size="sm" className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive">
+                                            <Trash2 className="mr-2 h-4 w-4"/> हटाएं
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                        <AlertDialogTitle>क्या आप निश्चित हैं?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            यह क्रिया स्थायी रूप से इस छवि को हटा देगी।
+                                        </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                        <AlertDialogCancel>रद्द करें</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleAction('छवि हटा दी गई।')}>हटाएं</AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                                <Button variant="outline" size="sm" onClick={() => handleAction('छवि संपादन इंटरफ़ेस खुल रहा है।')}>
                                     <Edit2 className="mr-2 h-4 w-4"/> एडिट
                                 </Button>
                             </div>
@@ -166,8 +211,8 @@ export default function FileManagerPage() {
                          ))}
                     </CardContent>
                     <CardFooter className="flex flex-col gap-2">
-                        <Button variant="outline" size="sm" className="w-full">↩️ पिछला वर्जन रिस्टोर</Button>
-                        <Button variant="link" size="sm">📋 चेंज लॉग</Button>
+                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('v1.1 को पुनर्स्थापित किया जा रहा है।')}>↩️ पिछला वर्जन रिस्टोर</Button>
+                        <Button variant="link" size="sm" onClick={() => handleAction('चेंज लॉग दिखाया जा रहा है।')}>📋 चेंज लॉग</Button>
                     </CardFooter>
                 </Card>
              </div>

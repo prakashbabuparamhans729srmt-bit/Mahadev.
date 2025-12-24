@@ -1,9 +1,5 @@
-
-
 'use client';
 
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -12,7 +8,6 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Textarea } from '@/components/ui/textarea';
 import {
   ArrowLeft,
   Star,
@@ -21,37 +16,28 @@ import {
   Mail,
   Calendar,
   Plus,
-  Paperclip,
-  Mic,
-  Video,
-  ScreenShare,
-  Link2,
   FileText,
   Palette,
   Code,
-  TestTube,
   CheckCircle,
-  Eye,
-  ChevronRight,
-  User as UserIcon,
-  Briefcase,
   Wallet,
   Clock,
   BarChart,
   Smile,
   Disc,
-  PenSquare,
   File,
   Users,
   Upload,
-  MessageSquare,
-  Menu,
+  ChevronRight,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
+import Link from 'next/link';
 
+// Dummy data, in a real app this would come from a database based on params.id
 const project = {
   id: '#1042',
   name: 'स्मार्ट ERP सिस्टम',
@@ -112,18 +98,32 @@ const files = [
   },
 ];
 
-export default function ProjectDetailsPage() {
+export default function ProjectDetailsPage({ params }: { params: { id: string } }) {
+    const { toast } = useToast();
+
+    const handleAction = (message: string) => {
+        toast({
+            title: 'कार्रवाई की आवश्यकता है',
+            description: message,
+        });
+    };
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-            <h1 className="text-xl md:text-2xl font-bold font-headline flex items-center gap-2">
-                <Briefcase className="h-5 w-5 text-primary" />
-                <span className="hidden md:inline">प्रोजेक्ट {project.id}: </span>"
-                {project.name}"
-            </h1>
-            <Button variant="ghost" size="icon">
+            <div className="flex items-center gap-2">
+                <Button variant="outline" size="icon" asChild>
+                    <Link href="/dashboard/project-oversight">
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                </Button>
+                <h1 className="text-xl md:text-2xl font-bold font-headline flex items-center gap-2">
+                    <span className="hidden md:inline">प्रोजेक्ट {decodeURIComponent(params.id)}: </span>"
+                    {project.name}"
+                </h1>
+            </div>
+            <Button variant="ghost" size="icon" onClick={() => handleAction('प्रोजेक्ट को पसंदीदा के रूप में चिह्नित करने की सुविधा जल्द ही आ रही है।')}>
                 <Star />
                 <span className="sr-only">Favorite</span>
             </Button>
@@ -141,7 +141,7 @@ export default function ProjectDetailsPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="p-4 bg-secondary/30 border-l-4 border-primary">
                 <h3 className="font-semibold flex items-center text-sm mb-2">
-                  <UserIcon className="mr-2 h-4 w-4" />
+                  <User className="mr-2 h-4 w-4" />
                   क्लाइंट
                 </h3>
                 <p className="font-bold">{project.client.name}</p>
@@ -234,7 +234,7 @@ export default function ProjectDetailsPage() {
               ))}
             </CardContent>
             <CardFooter>
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('अगले चरण पर जाने की सुविधा जल्द ही उपलब्ध होगी।')}>
                 <ChevronRight className="mr-2 h-4 w-4" /> अगला चरण
               </Button>
             </CardFooter>
@@ -260,7 +260,7 @@ export default function ProjectDetailsPage() {
               ))}
             </CardContent>
             <CardFooter>
-              <Button variant="outline" size="sm" className="w-full">
+              <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('नए सदस्यों को जोड़ने की सुविधा जल्द ही आ रही है।')}>
                 <Plus className="mr-2 h-4 w-4" /> सदस्य
               </Button>
             </CardFooter>
@@ -276,7 +276,8 @@ export default function ProjectDetailsPage() {
               {files.map((f) => (
                 <div
                   key={f.name}
-                  className="flex items-center gap-3 hover:bg-secondary/50 p-2 rounded-md"
+                  className="flex items-center gap-3 hover:bg-secondary/50 p-2 rounded-md cursor-pointer"
+                  onClick={() => handleAction(`${f.name} को देखने की सुविधा जल्द ही आ रही है।`)}
                 >
                   <div className="text-2xl">{f.icon}</div>
                   <div>
@@ -289,12 +290,16 @@ export default function ProjectDetailsPage() {
               ))}
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-2">
-              <Button variant="link" size="sm">
-                और देखें
+              <Button variant="link" size="sm" asChild>
+                <Link href="/dashboard/files">
+                    और देखें
+                </Link>
               </Button>
-              <Button variant="outline" size="sm" className="w-full">
-                <Upload className="mr-2 h-4 w-4" />
-                अपलोड
+              <Button variant="outline" size="sm" className="w-full" asChild>
+                <Link href="/dashboard/files">
+                    <Upload className="mr-2 h-4 w-4" />
+                    अपलोड
+                </Link>
               </Button>
             </CardFooter>
           </Card>
