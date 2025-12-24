@@ -16,6 +16,7 @@ import { Plus } from 'lucide-react';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useRouter } from 'next/navigation';
 
 
 const chartData = [
@@ -41,6 +42,7 @@ const activeProjects = [
 ]
 
 export default function AdminDashboard() {
+  const router = useRouter();
 
   return (
     <div className="p-6">
@@ -51,11 +53,13 @@ export default function AdminDashboard() {
           </h1>
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
-        <Button asChild size="lg" className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8">
-            <Link href="/start-project">
+        <Button 
+            size="lg" 
+            className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8"
+            onClick={() => router.push('/start-project')}
+        >
               <Plus className="h-4 w-4 mr-2" />
               नया प्रोजेक्ट
-            </Link>
         </Button>
       </div>
 
