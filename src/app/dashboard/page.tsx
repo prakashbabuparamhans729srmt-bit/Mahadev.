@@ -5,76 +5,101 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription
 } from '@/components/ui/card';
 import {
-  Users,
-  Briefcase,
-  IndianRupee,
-  TrendingUp,
-  TriangleAlert,
-  HeartPulse,
-  Activity,
-  ShieldAlert,
-  Bell,
-  RefreshCcw,
-} from 'lucide-react';
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { Plus } from 'lucide-react';
+import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
-const overviewStats = [
-  { title: 'सक्रिय यूज़र्स', value: '1,248', change: '80% सक्रिय', icon: <Users className="h-5 w-5 text-muted-foreground" /> },
-  { title: 'एक्टिव प्रोजेक्ट्स', value: '45', change: '60% क्षमता पर', icon: <Briefcase className="h-5 w-5 text-muted-foreground" /> },
-  { title: 'आज की कमाई', value: '₹2,87,500', change: '▲ 12.5% कल से', changeColor: 'text-green-500', icon: <IndianRupee className="h-5 w-5 text-muted-foreground" /> },
-  { title: 'मासिक रेवेन्यू', value: '₹45.2 लाख', change: '▲ 18% पिछले महीने से', changeColor: 'text-green-500', icon: <TrendingUp className="h-5 w-5 text-muted-foreground" /> },
-  { title: 'पेंडिंग इश्यूज', value: '8', change: '2 महत्वपूर्ण', changeColor: 'text-yellow-500', icon: <TriangleAlert className="h-5 w-5 text-muted-foreground" /> },
-  { title: 'सिस्टम हेल्थ', value: '98%', change: 'सभी सिस्टम ऑनलाइन', changeColor: 'text-green-500', icon: <HeartPulse className="h-5 w-5 text-muted-foreground" /> },
+
+const chartData = [
+  { day: 'Tue', commits: 5 },
+  { day: 'Wed', commits: 8 },
+  { day: 'Thu', commits: 6 },
+  { day: 'Fri', commits: 12 },
+  { day: 'Sat', commits: 10 },
+  { day: 'Sun', commits: 15 },
 ];
 
-const bottomCards = [
-    { title: 'क्रिटिकल अलर्ट्स', icon: <ShieldAlert className="text-red-500"/>, content: 'प्रोजेक्ट #1042 डेडलाइन आज है।', },
-    { title: 'आज की एक्टिविटी', icon: <Activity className="text-blue-500"/>, content: '09:30 - प्रिया ने नई फाइल अपलोड की।', },
-    { title: 'रीसेंट एक्शंस', icon: <RefreshCcw className="text-green-500"/>, content: 'admin ने 2 नए यूज़र्स जोड़े।', },
+const chartConfig = {
+  commits: {
+    label: 'Commits',
+    color: 'hsl(var(--primary))',
+  },
+} satisfies ChartConfig;
+
+
+const activeProjects = [
+    { id: '#1042', name: 'स्मार्ट ERP सिस्टम', progress: 75 },
+    { id: '#1043', name: 'ई-कॉमर्स पोर्टल', progress: 90 }
 ]
 
 export default function AdminDashboard() {
   return (
-    <div className="p-4 md:p-6 lg:p-8">
-      <div className="flex flex-col gap-6">
-        <h1 className="text-2xl font-bold font-headline">
-          मास्टर एडमिन पैनल
-        </h1>
+    <div className="p-6">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold font-headline flex items-center gap-3">
+            नमस्ते अमित <span className="text-2xl">👋</span>
+          </h1>
+          <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
+        </div>
+        <Button className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_hsl(var(--primary)/0.5)]">
+          <Plus className="mr-2 h-4 w-4" />
+          नया प्रोजेक्ट
+        </Button>
+      </div>
 
-        <Card>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2 bg-card">
           <CardHeader>
-            <CardTitle className="font-headline text-lg">सिस्टम ओवरव्यू</CardTitle>
+            <CardTitle className="font-headline text-lg">रियल-टाइम कोड ट्रैकर</CardTitle>
           </CardHeader>
-          <CardContent className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-            {overviewStats.map((stat) => (
-              <Card key={stat.title} className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-sm font-medium text-muted-foreground">{stat.title}</p>
-                  {stat.icon}
-                </div>
-                <h3 className="text-2xl font-bold">{stat.value}</h3>
-                <p className={`text-xs ${stat.changeColor || 'text-muted-foreground'}`}>{stat.change}</p>
-              </Card>
-            ))}
+          <CardContent className="h-[300px] w-full">
+             <ChartContainer config={chartConfig} className="w-full h-full">
+              <AreaChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorCommits" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <XAxis dataKey="day" tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }} />
+                 <ChartTooltip
+                  cursor={false}
+                  content={<ChartTooltipContent indicator="line" />}
+                />
+                <Area type="monotone" dataKey="commits" stroke="hsl(var(--primary))" strokeWidth={3} fillOpacity={1} fill="url(#colorCommits)" />
+              </AreaChart>
+            </ChartContainer>
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-          {bottomCards.map(card => (
-            <Card key={card.title}>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium flex items-center gap-2">
-                    {card.icon} {card.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-md text-muted-foreground">{card.content}</div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        <Card className="bg-card">
+          <CardHeader>
+            <CardTitle className="font-headline text-lg">सक्रिय प्रोजेक्ट्स</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {activeProjects.map(project => (
+                <div key={project.id}>
+                    <div className="flex justify-between items-baseline mb-2">
+                        <h3 className="font-semibold">{project.name}</h3>
+                        <p className="text-xs font-mono text-muted-foreground">{project.id}</p>
+                    </div>
+                    <Progress value={project.progress} className="h-2" />
+                </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

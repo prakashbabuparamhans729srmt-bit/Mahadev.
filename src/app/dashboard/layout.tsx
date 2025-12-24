@@ -12,18 +12,17 @@ import {
   SidebarFooter,
 } from '@/components/ui/sidebar';
 import {
-  BarChart2,
+  LayoutGrid,
   File,
   MessageSquare,
-  PanelLeft,
   Settings,
-  Users,
   Briefcase,
-  TrendingUp,
-  CreditCard,
   LogOut,
-  LifeBuoy,
-  ChevronDown,
+  Cpu,
+  Share2,
+  Bell,
+  Search,
+  Plus
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -41,6 +40,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Input } from '@/components/ui/input';
 
 function UserNav() {
   const { user } = useUser();
@@ -57,29 +57,21 @@ function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="w-full justify-start text-left !px-2">
-            <div className="flex justify-between items-center w-full">
-              <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                     <AvatarImage src={user?.photoURL ?? ''} alt={user?.displayName ?? 'User'} />
-                    <AvatarFallback>
-                      {user?.email?.[0]?.toUpperCase() ?? <Users />}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="text-sm font-medium group-data-[state=collapsed]:hidden">
-                    {user?.displayName ?? 'Admin User'}
-                  </div>
-              </div>
-              <ChevronDown className="h-4 w-4 group-data-[state=collapsed]:hidden" />
-            </div>
+        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+            <Avatar className="h-10 w-10">
+                <AvatarImage src={user?.photoURL ?? "https://picsum.photos/seed/1/100/100"} alt={user?.displayName ?? 'अमित कुमार'} />
+                <AvatarFallback>
+                {user?.email?.[0]?.toUpperCase() ?? 'A'}
+                </AvatarFallback>
+            </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.displayName ?? 'Admin'}</p>
+            <p className="text-sm font-medium leading-none">{user?.displayName ?? 'अमित कुमार'}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user?.email}
+              {user?.email ?? 'प्रीमियम क्लाइंट'}
             </p>
           </div>
         </DropdownMenuLabel>
@@ -99,33 +91,44 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const auth = useAuth();
+  const router = useRouter();
 
   const isActive = (path: string) => pathname === path;
 
+  const handleLogout = async () => {
+    if (auth) {
+        await signOut(auth);
+        router.push('/');
+    }
+  };
+
+
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen bg-background">
+      <div className="flex min-h-screen bg-background text-foreground">
         <Sidebar>
-          <SidebarContent className="flex flex-col p-0">
-            <SidebarGroup className="p-3 border-b border-sidebar-border">
+          <SidebarContent className="flex flex-col p-2">
+            <SidebarGroup className="p-3 mb-4">
               <div className="flex items-center gap-3">
                 <Icons.logo className="h-8 w-8 text-primary" />
                 <div className="text-xl font-bold font-headline group-data-[state=collapsed]:hidden overflow-hidden">
-                  HG Hub
+                  HAJARO PORTAL
                 </div>
               </div>
             </SidebarGroup>
-            <SidebarMenu className="p-3 flex-1">
+            <SidebarMenu className="flex-1 px-1">
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/dashboard')}
-                  tooltip="Dashboard"
+                  tooltip="डैशबोर्ड"
                   size="lg"
+                  className="!justify-start"
                 >
                   <Link href="/dashboard">
-                    <BarChart2 />
-                    <span className="group-data-[state=collapsed]:hidden">Dashboard</span>
+                    <LayoutGrid />
+                    <span className="group-data-[state=collapsed]:hidden">डैशबोर्ड</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -133,25 +136,27 @@ export default function DashboardLayout({
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/dashboard/project-oversight')}
-                  tooltip="Projects"
+                  tooltip="प्रोजेक्ट्स"
                    size="lg"
+                   className="!justify-start"
                 >
                   <Link href="/dashboard/project-oversight">
                     <Briefcase />
-                    <span className="group-data-[state=collapsed]:hidden">Projects</span>
+                    <span className="group-data-[state=collapsed]:hidden">प्रोजेक्ट्स</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive('/dashboard/files')}
-                  tooltip="Files"
+                  isActive={isActive('/dashboard/ai-scoper')}
+                  tooltip="AI स्कोपर"
                    size="lg"
+                   className="!justify-start"
                 >
-                  <Link href="/dashboard/files">
-                    <File />
-                    <span className="group-data-[state=collapsed]:hidden">Files</span>
+                  <Link href="/dashboard/ai-scoper">
+                    <Cpu />
+                    <span className="group-data-[state=collapsed]:hidden">AI स्कोपर</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -159,44 +164,72 @@ export default function DashboardLayout({
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/dashboard/messages')}
-                  tooltip="Messages"
+                  tooltip="चैट रूम"
                    size="lg"
+                   className="!justify-start"
                 >
                   <Link href="/dashboard/messages">
                     <MessageSquare />
-                    <span className="group-data-[state=collapsed]:hidden">Messages</span>
+                    <span className="group-data-[state=collapsed]:hidden">चैट रूम</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/files')}
+                  tooltip="फाइल्स"
+                   size="lg"
+                   className="!justify-start"
+                >
+                  <Link href="/dashboard/files">
+                    <File />
+                    <span className="group-data-[state=collapsed]:hidden">फाइल्स</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/collab-space')}
+                  tooltip="कोलैब स्पेस"
+                   size="lg"
+                   className="!justify-start"
+                >
+                  <Link href="/dashboard/collab-space">
+                    <Share2 />
+                    <span className="group-data-[state=collapsed]:hidden">कोलैब स्पेस</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+                 <SidebarMenuItem>
+                <SidebarMenuButton
+                    asChild
+                    isActive={isActive('/dashboard/settings')}
+                    tooltip="सेटिंग्स"
+                    size="lg"
+                    className="!justify-start"
+                >
+                    <Link href="/dashboard/settings">
+                    <Settings />
+                    <span className="group-data-[state=collapsed]:hidden">सेटिंग्स</span>
+                    </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
-            <SidebarFooter className="p-3">
+            <SidebarFooter className="p-1 mt-auto">
                 <SidebarMenu>
-                     <SidebarMenuItem>
-                        <SidebarMenuButton
-                          asChild
-                          isActive={isActive('/dashboard/settings')}
-                          tooltip="Settings"
-                          size="lg"
-                          variant="ghost"
-                        >
-                           <Link href="/dashboard/settings">
-                            <Settings />
-                            <span className="group-data-[state=collapsed]:hidden">Settings</span>
-                           </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                          tooltip="Support"
+                          onClick={handleLogout}
+                          tooltip="लॉगआउट"
                           size="lg"
                           variant="ghost"
+                          className="!justify-start text-red-400 hover:!bg-red-400/10 hover:!text-red-400"
                         >
-                          <LifeBuoy />
-                          <span className="group-data-[state=collapsed]:hidden">Support</span>
+                           <LogOut />
+                           <span className="group-data-[state=collapsed]:hidden">लॉगआउट</span>
                         </SidebarMenuButton>
-                    </SidebarMenuItem>
-                    <SidebarMenuItem>
-                      <UserNav />
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
@@ -204,20 +237,43 @@ export default function DashboardLayout({
         </Sidebar>
 
         <div className="flex-1 flex flex-col">
-            <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between gap-4 border-b bg-card/80 px-4 backdrop-blur-sm md:px-6">
+            <header className="sticky top-0 z-20 flex h-20 shrink-0 items-center justify-between gap-4 border-b border-border/20 bg-background px-6">
                 <SidebarTrigger className="md:hidden" />
-                <div className="flex-1">
-                <SidebarTrigger className="hidden md:block" />
+                 <div className="relative flex-1 max-w-xl">
+                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                        placeholder="खोजें..."
+                        className="pl-10 h-11 bg-card/50 border-border/30"
+                    />
                 </div>
-                 <Button variant="ghost" size="icon" asChild>
-                  <Link href="/dashboard/settings">
-                    <Settings />
-                  </Link>
-                </Button>
+                 <div className="flex items-center gap-2">
+                    <Button variant="ghost" size="icon">
+                        <Bell />
+                        <span className="sr-only">Notifications</span>
+                    </Button>
+                    <div className="flex items-center gap-3">
+                        <UserNav />
+                         <div className="text-right hidden sm:block">
+                            <p className="font-semibold text-sm">अमित कुमार</p>
+                            <p className="text-xs text-primary">प्रीमियम क्लाइंट</p>
+                        </div>
+                    </div>
+                 </div>
             </header>
-            <main className="flex-1 bg-secondary/30">
+            <main className="flex-1 bg-background">
                 {children}
             </main>
+            <footer className="h-14 px-6 flex items-center justify-between text-xs text-muted-foreground border-t border-border/20">
+                <div className="flex items-center gap-2">
+                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+                    सर्वर ऑनलाइन
+                    <span className="text-foreground/40">•</span>
+                    V2.1.4
+                </div>
+                <div className="hidden md:block">
+                    नई सूचना: प्रोजेक्ट #1042 का डिज़ाइन स्वीकृत
+                </div>
+            </footer>
         </div>
       </div>
     </SidebarProvider>
