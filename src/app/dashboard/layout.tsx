@@ -26,6 +26,7 @@ import {
   CheckCircle,
   CreditCard,
   Cookie,
+  Shield,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -146,6 +147,13 @@ function UserNav() {
             </p>
           </div>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem asChild>
+          <a href="https://idx.google.com/studio-9341424071" target="_blank" rel="noopener noreferrer">
+            <Shield className="mr-2 h-4 w-4" />
+            <span>एडमिन पैनल</span>
+          </a>
+        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
