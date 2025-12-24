@@ -42,9 +42,9 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (user && !isUserLoading) {
-      router.push('/dashboard');
+      window.location.href = '/dashboard';
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -59,7 +59,8 @@ export default function LoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      router.push('/dashboard');
+      // Use direct navigation instead of router.push for reliability
+      window.location.href = '/dashboard';
     } catch (error: any) {
       let message = 'लॉगिन विफल। कृपया पुनः प्रयास करें।';
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
