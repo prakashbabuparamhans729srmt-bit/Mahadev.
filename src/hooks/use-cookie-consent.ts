@@ -22,36 +22,21 @@ const defaultPreferences: CookiePreferences = {
 };
 
 export function useCookieConsent() {
-  const [preferences, setPreferencesState] = useState<CookiePreferences>(() => {
-    if (typeof window === 'undefined') {
-      return { ...defaultPreferences, hasMadeChoice: true }; // Assume no consent on server, banner will show on client
-    }
-    try {
-      const storedPrefs = localStorage.getItem(COOKIE_CONSENT_KEY);
-      if (storedPrefs) {
-        const parsed = JSON.parse(storedPrefs);
-        // Ensure necessary is always true and hasMadeChoice is set from storage
-        return { ...defaultPreferences, ...parsed, necessary: true };
-      }
-    } catch (error) {
-      console.error("Failed to parse cookie preferences from localStorage", error);
-    }
-    return defaultPreferences;
-  });
-  
+  const [preferences, setPreferencesState] = useState<CookiePreferences>(defaultPreferences);
   const [isClient, setIsClient] = useState(false);
 
-  // This effect ensures we only check localStorage on the client
+  // This effect runs only on the client, after the initial render.
   useEffect(() => {
     setIsClient(true);
     try {
       const storedPrefs = localStorage.getItem(COOKIE_CONSENT_KEY);
       if (storedPrefs) {
         const parsed = JSON.parse(storedPrefs);
+        // Ensure necessary is always true and hasMadeChoice is set from storage
         setPreferencesState({ ...defaultPreferences, ...parsed, necessary: true });
       }
     } catch (error) {
-      console.error("Failed to parse cookie preferences on mount", error);
+      console.error("Failed to parse cookie preferences from localStorage", error);
       setPreferencesState(defaultPreferences);
     }
   }, []);
@@ -60,18 +45,21 @@ export function useCookieConsent() {
   const setPreferences = useCallback((newPrefs: Partial<CookiePreferences>) => {
     if (typeof window !== 'undefined') {
         try {
-            const updatedPrefs: CookiePreferences = { ...preferences, ...newPrefs, hasMadeChoice: true, necessary: true };
+            const currentStoredPrefs = localStorage.getItem(COOKIE_CONSENT_KEY);
+            const currentPrefs = currentStoredPrefs ? JSON.parse(currentStoredPrefs) : defaultPreferences;
+            
+            const updatedPrefs: CookiePreferences = { ...currentPrefs, ...newPrefs, hasMadeChoice: true, necessary: true };
             localStorage.setItem(COOKIE_CONSENT_KEY, JSON.stringify(updatedPrefs));
             setPreferencesState(updatedPrefs);
         } catch (error) {
             console.error("Failed to save cookie preferences to localStorage", error);
         }
     }
-  }, [preferences]);
+  }, []);
 
   return {
     preferences,
-    hasMadeChoice: isClient ? preferences.hasMadeChoice : true, // Prevent banner flash on server render
+    hasMadeChoice: isClient ? preferences.hasMadeChoice : false, // Return false on server/initial render to ensure banner shows
     setPreferences,
   };
 }
