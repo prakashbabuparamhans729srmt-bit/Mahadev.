@@ -1,4 +1,3 @@
-
 'use client';
 
 import {
@@ -48,6 +47,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
+import { StartProjectDialog } from '@/components/start-project-dialog';
 
 const notifications = [
     {
@@ -166,6 +166,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const { toast } = useToast();
   const [globalSearch, setGlobalSearch] = useState('');
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
 
   const isActive = (path: string) => pathname.startsWith(path) && (pathname === path || pathname.startsWith(`${path}/`));
@@ -203,7 +204,7 @@ export default function DashboardLayout({
             
             <SidebarMenu className="flex-1 px-1">
                <SidebarMenuItem>
-                <Button variant="default" size="lg" className="w-full !justify-start mb-4" onClick={() => router.push('/start-project')}>
+                <Button variant="default" size="lg" className="w-full !justify-start mb-4" onClick={() => setIsProjectModalOpen(true)}>
                     <Plus />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">नया प्रोजेक्ट</span>
                 </Button>
@@ -382,6 +383,7 @@ export default function DashboardLayout({
             </footer>
         </div>
       </div>
+      <StartProjectDialog isOpen={isProjectModalOpen} onOpenChange={setIsProjectModalOpen} />
     </SidebarProvider>
   );
 }

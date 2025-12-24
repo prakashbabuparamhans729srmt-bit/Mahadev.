@@ -36,8 +36,8 @@ const chartConfig = {
 
 
 const activeProjects = [
-    { id: '#1042', name: 'स्मार्ट ERP सिस्टम', progress: 75, link: '/dashboard/project/%231042' },
-    { id: '#1043', name: 'ई-कॉमर्स पोर्टल', progress: 90, link: '/dashboard/project/%231043' }
+    { id: '#1042', name: 'स्मार्ट ERP सिस्टम', progress: 75, link: '/dashboard/project-oversight' },
+    { id: '#1043', name: 'ई-कॉमर्स पोर्टल', progress: 90, link: '/dashboard/project-oversight' }
 ]
 
 export default function AdminDashboard() {
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card">
+        <Card className="bg-card" onClick={() => router.push('/dashboard/project-oversight')}>
           <CardHeader>
             <CardTitle className="font-headline text-lg">सक्रिय प्रोजेक्ट्स</CardTitle>
           </CardHeader>
