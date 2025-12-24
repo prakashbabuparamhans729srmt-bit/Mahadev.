@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -5,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Globe, Smartphone, Server, Wrench } from 'lucide-react';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
+import { useToast } from '@/hooks/use-toast';
 
 const projectTypes = [
   {
@@ -35,6 +37,18 @@ const projectTypes = [
 
 export default function StartProjectPage() {
   const router = useRouter();
+  const { toast } = useToast();
+
+  const handleCardClick = (link: string) => {
+    if (link === '#') {
+      toast({
+        title: 'सुविधा जल्द ही आ रही है',
+        description: 'यह प्रोजेक्ट प्रकार जल्द ही उपलब्ध होगा।',
+      });
+    } else {
+      router.push(link);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -55,7 +69,7 @@ export default function StartProjectPage() {
               {projectTypes.map((type) => (
                 <Card
                   key={type.title}
-                  onClick={() => router.push(type.link)}
+                  onClick={() => handleCardClick(type.link)}
                   className="flex flex-col items-center justify-center p-8 text-center cursor-pointer transition-all duration-300 hover:shadow-primary/20 hover:shadow-lg hover:-translate-y-2"
                 >
                   <div className="mb-6">{type.icon}</div>
