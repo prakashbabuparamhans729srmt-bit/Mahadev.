@@ -7,9 +7,10 @@ import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase';
 import { updateProfile } from 'firebase/auth';
-import { Loader2, User, Shield, Bell, CreditCard, Camera } from 'lucide-react';
+import { Loader2, User, Shield, Bell, CreditCard, Camera, ArrowLeft } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Link from 'next/link';
 
 export default function SettingsPage() {
   const { user, isUserLoading } = useUser();
@@ -79,7 +80,14 @@ export default function SettingsPage() {
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
-      <h1 className="text-3xl font-bold font-headline mb-8">सेटिंग्स</h1>
+      <div className="flex items-center gap-4 mb-8">
+        <Button variant="outline" size="icon" asChild className="md:hidden">
+            <Link href="/dashboard">
+                <ArrowLeft className="h-4 w-4" />
+            </Link>
+        </Button>
+        <h1 className="text-3xl font-bold font-headline">सेटिंग्स</h1>
+      </div>
       <Tabs defaultValue="profile" onValueChange={handleTabChange} orientation="vertical" className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-10">
         <TabsList className="flex-col h-auto justify-start items-stretch gap-2 bg-transparent p-0 border-none">
           <TabsTrigger value="profile" className="justify-start p-4 text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">

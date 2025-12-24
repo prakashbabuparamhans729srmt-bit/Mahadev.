@@ -72,10 +72,17 @@ export default function FileManagerPage() {
     <div className="p-4 md:p-6 lg:p-8">
       <div className="flex flex-col gap-6">
         <div className="flex items-center justify-between">
-            <h1 className="text-xl font-bold font-headline flex items-center gap-2">
-                <Folder className="h-5 w-5 text-primary" />
-                फ़ाइल मैनेजर - प्रोजेक्ट #1042
-            </h1>
+            <div className="flex items-center gap-2">
+                <Button variant="outline" size="icon" asChild className="md:hidden">
+                    <Link href="/dashboard">
+                        <ArrowLeft className="h-4 w-4" />
+                    </Link>
+                </Button>
+                <h1 className="text-xl font-bold font-headline flex items-center gap-2">
+                    <Folder className="h-5 w-5 text-primary" />
+                    फ़ाइल मैनेजर - प्रोजेक्ट #1042
+                </h1>
+            </div>
              <Button onClick={handleUploadClick}>
                 <Upload className="mr-2 h-4 w-4" /> अपलोड
             </Button>
