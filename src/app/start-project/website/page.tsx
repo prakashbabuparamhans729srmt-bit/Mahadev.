@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Search } from 'lucide-react';
 import { projectCategories } from '@/lib/project-categories';
-import ProjectCategoryList from './project-category-list';
+import ProjectCategoryList from '../project-category-list';
 
 export default function WebsiteSelectionPage() {
   const router = useRouter();
