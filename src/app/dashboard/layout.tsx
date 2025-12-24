@@ -22,7 +22,9 @@ import {
   Share2,
   Bell,
   Search,
-  Plus
+  Plus,
+  CheckCircle,
+  CreditCard,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -39,8 +41,62 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuHeader,
 } from "@/components/ui/dropdown-menu";
 import { Input } from '@/components/ui/input';
+
+const notifications = [
+    {
+      icon: <CheckCircle className="h-6 w-6 text-green-500" />,
+      title: 'डिज़ाइन स्वीकृत',
+      description: 'प्रोजेक्ट #1042 का डिज़ाइन राहुल द्वारा अपलोड किया गया और क्लाइंट द्वारा अप्रूव हो गया है।',
+      time: '10 मिनट पहले',
+    },
+    {
+      icon: <MessageSquare className="h-6 w-6 text-blue-500" />,
+      title: 'नया मैसेज',
+      description: 'राहुल (TL) ने आपको एक संदेश भेजा है: "कल की मीटिंग के लिए डेमो तैयार है।',
+      time: '1 घंटा पहले',
+    },
+    {
+      icon: <CreditCard className="h-6 w-6 text-orange-500" />,
+      title: 'पेमेंट प्राप्त',
+      description: 'स्मार्ट ERP सिस्टम प्रोजेक्ट के लिए ₹1.2L का भुगतान सफल रहा।',
+      time: '5 घंटे पहले',
+    },
+]
+
+function NotificationsNav() {
+    return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+                 <Button variant="ghost" size="icon">
+                    <Bell />
+                    <span className="sr-only">Notifications</span>
+                </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-96 mr-4" align="end">
+                <DropdownMenuHeader className="flex justify-between items-center">
+                    <DropdownMenuLabel className="text-lg font-headline p-0">सूचनाएं</DropdownMenuLabel>
+                    <Button variant="link" size="sm" className="p-0 h-auto">सभी पढ़ें</Button>
+                </DropdownMenuHeader>
+                <DropdownMenuSeparator />
+                {notifications.map((n, i) => (
+                    <DropdownMenuItem key={i} className="flex items-start gap-4 p-4 cursor-pointer">
+                        <div className="bg-secondary p-3 rounded-full">
+                           {n.icon}
+                        </div>
+                        <div className="flex-1 space-y-1">
+                            <p className="font-semibold">{n.title}</p>
+                            <p className="text-xs text-muted-foreground">{n.description}</p>
+                            <p className="text-xs text-muted-foreground/70 pt-1">{n.time}</p>
+                        </div>
+                    </DropdownMenuItem>
+                ))}
+            </DropdownMenuContent>
+        </DropdownMenu>
+    )
+}
 
 function UserNav() {
   const { user } = useUser();
@@ -128,7 +184,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard">
                     <LayoutGrid />
-                    <span className="group-data-[state=collapsed]:hidden">डैशबोर्ड</span>
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">डैशबोर्ड</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -142,7 +198,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard/project-oversight">
                     <Briefcase />
-                    <span className="group-data-[state=collapsed]:hidden">प्रोजेक्ट्स</span>
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">प्रोजेक्ट्स</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -156,7 +212,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard/ai-scoper">
                     <Cpu />
-                    <span className="group-data-[state=collapsed]:hidden">AI स्कोपर</span>
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">AI स्कोपर</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -170,7 +226,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard/messages">
                     <MessageSquare />
-                    <span className="group-data-[state=collapsed]:hidden">चैट रूम</span>
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">चैट रूम</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -184,7 +240,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard/files">
                     <File />
-                    <span className="group-data-[state=collapsed]:hidden">फाइल्स</span>
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">फाइल्स</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -198,7 +254,7 @@ export default function DashboardLayout({
                 >
                   <Link href="/dashboard/collab-space">
                     <Share2 />
-                    <span className="group-data-[state=collapsed]:hidden">कोलैब स्पेस</span>
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">कोलैब स्पेस</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -212,7 +268,7 @@ export default function DashboardLayout({
                 >
                     <Link href="/dashboard/settings">
                     <Settings />
-                    <span className="group-data-[state=collapsed]:hidden">सेटिंग्स</span>
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">सेटिंग्स</span>
                     </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -228,7 +284,7 @@ export default function DashboardLayout({
                           className="!justify-start text-red-400 hover:!bg-red-400/10 hover:!text-red-400"
                         >
                            <LogOut />
-                           <span className="group-data-[state=collapsed]:hidden">लॉगआउट</span>
+                           <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">लॉगआउट</span>
                         </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
@@ -247,10 +303,7 @@ export default function DashboardLayout({
                     />
                 </div>
                  <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon">
-                        <Bell />
-                        <span className="sr-only">Notifications</span>
-                    </Button>
+                    <NotificationsNav />
                     <div className="flex items-center gap-3">
                         <UserNav />
                          <div className="text-right hidden sm:block">
