@@ -16,6 +16,8 @@ import { Plus } from 'lucide-react';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { StartProjectDialog } from '@/components/start-project-dialog';
 
 
 const chartData = [
@@ -42,8 +44,10 @@ const activeProjects = [
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   return (
+    <>
     <div className="p-6">
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -53,7 +57,7 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
         <Button
-          onClick={() => router.push('/start-project')}
+          onClick={() => setIsProjectModalOpen(true)}
           size="lg"
           className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8"
         >
@@ -105,5 +109,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
     </div>
+    <StartProjectDialog isOpen={isProjectModalOpen} onOpenChange={setIsProjectModalOpen} />
+    </>
   );
 }

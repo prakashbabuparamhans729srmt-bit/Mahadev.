@@ -118,7 +118,7 @@ export default function Header() {
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
            <Button asChild className="hidden md:flex animate-fast-blinking-glow">
-             <Link href="/start-project">
+             <Link href="/login">
               <Rocket className="mr-2 h-4 w-4" />
                प्रोजेक्ट शुरू करें
              </Link>
@@ -149,7 +149,7 @@ export default function Header() {
               </Link>
             ))}
             <Link
-                href="/start-project"
+                href="/login"
                 onClick={() => setIsMenuOpen(false)}
                 className="font-medium text-primary hover:text-primary/90"
               >
