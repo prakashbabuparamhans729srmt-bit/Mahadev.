@@ -15,6 +15,7 @@ import { Progress } from '@/components/ui/progress';
 import { Plus } from 'lucide-react';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 
@@ -53,12 +54,14 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
         <Button
+          asChild
           size="lg"
           className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8"
-          onClick={() => router.push('/start-project')}
         >
-          <Plus className="h-4 w-4 mr-2" />
-          नया प्रोजेक्ट
+          <Link href="/start-project">
+            <Plus className="h-4 w-4 mr-2" />
+            नया प्रोजेक्ट
+          </Link>
         </Button>
       </div>
 
@@ -93,13 +96,15 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-6">
             {activeProjects.map(project => (
-                <div key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer" onClick={() => router.push('/dashboard/project-oversight')}>
-                    <div className="flex justify-between items-baseline mb-2">
-                        <h3 className="font-semibold">{project.name}</h3>
-                        <p className="text-xs font-mono text-muted-foreground">{project.id}</p>
+                <Link href="/dashboard/project-oversight" key={project.id}>
+                    <div className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
+                        <div className="flex justify-between items-baseline mb-2">
+                            <h3 className="font-semibold">{project.name}</h3>
+                            <p className="text-xs font-mono text-muted-foreground">{project.id}</p>
+                        </div>
+                        <Progress value={project.progress} className="h-2" />
                     </div>
-                    <Progress value={project.progress} className="h-2" />
-                </div>
+                </Link>
             ))}
           </CardContent>
         </Card>
