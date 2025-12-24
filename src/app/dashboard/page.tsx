@@ -55,7 +55,7 @@ export default function AdminDashboard() {
         </div>
         <Button
           size="lg"
-          className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8"
+          className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8 animate-fast-blinking-glow"
           onClick={() => router.push('/start-project')}
         >
           <Plus className="h-4 w-4 mr-2" />
