@@ -15,6 +15,7 @@ import { Progress } from '@/components/ui/progress';
 import { Plus } from 'lucide-react';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 
 const chartData = [
@@ -50,13 +51,12 @@ export default function AdminDashboard() {
           </h1>
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
-        <Link 
-          href="/start-project" 
-          className="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-11 px-8 shadow-[0_0_20px_hsl(var(--primary)/0.5)]"
-        >
-            <Plus className="h-4 w-4 mr-2" />
-            नया प्रोजेक्ट
-        </Link>
+        <Button asChild size="lg" className="shadow-lg transition-transform duration-200 hover:scale-105 animate-fast-blinking-glow h-11 px-8">
+            <Link href="/start-project">
+              <Plus className="h-4 w-4 mr-2" />
+              नया प्रोजेक्ट
+            </Link>
+        </Button>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
