@@ -110,7 +110,7 @@ export function CookiePreferencesDialog({ isOpen, onOpenChange }: { isOpen: bool
         })),
       }))
     );
-  }, [preferences]);
+  }, [preferences, isOpen]);
 
   const handleToggle = (categoryId: keyof Omit<CookiePreferences, 'hasMadeChoice'>, cookieId: string, checked: boolean) => {
     setDetailedPrefs(prevData =>
@@ -146,6 +146,17 @@ export function CookiePreferencesDialog({ isOpen, onOpenChange }: { isOpen: bool
     toast({
       description: message,
     });
+  }
+
+  const handleReset = () => {
+     setDetailedPrefs(initialCookieData.map(cat => ({
+        ...cat,
+        cookies: cat.cookies.map(c => ({...c, enabled: c.locked}))
+     })));
+     toast({
+        title: "रीसेट",
+        description: "सेटिंग्स डिफ़ॉल्ट पर रीसेट हो गई हैं। परिवर्तनों को लागू करने के लिए सहेजें।",
+     })
   }
 
   return (
@@ -192,16 +203,18 @@ export function CookiePreferencesDialog({ isOpen, onOpenChange }: { isOpen: bool
           </div>
         </ScrollArea>
 
-        <DialogFooter className="p-6 bg-secondary/30 flex-wrap">
-          <Button variant="destructive" onClick={() => handleAction('सभी कुकीज़ साफ़ कर दी गई हैं।')}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            सभी कुकीज़ साफ़ करें
-          </Button>
-          <Button variant="ghost" onClick={() => handleAction('सेटिंग्स डिफ़ॉल्ट पर रीसेट हो गई हैं।')}>
-            <RotateCcw className="mr-2 h-4 w-4" />
-            डिफ़ॉल्ट पर रीसेट
-          </Button>
-          <div className="flex-1" />
+        <DialogFooter className="p-6 bg-secondary/30 flex-wrap gap-2 justify-between">
+          <div className="flex gap-2">
+            <Button variant="destructive" onClick={() => handleAction('यह सुविधा जल्द ही आएगी।')}>
+              <Trash2 className="mr-2 h-4 w-4" />
+              सभी कुकीज़ साफ़ करें
+            </Button>
+            <Button variant="ghost" onClick={handleReset}>
+              <RotateCcw className="mr-2 h-4 w-4" />
+              डिफ़ॉल्ट पर रीसेट
+            </Button>
+          </div>
+          <div className="flex gap-2">
            <DialogClose asChild>
                 <Button variant="outline">
                     रद्द करें
@@ -211,6 +224,7 @@ export function CookiePreferencesDialog({ isOpen, onOpenChange }: { isOpen: bool
             <Save className="mr-2 h-4 w-4" />
             वरीयताएँ सहेजें
           </Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Switch } from '@/components/ui/switch';
 import { useCookieConsent, type CookiePreferences } from '@/hooks/use-cookie-consent';
-import { Cookie, Check, X, Settings, TrendingUp, Brush, Megaphone } from 'lucide-react';
+import { Cookie, Check, X, Settings, TrendingUp, Sparkles as Brush, Megaphone } from 'lucide-react';
 import { CookiePreferencesDialog } from './cookie-preferences-dialog';
 
 const consentCategories: {
@@ -71,8 +71,9 @@ export function CookieConsent() {
   };
 
   const handleSaveSelection = () => {
-    setPreferences(currentPrefs);
+    setPreferences({ ...currentPrefs, hasMadeChoice: true });
     setIsOpen(false);
+    setIsPreferencesOpen(false);
   };
 
   const handleAcceptAll = () => {
@@ -103,7 +104,7 @@ export function CookieConsent() {
   return (
     <>
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
-        <DialogContent className="max-w-2xl p-0">
+        <DialogContent className="max-w-md p-0">
           <DialogHeader className="p-6 pb-4">
             <DialogTitle className="text-2xl font-headline flex items-center gap-2">
               <Cookie className="h-6 w-6 text-primary" />
@@ -114,38 +115,21 @@ export function CookieConsent() {
             </DialogDescription>
           </DialogHeader>
           
-          <div className="px-6 space-y-4 max-h-[60vh] overflow-y-auto">
-              {consentCategories.map((cat) => (
-                  <div key={cat.id} className="flex items-start justify-between p-4 rounded-lg border bg-secondary/30">
-                      <div className="flex items-start gap-4">
-                          {cat.icon}
-                          <div>
-                              <h4 className="font-semibold">{cat.title}</h4>
-                              <p className="text-xs text-muted-foreground">{cat.description}</p>
-                          </div>
-                      </div>
-                      <Switch
-                          checked={currentPrefs[cat.id]}
-                          onCheckedChange={(checked) => handleToggle(cat.id, checked)}
-                          disabled={cat.readonly}
-                          aria-label={`${cat.title} टॉगल करें`}
-                      />
-                  </div>
-              ))}
-          </div>
-
-          <DialogFooter className="p-6 bg-secondary/30 grid grid-cols-2 md:flex md:flex-row gap-2">
-            <Button variant="ghost" onClick={() => setIsPreferencesOpen(true)} className="col-span-2 md:col-auto md:mr-auto">
-              <Settings className="mr-2 h-4 w-4" />
-              वरीयताएँ अनुकूलित करें
+          <div className="px-6 pb-6">
+            <Button onClick={handleAcceptAll} className="w-full mb-2">
+              <Check className="mr-2 h-4 w-4" />
+              सभी स्वीकार करें
             </Button>
-            <Button variant="outline" onClick={handleRejectAll}>
+            <Button variant="outline" onClick={handleRejectAll} className="w-full">
               <X className="mr-2 h-4 w-4" />
               केवल आवश्यक
             </Button>
-            <Button onClick={handleAcceptAll}>
-              <Check className="mr-2 h-4 w-4" />
-              सभी स्वीकार करें
+          </div>
+
+          <DialogFooter className="p-4 bg-secondary/30">
+            <Button variant="link" onClick={() => setIsPreferencesOpen(true)} className="w-full">
+              <Settings className="mr-2 h-4 w-4" />
+              वरीयताएँ अनुकूलित करें
             </Button>
           </DialogFooter>
         </DialogContent>
