@@ -170,9 +170,11 @@ function ScopeResultDialog({
           </div>
 
           <DialogFooter className="sm:justify-between pt-2">
-            <Button variant="ghost" onClick={onReset}>
-              ⬅️ नया स्कोप
-            </Button>
+            <DialogClose asChild>
+              <Button variant="ghost" onClick={onReset}>
+                ⬅️ नया स्कोप
+              </Button>
+            </DialogClose>
             <Button onClick={handleCreateProject}>✅ प्रोजेक्ट शुरू करें</Button>
           </DialogFooter>
         </div>
