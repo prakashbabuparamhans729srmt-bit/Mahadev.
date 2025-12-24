@@ -88,10 +88,12 @@ export default function FileManagerPage() {
                         <ArrowLeft className="h-4 w-4" />
                     </Link>
                 </Button>
-                <h1 className="text-xl font-bold font-headline flex items-center gap-2">
-                    <Folder className="h-5 w-5 text-primary" />
-                    फ़ाइल मैनेजर - प्रोजेक्ट #1042
-                </h1>
+                 <Link href="/dashboard/project-oversight" className="cursor-pointer">
+                    <h1 className="text-xl font-bold font-headline flex items-center gap-2">
+                        <Folder className="h-5 w-5 text-primary" />
+                        फ़ाइल मैनेजर - प्रोजेक्ट #1042
+                    </h1>
+                </Link>
             </div>
              <Button onClick={handleUploadClick}>
                 <Upload className="mr-2 h-4 w-4" /> अपलोड

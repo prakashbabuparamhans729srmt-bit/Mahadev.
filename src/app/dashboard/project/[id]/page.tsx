@@ -274,19 +274,19 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
               {files.map((f) => (
-                <div
-                  key={f.name}
-                  className="flex items-center gap-3 hover:bg-secondary/50 p-2 rounded-md cursor-pointer"
-                  onClick={() => handleAction(`${f.name} को देखने की सुविधा जल्द ही आ रही है।`)}
-                >
-                  <div className="text-2xl">{f.icon}</div>
-                  <div>
-                    <p className="font-semibold text-sm">{f.name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {f.size} - {f.date}
-                    </p>
-                  </div>
-                </div>
+                 <Link href="/dashboard/files" key={f.name}>
+                    <div
+                    className="flex items-center gap-3 hover:bg-secondary/50 p-2 rounded-md cursor-pointer"
+                    >
+                    <div className="text-2xl">{f.icon}</div>
+                    <div>
+                        <p className="font-semibold text-sm">{f.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                        {f.size} - {f.date}
+                        </p>
+                    </div>
+                    </div>
+                </Link>
               ))}
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-2">
