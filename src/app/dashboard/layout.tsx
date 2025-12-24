@@ -301,14 +301,12 @@ export default function DashboardLayout({
         <div className="flex-1 flex flex-col">
             <header className="sticky top-0 z-20 flex h-20 shrink-0 items-center justify-between gap-4 border-b border-border/20 bg-background px-6">
                 <div className="flex items-center gap-4">
-                  <SidebarTrigger className="max-md:hidden" />
+                  <SidebarTrigger className="hidden md:flex" />
+                  <SidebarTrigger className="md:hidden" />
                   <Link href="/dashboard">
                     <Icons.logo className="h-6 w-6 text-primary" />
                     <span className="sr-only">Refresh Dashboard</span>
                   </Link>
-                </div>
-                 <div className="md:hidden">
-                    <SidebarTrigger />
                 </div>
                 <div className="relative flex-1 max-w-xl">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
