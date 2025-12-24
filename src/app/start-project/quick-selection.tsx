@@ -2,11 +2,12 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowRight, RefreshCw, Zap } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 const roles = [
   'छोटा व्यवसाय', 'स्टार्टअप', 'फ्रीलांसर', 'कलाकार', 'शिक्षक', 'डॉक्टर', 'रेस्तरां मालिक', 'सलाहकार'
@@ -25,16 +26,18 @@ const recommendations: { [key: string]: { [key: string]: string } } = {
   'शिक्षक': { 'ऑनलाइन पहचान बनाने के लिए': 'शैक्षिक', 'सामग्री साझा करने के लिए': 'ब्लॉग' },
   'डॉक्टर': { 'सेवाएं प्रदान करने के लिए': 'स्वास्थ्य', 'बुकिंग प्राप्त करने के लिए': 'स्वास्थ्य' },
   'रेस्तरां मालिक': { 'उत्पाद बेचने के लिए': 'रेस्तरां', 'बुकिंग प्राप्त करने के लिए': 'रेस्तरां' },
+  'सलाहकार': { 'सेवाएं प्रदान करने के लिए': 'कॉर्पोरेट', 'ऑनलाइन पहचान बनाने के लिए': 'ब्लॉग' },
 };
 
 export function QuickSelection() {
-  const [role, setRole] = useState<string | null>(null);
-  const [goal, setGoal] = useState<string | null>(null);
+  const [role, setRole] = useState<string>('');
+  const [goal, setGoal] = useState<string>('');
   const { toast } = useToast();
+  const router = useRouter();
 
   const recommendation = useMemo(() => {
     if (!role || !goal) return null;
-    const recommendedType = recommendations[role]?.[goal] || 'कॉर्पोरेट वेबसाइट + ब्लॉग';
+    const recommendedType = recommendations[role]?.[goal] || 'कॉर्पोरेट + ब्लॉग';
     const budget = '₹35,000 - ₹1,50,000';
     const timeline = '3-6 सप्ताह';
     return { type: recommendedType, budget, timeline };
@@ -44,12 +47,19 @@ export function QuickSelection() {
      if (recommendation) {
         toast({
             title: "विकल्प चुना गया!",
-            description: `${recommendation.type} को आपके प्रोजेक्ट के लिए चुना गया है।`,
+            description: `${recommendation.type} को आपके प्रोजेक्ट के लिए चुना गया है। अगले चरण पर जाया जा रहा है।`,
         });
+        // In a real app, you might navigate to a more specific page
+        router.push('/contact');
      }
   };
 
   const handleAnotherSuggestion = () => {
+    // This is a mock function. In a real app, you might have more complex logic.
+    const randomRole = roles[Math.floor(Math.random() * roles.length)];
+    const randomGoal = goals[Math.floor(Math.random() * goals.length)];
+    setRole(randomRole);
+    setGoal(randomGoal);
     toast({
         description: "एक और सुझाव दिखाया जा रहा है...",
     });
@@ -70,7 +80,7 @@ export function QuickSelection() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
             <div className="space-y-2">
                 <label className="font-medium">👤 मैं हूँ:</label>
-                 <Select onValueChange={setRole}>
+                 <Select onValueChange={setRole} value={role}>
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="एक भूमिका चुनें..." />
                     </SelectTrigger>
@@ -81,7 +91,7 @@ export function QuickSelection() {
             </div>
              <div className="space-y-2">
                 <label className="font-medium">🎯 मेरा उद्देश्य:</label>
-                 <Select onValueChange={setGoal}>
+                 <Select onValueChange={setGoal} value={goal}>
                     <SelectTrigger className="w-full">
                         <SelectValue placeholder="एक लक्ष्य चुनें..." />
                     </SelectTrigger>
