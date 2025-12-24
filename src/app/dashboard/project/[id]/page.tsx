@@ -36,6 +36,7 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
+import React from 'react';
 
 // Dummy data, in a real app this would come from a database based on params.id
 const project = {
@@ -100,6 +101,7 @@ const files = [
 
 export default function ProjectDetailsPage({ params }: { params: { id: string } }) {
     const { toast } = useToast();
+    const resolvedParams = React.use(params);
 
     const handleAction = (message: string) => {
         toast({
@@ -119,7 +121,7 @@ export default function ProjectDetailsPage({ params }: { params: { id: string } 
                     </Link>
                 </Button>
                 <h1 className="text-xl md:text-2xl font-bold font-headline flex items-center gap-2">
-                    <span className="hidden md:inline">प्रोजेक्ट {decodeURIComponent(params.id)}: </span>"
+                    <span className="hidden md:inline">प्रोजेक्ट {decodeURIComponent(resolvedParams.id)}: </span>"
                     {project.name}"
                 </h1>
             </div>
