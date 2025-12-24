@@ -168,7 +168,7 @@ export default function DashboardLayout({
   const [globalSearch, setGlobalSearch] = useState('');
 
 
-  const isActive = (path: string) => pathname === path;
+  const isActive = (path: string) => pathname.startsWith(path) && (pathname === path || pathname.startsWith(`${path}/`));
 
   const handleLogout = async () => {
     if (auth) {
@@ -200,7 +200,15 @@ export default function DashboardLayout({
                 </div>
               </div>
             </SidebarGroup>
+            
             <SidebarMenu className="flex-1 px-1">
+               <SidebarMenuItem>
+                <Button variant="default" size="lg" className="w-full !justify-start mb-4" onClick={() => router.push('/start-project')}>
+                    <Plus />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">नया प्रोजेक्ट</span>
+                </Button>
+              </SidebarMenuItem>
+
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
