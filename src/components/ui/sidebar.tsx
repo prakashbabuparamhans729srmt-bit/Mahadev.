@@ -225,7 +225,7 @@ const Sidebar = React.forwardRef<
       <aside
         ref={ref}
         className={cn(
-            "group hidden md:flex flex-col h-screen bg-sidebar text-sidebar-foreground sticky top-0 transition-all duration-300 ease-in-out z-30",
+            "group hidden md:flex flex-col h-screen bg-sidebar text-sidebar-foreground sticky top-0 transition-all duration-200 ease-in-out z-30",
             "data-[state=expanded]:w-[--sidebar-width] data-[state=collapsed]:w-[--sidebar-width-icon]",
             "data-[state=collapsed]:hover:w-[--sidebar-width] data-[state=collapsed]:hover:shadow-lg",
             variant === "sidebar" && "border-r",
