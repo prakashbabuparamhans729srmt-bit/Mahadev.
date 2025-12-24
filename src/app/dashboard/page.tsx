@@ -53,13 +53,13 @@ export default function AdminDashboard() {
           </h1>
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
-        <Button 
-            size="lg" 
-            className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8"
-            onClick={() => router.push('/start-project')}
+        <Button
+          size="lg"
+          className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8"
+          onClick={() => router.push('/start-project')}
         >
-              <Plus className="h-4 w-4 mr-2" />
-              नया प्रोजेक्ट
+          <Plus className="h-4 w-4 mr-2" />
+          नया प्रोजेक्ट
         </Button>
       </div>
 
