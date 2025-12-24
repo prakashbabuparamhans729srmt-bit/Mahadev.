@@ -51,7 +51,7 @@ export default function AdminDashboard() {
           </h1>
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
-        <Button asChild size="lg" className="shadow-lg transition-transform duration-200 hover:scale-105 animate-fast-blinking-glow h-11 px-8">
+        <Button asChild size="lg" className="shadow-lg transition-transform duration-200 hover:scale-105 h-11 px-8">
             <Link href="/start-project">
               <Plus className="h-4 w-4 mr-2" />
               नया प्रोजेक्ट
