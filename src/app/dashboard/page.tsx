@@ -93,7 +93,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-6">
             {activeProjects.map(project => (
-                <div key={project.id} onClick={() => router.push(project.link)} className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
+                <div key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg">
                     <div className="flex justify-between items-baseline mb-2">
                         <h3 className="font-semibold">{project.name}</h3>
                         <p className="text-xs font-mono text-muted-foreground">{project.id}</p>
