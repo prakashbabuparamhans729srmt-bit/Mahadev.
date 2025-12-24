@@ -15,14 +15,10 @@ interface UserAuthState {
 }
 
 // Combined state for the Firebase context
-export interface FirebaseContextState {
+export interface FirebaseContextState extends UserAuthState {
   firebaseApp: FirebaseApp | null;
   firestore: Firestore | null;
   auth: Auth | null; // The Auth service instance
-  // User authentication state
-  user: User | null;
-  isUserLoading: boolean; // True during initial auth check
-  userError: Error | null; // Error from auth listener
 }
 
 // React Context
@@ -90,6 +86,21 @@ export const FirebaseProvider: React.FC<{
     </FirebaseContext.Provider>
   );
 };
+
+/**
+ * Hook specifically for accessing the authenticated user's state.
+ * This provides the User object, loading status, and any auth errors.
+ * @returns {UserAuthState} Object with user, isUserLoading, userError.
+ */
+export const useUser = (): UserAuthState => {
+  const context = useContext(FirebaseContext);
+  if (context === undefined) {
+    throw new Error("useUser must be used within a FirebaseProvider.");
+  }
+  const { user, isUserLoading, userError } = context;
+  return { user, isUserLoading, userError };
+};
+
 
 /** Hook to access Firebase Auth instance. */
 export const useAuth = (): Auth | null => {
