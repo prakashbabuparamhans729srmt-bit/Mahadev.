@@ -64,7 +64,7 @@ export default function FileManagerPage() {
 
     const handleAction = (message: string) => {
         toast({
-            title: 'कार्रवाई',
+            title: 'सुविधा उपलब्ध नहीं है',
             description: message,
         });
     };
@@ -116,7 +116,7 @@ export default function FileManagerPage() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <Button variant="outline" size="icon" onClick={() => handleAction('सूची दृश्य सक्रिय।')}>
+                        <Button variant="outline" size="icon" onClick={() => toast({description: 'आप पहले से ही सूची दृश्य में हैं।'})}>
                             <List className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="icon" onClick={() => handleAction('ग्रिड दृश्य जल्द ही आ रहा है।')}>
@@ -148,8 +148,8 @@ export default function FileManagerPage() {
                     <TableCell>{file.modified}</TableCell>
                     <TableCell className="text-right">
                        <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" onClick={() => handleAction(`प्रीव्यू '${file.name}'`)}><Eye className="h-4 w-4" /></Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleAction(`डाउनलोड हो रहा है '${file.name}'`)}><Download className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' का प्रीव्यू दिखाना अभी संभव नहीं है।`)}><Eye className="h-4 w-4" /></Button>
+                            <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' को डाउनलोड करने की सुविधा जल्द ही आएगी।`)}><Download className="h-4 w-4" /></Button>
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
                                     <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
@@ -190,8 +190,8 @@ export default function FileManagerPage() {
                         </div>
                          <div className="flex justify-between items-center">
                              <div className="flex gap-2">
-                                <Button variant="outline" size="icon" onClick={() => handleAction('पिछली छवि लोड हो रही है।')}><ArrowLeft className="h-4 w-4"/></Button>
-                                <Button variant="outline" size="icon" onClick={() => handleAction('अगली छवि लोड हो रही है।')}><ArrowRight className="h-4 w-4"/></Button>
+                                <Button variant="outline" size="icon" onClick={() => handleAction('अभी कोई पिछली छवि नहीं है।')}><ArrowLeft className="h-4 w-4"/></Button>
+                                <Button variant="outline" size="icon" onClick={() => handleAction('अभी कोई अगली छवि नहीं है।')}><ArrowRight className="h-4 w-4"/></Button>
                              </div>
                              <div className="flex gap-2">
                                 <AlertDialog>
@@ -213,7 +213,7 @@ export default function FileManagerPage() {
                                         </AlertDialogFooter>
                                     </AlertDialogContent>
                                 </AlertDialog>
-                                <Button variant="outline" size="sm" onClick={() => handleAction('छवि संपादन इंटरफ़ेस खुल रहा है।')}>
+                                <Button variant="outline" size="sm" onClick={() => handleAction('छवि संपादन इंटरफ़ेस जल्द ही आ रहा है।')}>
                                     <Edit2 className="mr-2 h-4 w-4"/> एडिट
                                 </Button>
                             </div>
@@ -235,8 +235,8 @@ export default function FileManagerPage() {
                          ))}
                     </CardContent>
                     <CardFooter className="flex flex-col gap-2">
-                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('v1.1 को पुनर्स्थापित किया जा रहा है।')}>↩️ पिछला वर्जन रिस्टोर</Button>
-                        <Button variant="link" size="sm" onClick={() => handleAction('चेंज लॉग दिखाया जा रहा है।')}>📋 चेंज लॉग</Button>
+                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('v1.1 को पुनर्स्थापित करने की सुविधा जल्द ही आएगी।')}>↩️ पिछला वर्जन रिस्टोर</Button>
+                        <Button variant="link" size="sm" onClick={() => handleAction('पूर्ण चेंज लॉग दिखाने की सुविधा जल्द ही आएगी।')}>📋 चेंज लॉग</Button>
                     </CardFooter>
                 </Card>
              </div>
@@ -245,5 +245,3 @@ export default function FileManagerPage() {
     </div>
   );
 }
-
-    

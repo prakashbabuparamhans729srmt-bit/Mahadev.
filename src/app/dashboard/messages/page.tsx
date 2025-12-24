@@ -133,13 +133,13 @@ export default function MessagesPage() {
             </div>
              <ScrollArea className="flex-1">
                 <div className="flex gap-2 p-2 border-b border-border/50">
-                    <Button variant="ghost" size="sm" onClick={() => handleAction('सभी संदेश दिखाए जा रहे हैं।')}>सभी</Button>
-                    <Button variant="ghost" size="sm" className="relative" onClick={() => handleAction('केवल अपठित संदेश दिखाए जा रहे हैं।')}>
+                    <Button variant="ghost" size="sm" onClick={() => toast({ description: 'सभी संदेश दिखाए जा रहे हैं।' })}>सभी</Button>
+                    <Button variant="ghost" size="sm" className="relative" onClick={() => toast({ description: 'केवल अपठित संदेश दिखाए जा रहे हैं।' })}>
                         अपठित
                         <Badge className="absolute -top-1 -right-2 h-4 w-4 justify-center p-0">2</Badge>
                     </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleAction('तारांकित संदेश दिखाए जा रहे हैं।')}><Star className="h-4 w-4"/></Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleAction('संग्रहीत संदेश दिखाए जा रहे हैं।')}><Archive className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleAction('तारांकित संदेश दिखाने की सुविधा जल्द ही आएगी।')}><Star className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="sm" onClick={() => handleAction('संग्रहीत संदेश दिखाने की सुविधा जल्द ही आएगी।')}><Archive className="h-4 w-4"/></Button>
                 </div>
                 <div className="p-2 space-y-1">
                     {filteredContacts.map(contact => (
@@ -182,8 +182,8 @@ export default function MessagesPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Button variant="ghost" size="icon" onClick={() => handleAction('वीडियो कॉल शुरू हो रही है...')}><Video className="h-5 w-5"/></Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleAction('अधिक विकल्प दिखाए जा रहे हैं।')}><MoreHorizontal className="h-5 w-5"/></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleAction('वीडियो कॉल की सुविधा जल्द ही आ रही है।')}><Video className="h-5 w-5"/></Button>
+                        <Button variant="ghost" size="icon" onClick={() => handleAction('अधिक विकल्प दिखाने की सुविधा जल्द ही आएगी।')}><MoreHorizontal className="h-5 w-5"/></Button>
                     </div>
                 </CardHeader>
                 <ScrollArea className="flex-1 p-6" ref={scrollAreaRef}>

@@ -1,11 +1,26 @@
+
+'use client';
+
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import React from "react";
 
 export default function PortfolioSection() {
   const portfolioImages = PlaceHolderImages.filter(img => img.id.startsWith("portfolio-"));
+  const { toast } = useToast();
+
+  const handleCaseStudyClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    toast({
+      title: "सुविधा जल्द ही आ रही है",
+      description: "यह केस स्टडी जल्द ही उपलब्ध होगी।",
+    });
+  };
+
 
   return (
     <section id="portfolio">
@@ -25,7 +40,7 @@ export default function PortfolioSection() {
         </div>
         <div className="mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8 mt-12">
           {portfolioImages.map((image) => (
-            <Link href="#" key={image.id}>
+            <Link href="#" key={image.id} onClick={handleCaseStudyClick}>
               <Card className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
                 <Image
                   alt={image.description}
