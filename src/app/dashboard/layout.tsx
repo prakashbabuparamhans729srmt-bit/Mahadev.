@@ -26,6 +26,7 @@ import {
   Plus,
   CheckCircle,
   CreditCard,
+  Cookie,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -281,6 +282,20 @@ export default function DashboardLayout({
                   <Link href="/dashboard/collab-space">
                     <Share2 />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">कोलैब स्पेस</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/cookie-status')}
+                  tooltip="कुकी स्थिति"
+                   size="lg"
+                   className="!justify-start"
+                >
+                  <Link href="/dashboard/cookie-status">
+                    <Cookie />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">कुकी स्थिति</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
