@@ -1,6 +1,7 @@
+
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -24,7 +25,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 
-const contacts = [
+const initialContacts = [
     {
         name: 'स्मार्ट ERP टीम',
         avatar: 'S',
@@ -61,7 +62,7 @@ const contacts = [
         online: true,
         type: 'bot'
     }
-]
+];
 
 export default function MessagesPage() {
     const { toast } = useToast();
@@ -70,6 +71,18 @@ export default function MessagesPage() {
         { role: 'other', name: 'राहुल', text: 'नमस्ते, प्रोजेक्ट अपडेट तैयार है। क्या हम कल सुबह रिव्यू कर सकते हैं?', time: '10:45 AM', avatar: 'R' },
         { role: 'me', name: 'अमित कुमार', text: 'बढ़िया, रिव्यू करते हैं। मैं 11 बजे फ्री हूँ।', time: '11:00 AM', avatar: 'A' },
     ]);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredContacts, setFilteredContacts] = useState(initialContacts);
+
+    useEffect(() => {
+        const lowercasedQuery = searchQuery.toLowerCase();
+        const filtered = initialContacts.filter(contact =>
+            contact.name.toLowerCase().includes(lowercasedQuery) ||
+            contact.lastMessage.toLowerCase().includes(lowercasedQuery)
+        );
+        setFilteredContacts(filtered);
+    }, [searchQuery]);
+
 
     const handleSend = () => {
         if (!input.trim()) return;
@@ -98,7 +111,12 @@ export default function MessagesPage() {
                 <h2 className="font-bold text-lg font-headline">चैट्स</h2>
                  <div className="relative mt-4">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input placeholder="संदेश या संपर्क खोजें..." className="pl-9 bg-card/50" />
+                    <Input 
+                        placeholder="संदेश या संपर्क खोजें..." 
+                        className="pl-9 bg-card/50" 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                    />
                 </div>
             </div>
              <div className="flex-1 overflow-y-auto">
@@ -112,7 +130,7 @@ export default function MessagesPage() {
                     <Button variant="ghost" size="sm" onClick={() => handleAction('संग्रहीत संदेश दिखाए जा रहे हैं।')}><Archive className="h-4 w-4"/></Button>
                 </div>
                 <div className="p-2 space-y-1">
-                    {contacts.map(contact => (
+                    {filteredContacts.map(contact => (
                         <div key={contact.name} className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors bg-secondary">
                              <Avatar className="relative">
                                 <AvatarFallback>{contact.avatar}</AvatarFallback>

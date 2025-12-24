@@ -1,6 +1,7 @@
+
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -35,7 +36,17 @@ const versions = [
 export default function FileManagerPage() {
     const { toast } = useToast();
     const [files, setFiles] = useState(initialFiles);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [filteredFiles, setFilteredFiles] = useState(initialFiles);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const lowercasedQuery = searchQuery.toLowerCase();
+        const filtered = files.filter(file => 
+            file.name.toLowerCase().includes(lowercasedQuery)
+        );
+        setFilteredFiles(filtered);
+    }, [searchQuery, files]);
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
@@ -97,7 +108,12 @@ export default function FileManagerPage() {
                      <div className="flex items-center gap-2">
                         <div className="relative flex items-center">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                            <Input placeholder="खोजें..." className="pl-9" />
+                            <Input 
+                                placeholder="खोजें..." 
+                                className="pl-9" 
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
                         </div>
                         <Button variant="outline" size="icon" onClick={() => handleAction('सूची दृश्य सक्रिय।')}>
                             <List className="h-4 w-4" />
@@ -119,7 +135,7 @@ export default function FileManagerPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {files.map((file) => (
+                {filteredFiles.map((file) => (
                   <TableRow key={file.name}>
                     <TableCell className="font-medium">
                       <div className="flex items-center gap-3">
