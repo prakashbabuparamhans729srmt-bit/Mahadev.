@@ -113,13 +113,17 @@ function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-10 w-10 rounded-full">
+        <Button variant="ghost" className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
                 <AvatarImage src={user?.photoURL ?? "https://picsum.photos/seed/1/100/100"} alt={user?.displayName ?? 'अमित कुमार'} />
                 <AvatarFallback>
                 {user?.email?.[0]?.toUpperCase() ?? 'A'}
                 </AvatarFallback>
             </Avatar>
+            <div className="text-right hidden sm:block">
+                <p className="font-semibold text-sm">{user?.displayName ?? 'अमित कुमार'}</p>
+                <p className="text-xs text-primary">प्रीमियम क्लाइंट</p>
+            </div>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
@@ -304,13 +308,7 @@ export default function DashboardLayout({
                 </div>
                  <div className="flex items-center gap-2">
                     <NotificationsNav />
-                    <div className="flex items-center gap-3">
-                        <UserNav />
-                         <div className="text-right hidden sm:block">
-                            <p className="font-semibold text-sm">अमित कुमार</p>
-                            <p className="text-xs text-primary">प्रीमियम क्लाइंट</p>
-                        </div>
-                    </div>
+                    <UserNav />
                  </div>
             </header>
             <main className="flex-1 bg-background">
