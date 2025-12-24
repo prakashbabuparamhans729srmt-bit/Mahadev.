@@ -1,0 +1,177 @@
+'use client';
+
+import {
+  Card,
+  CardContent,
+  CardHeader,
+} from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import {
+  Search,
+  Video,
+  MoreHorizontal,
+  Paperclip,
+  Send,
+  Archive,
+  Star,
+  Users,
+  Bot
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { ScrollArea } from '@/components/ui/scroll-area';
+
+const contacts = [
+    {
+        name: 'स्मार्ट ERP टीम',
+        avatar: 'S',
+        lastMessage: 'बढ़िया, रिव्यू करते हैं।',
+        time: '11:00 AM',
+        unread: 0,
+        online: true,
+        type: 'group'
+    },
+    {
+        name: 'ई-कॉमर्स पोर्टल टीम',
+        avatar: 'E',
+        lastMessage: 'हाँ, डिज़ाइन स्वीकृत है।',
+        time: 'कल',
+        unread: 2,
+        online: false,
+        type: 'group'
+    },
+    {
+        name: 'प्रिया शर्मा (UI/UX)',
+        avatar: 'P',
+        lastMessage: 'मैं आपको वायरफ्रेम भेज रही हूँ।',
+        time: '18/04/24',
+        unread: 0,
+        online: true,
+        type: 'user'
+    },
+    {
+        name: 'HG-Bot',
+        avatar: <Bot size={20}/>,
+        lastMessage: 'मैं आपकी कैसे मदद कर सकता हूँ?',
+        time: '17/04/24',
+        unread: 0,
+        online: true,
+        type: 'bot'
+    }
+]
+
+export default function MessagesPage() {
+  return (
+    <div className="h-full flex text-sm">
+        {/* Left Sidebar for contacts */}
+        <div className="w-1/3 border-r border-border/50 h-full flex flex-col">
+            <div className="p-4 border-b border-border/50">
+                <h2 className="font-bold text-lg font-headline">चैट्स</h2>
+                 <div className="relative mt-4">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input placeholder="संदेश या संपर्क खोजें..." className="pl-9 bg-card/50" />
+                </div>
+            </div>
+             <div className="flex-1 overflow-y-auto">
+                <div className="flex gap-2 p-2 border-b border-border/50">
+                    <Button variant="ghost" size="sm">सभी</Button>
+                    <Button variant="ghost" size="sm" className="relative">
+                        अपठित
+                        <Badge className="absolute -top-1 -right-2 h-4 w-4 justify-center p-0">2</Badge>
+                    </Button>
+                    <Button variant="ghost" size="sm"><Star className="h-4 w-4"/></Button>
+                    <Button variant="ghost" size="sm"><Archive className="h-4 w-4"/></Button>
+                </div>
+                <div className="p-2 space-y-1">
+                    {contacts.map(contact => (
+                        <div key={contact.name} className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-secondary/50 transition-colors bg-secondary">
+                             <Avatar className="relative">
+                                <AvatarFallback>{contact.avatar}</AvatarFallback>
+                                {contact.online && <div className="absolute bottom-0 right-0 h-2.5 w-2.5 bg-green-500 rounded-full border-2 border-secondary"></div>}
+                            </Avatar>
+                            <div className="flex-1">
+                                <div className="flex justify-between">
+                                    <p className="font-semibold">{contact.name}</p>
+                                    <p className="text-xs text-muted-foreground">{contact.time}</p>
+                                </div>
+                                <div className="flex justify-between">
+                                    <p className="text-xs text-muted-foreground truncate">{contact.lastMessage}</p>
+                                    {contact.unread > 0 && <Badge className="h-5 w-5 justify-center p-0 bg-primary">{contact.unread}</Badge>}
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+
+        {/* Main Chat Area */}
+        <div className="w-2/3 h-full flex flex-col p-4 pb-0">
+             <Card className="flex-1 flex flex-col bg-card/50 border-border/30 rounded-2xl">
+                <CardHeader className="flex-row items-center justify-between p-4 border-b border-border/50">
+                    <div className="flex items-center gap-3">
+                         <Avatar className="relative">
+                            <AvatarFallback>S</AvatarFallback>
+                            <div className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-card"></div>
+                        </Avatar>
+                        <div>
+                            <h3 className="font-bold">स्मार्ट ERP टीम</h3>
+                            <p className="text-xs text-green-400 flex items-center gap-1.5">
+                                <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                ऑनलाइन
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button variant="ghost" size="icon"><Video className="h-5 w-5"/></Button>
+                        <Button variant="ghost" size="icon"><MoreHorizontal className="h-5 w-5"/></Button>
+                    </div>
+                </CardHeader>
+                <CardContent className="flex-1 p-6 space-y-6 overflow-y-auto">
+                     <div className="flex items-start gap-3">
+                         <Avatar className="h-8 w-8">
+                            <AvatarFallback>R</AvatarFallback>
+                         </Avatar>
+                         <div>
+                            <div className="flex items-baseline gap-2">
+                                <p className="font-semibold text-sm">राहुल</p>
+                                <p className="text-xs text-muted-foreground">10:45 AM</p>
+                            </div>
+                            <div className="bg-secondary rounded-2xl rounded-tl-none p-3 mt-1 max-w-lg">
+                                नमस्ते, प्रोजेक्ट अपडेट तैयार है। क्या हम कल सुबह रिव्यू कर सकते हैं?
+                            </div>
+                         </div>
+                     </div>
+                     <div className="flex items-start gap-3 justify-end">
+                         <div>
+                            <div className="flex items-baseline gap-2 justify-end">
+                                <p className="font-semibold text-sm">अमित कुमार</p>
+                                <p className="text-xs text-muted-foreground">11:00 AM</p>
+                            </div>
+                            <div className="bg-primary text-primary-foreground rounded-2xl rounded-br-none p-3 mt-1 max-w-lg">
+                                बढ़िया, रिव्यू करते हैं। मैं 11 बजे फ्री हूँ।
+                            </div>
+                         </div>
+                         <Avatar className="h-8 w-8">
+                            <AvatarImage src="https://picsum.photos/seed/1/100/100" />
+                            <AvatarFallback>A</AvatarFallback>
+                         </Avatar>
+                     </div>
+                </CardContent>
+                <div className="p-4 mt-auto">
+                    <div className="relative bg-secondary/80 rounded-full">
+                        <Input placeholder="अपना संदेश यहाँ टाइप करें..." className="bg-transparent border-none rounded-full h-12 pr-24 pl-12" />
+                        <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8">
+                            <Paperclip />
+                        </Button>
+                        <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-primary hover:bg-primary/90">
+                            <Send />
+                        </Button>
+                    </div>
+                </div>
+            </Card>
+        </div>
+    </div>
+  );
+}

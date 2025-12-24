@@ -112,21 +112,6 @@ const files = [
   },
 ];
 
-const chat = [
-  {
-    sender: 'राहुल',
-    time: '10:15 AM',
-    message: 'लॉगिन मॉड्यूल पूरा हो गया, रिव्यू के लिए भेज रहा हूं',
-    avatar: 'R',
-  },
-  {
-    sender: 'क्लाइंट',
-    time: '10:20 AM',
-    message: 'बढ़िया! क्या मैं लाइव डेमो देख सकता हूं?',
-    avatar: 'C',
-  },
-];
-
 export default function ProjectDetailsPage() {
 
   return (
@@ -314,80 +299,6 @@ export default function ProjectDetailsPage() {
             </CardFooter>
           </Card>
         </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="font-headline text-lg flex items-center">
-              <MessageSquare className="mr-2 h-5 w-5 text-primary" />💬
-              रियल-टाइम चैट
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {chat.map((c, index) => (
-              <div
-                key={index}
-                className={`flex items-start gap-3 ${
-                  c.sender === 'क्लाइंट' ? 'justify-end' : ''
-                }`}
-              >
-                {c.sender !== 'क्लाइंट' && (
-                  <Avatar>
-                    <AvatarFallback>{c.avatar}</AvatarFallback>
-                  </Avatar>
-                )}
-                <div
-                  className={`flex flex-col ${
-                    c.sender === 'क्लाइंट' ? 'items-end' : 'items-start'
-                  }`}
-                >
-                  <div className="flex items-baseline gap-2">
-                    <p className="font-semibold text-sm">{c.sender}</p>
-                    <p className="text-xs text-muted-foreground">{c.time}</p>
-                  </div>
-                  <p
-                    className={`p-3 rounded-lg mt-1 max-w-md ${
-                      c.sender === 'क्लाइंट'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary'
-                    }`}
-                  >
-                    {c.message}
-                  </p>
-                </div>
-                {c.sender === 'क्लाइंट' && (
-                  <Avatar>
-                    <AvatarFallback>{c.avatar}</AvatarFallback>
-                  </Avatar>
-                )}
-              </div>
-            ))}
-            <div className="relative mt-6">
-              <Textarea placeholder="संदेश लिखें..." className="pr-24" />
-              <div className="absolute top-1/2 right-3 -translate-y-1/2 flex gap-1">
-                <Button variant="ghost" size="icon">
-                  <Paperclip className="h-5 w-5" />
-                </Button>
-                <Button variant="ghost" size="icon">
-                  <Mic className="h-5 w-5" />
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter className="gap-2 border-t pt-4">
-            <Button variant="outline">
-              <Video className="mr-2 h-4 w-4" />
-              वीडियो कॉल
-            </Button>
-            <Button variant="outline">
-              <ScreenShare className="mr-2 h-4 w-4" />
-              स्क्रीन शेयर
-            </Button>
-            <Button variant="outline">
-              <Link2 className="mr-2 h-4 w-4" />
-              लिंक शेयर
-            </Button>
-          </CardFooter>
-        </Card>
       </div>
     </div>
   );
