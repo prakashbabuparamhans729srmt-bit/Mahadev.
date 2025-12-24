@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { categoryIcons, type projectCategories } from '@/lib/project-categories';
 
@@ -28,7 +28,7 @@ export default function ProjectCategoryList({ filteredCategories }: ProjectCateg
                       <Badge variant="destructive" className="bg-accent text-accent-foreground text-xs">HOT</Badge>
                     )}
                   </div>
-                  <h3 className="text-2xl font-bold font-headline mb-2">{type.name}</h3>
+                  <h3 className="text-xl font-bold font-headline mb-2">{type.name}</h3>
                   <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
                     {type.features.slice(0, 3).map((feature) => (
                       <li key={feature}>{feature}</li>
