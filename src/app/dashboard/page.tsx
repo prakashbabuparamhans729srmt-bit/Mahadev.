@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -5,21 +6,16 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription
 } from '@/components/ui/card';
 import {
   AreaChart,
   Area,
   XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
 } from 'recharts';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Plus } from 'lucide-react';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 
 
@@ -46,14 +42,6 @@ const activeProjects = [
 ]
 
 export default function AdminDashboard() {
-    const { toast } = useToast();
-
-    const handleNewProject = () => {
-        toast({
-            title: 'नई सुविधा',
-            description: 'नया प्रोजेक्ट बनाने की सुविधा जल्द ही आ रही है। अभी के लिए, आप AI स्कोपर का उपयोग कर सकते हैं।',
-        });
-    }
 
   return (
     <div className="p-6">
@@ -65,11 +53,13 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
         <Button 
+            asChild
             className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_hsl(var(--primary)/0.5)]"
-            onClick={handleNewProject}
         >
-          <Plus className="mr-2 h-4 w-4" />
-          नया प्रोजेक्ट
+          <Link href="/start-project">
+            <Plus className="mr-2 h-4 w-4" />
+            नया प्रोजेक्ट
+          </Link>
         </Button>
       </div>
 
@@ -104,7 +94,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-6">
             {activeProjects.map(project => (
-                <Link href={`/dashboard/project/${encodeURIComponent(project.id)}`} key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg">
+                <Link href={`/dashboard/project-oversight`} key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg">
                     <div className="flex justify-between items-baseline mb-2">
                         <h3 className="font-semibold">{project.name}</h3>
                         <p className="text-xs font-mono text-muted-foreground">{project.id}</p>
