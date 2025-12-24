@@ -52,15 +52,14 @@ export default function AdminDashboard() {
           </h1>
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
-        <Button 
-            asChild
-            className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_hsl(var(--primary)/0.5)]"
-        >
-          <Link href="/start-project">
-            <Plus className="mr-2 h-4 w-4" />
-            नया प्रोजेक्ट
-          </Link>
-        </Button>
+        <Link href="/start-project">
+            <Button
+                className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_20px_hsl(var(--primary)/0.5)]"
+            >
+                <Plus className="mr-2 h-4 w-4" />
+                नया प्रोजेक्ट
+            </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
