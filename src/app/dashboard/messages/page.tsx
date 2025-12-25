@@ -83,7 +83,8 @@ export default function MessagesPage() {
             text: input,
             timestamp: serverTimestamp(),
             senderName: user.displayName || 'अनाम',
-            senderAvatar: user.photoURL || user.displayName?.[0] || 'U'
+            senderAvatar: user.photoURL || user.displayName?.[0] || 'U',
+            projectId: activeProjectId,
         };
 
         setInput('');

@@ -131,11 +131,11 @@ export default function AdminDashboard() {
   const { data: recentMessages, isLoading: messagesLoading } = useCollection(recentMessagesQuery);
   
   const teamActivityQuery = useMemo(() => {
-      if (!firestore) return null;
+      if (!firestore || !user) return null;
       // This query is for demonstration. A real app would have a dedicated 'activity' collection.
       // We'll use project updates as a proxy for team activity.
-      return query(collection(firestore, 'projects'), orderBy('endDate', 'desc'), limit(3));
-  }, [firestore]);
+      return query(collection(firestore, 'projects'), where("clientId", "==", user.uid), orderBy('endDate', 'desc'), limit(3));
+  }, [firestore, user]);
   const { data: teamActivity, isLoading: activityLoading } = useCollection(teamActivityQuery);
 
 
@@ -367,3 +367,5 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+    
