@@ -258,6 +258,23 @@ export default function SignupPage() {
             </Button>
           </form>
           <div className="mt-6 text-center text-sm">
+            <p className="px-8 text-center text-sm text-muted-foreground mb-4">
+                साइन अप करके, आप हमारी{' '}
+                <Link
+                    href="/terms"
+                    className="underline underline-offset-4 hover:text-primary"
+                >
+                    सेवा की शर्तों
+                </Link>{' '}
+                और{' '}
+                <Link
+                    href="/privacy"
+                    className="underline underline-offset-4 hover:text-primary"
+                >
+                    गोपनीयता नीति
+                </Link>
+                {' '}से सहमत होते हैं।
+            </p>
             पहले से ही एक खाता है?{' '}
             <Link href="/login" className="font-semibold text-primary hover:underline">
               लॉग इन करें
