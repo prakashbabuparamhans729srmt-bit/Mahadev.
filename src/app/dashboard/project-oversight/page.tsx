@@ -44,7 +44,7 @@ export default function ProjectOversightPage() {
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {projects?.map((project: any) => {
-            const image = PlaceHolderImages.find(p => p.id === project.imageId);
+            const image = PlaceHolderImages.find(p => p.id === 'portfolio-1');
             if (!image) return null; // Safely skip if image not found
 
             return (
@@ -78,4 +78,3 @@ export default function ProjectOversightPage() {
   );
 }
 
-    
