@@ -5,8 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useUser } from '@/firebase';
+import { useUser, useFirebaseApp } from '@/firebase';
 import { updateProfile } from 'firebase/auth';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Loader2, User, Shield, Bell, CreditCard, Camera, ArrowLeft } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -17,6 +18,7 @@ import { NotificationSettings } from './notification-settings';
 
 export default function SettingsPage() {
   const { user, isUserLoading } = useUser();
+  const firebaseApp = useFirebaseApp();
   const [displayName, setDisplayName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [photoURL, setPhotoURL] = useState<string | null>(null);
@@ -34,18 +36,40 @@ export default function SettingsPage() {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            setPhotoURL(e.target?.result as string);
-            toast({
-              title: "प्रीव्यू अपडेट किया गया",
-              description: "आपकी प्रोफ़ाइल फोटो का प्रीव्यू अपडेट हो गया है। सहेजने के लिए 'बदलाव सेव करें' पर क्लिक करें।",
-            });
-        };
-        reader.readAsDataURL(file);
+    if (!file || !user || !firebaseApp) return;
+
+    toast({
+        title: "फोटो अपलोड हो रही है...",
+        description: "कृपया प्रतीक्षा करें जब तक हम आपकी नई प्रोफ़ाइल फोटो अपलोड कर रहे हैं।",
+    });
+
+    try {
+        const storage = getStorage(firebaseApp);
+        // Create a unique file path for the user's avatar
+        const filePath = `avatars/${user.uid}/${file.name}`;
+        const fileStorageRef = storageRef(storage, filePath);
+
+        // Upload the file to Firebase Storage
+        const uploadTask = await uploadBytes(fileStorageRef, file);
+        const downloadURL = await getDownloadURL(uploadTask.ref);
+
+        // Update the state to show the new avatar immediately
+        setPhotoURL(downloadURL);
+        
+        toast({
+          title: "प्रीव्यू अपडेट किया गया",
+          description: "आपकी प्रोफ़ाइल फोटो का प्रीव्यू अपडेट हो गया है। सहेजने के लिए 'बदलाव सेव करें' पर क्लिक करें।",
+        });
+
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        toast({
+            variant: 'destructive',
+            title: 'त्रुटि',
+            description: 'फोटो अपलोड करने में विफल।',
+        });
     }
   };
 
@@ -53,9 +77,7 @@ export default function SettingsPage() {
     if (!user) return;
     setIsSaving(true);
     try {
-      // In a real app, you'd upload the photoURL to a storage service
-      // and get a public URL before calling updateProfile.
-      // For this demo, we'll use the potentially long data URI.
+      // The photoURL is already the public URL from Firebase Storage
       await updateProfile(user, { 
           displayName: displayName,
           photoURL: photoURL 
