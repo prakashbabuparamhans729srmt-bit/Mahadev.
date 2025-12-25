@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/table';
 import {
   AreaChart,
-  BarChart,
+  BarChart as BarChartIcon,
   DollarSign,
   Briefcase,
   Clock,
@@ -31,16 +31,28 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import { Progress } from '@/components/ui/progress';
+import { Skeleton } from '@/components/ui/skeleton';
+import dynamic from 'next/dynamic';
+
+const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), {
+    loading: () => <Skeleton className="w-full h-full" />,
+    ssr: false,
+});
+const PieChart = dynamic(() => import('recharts').then(mod => mod.PieChart), {
+    loading: () => <Skeleton className="w-full h-full" />,
+    ssr: false,
+});
+
 import {
   Bar,
   XAxis,
   YAxis,
   CartesianGrid,
-  PieChart,
   Pie,
   Cell,
 } from 'recharts';
-import { Progress } from '@/components/ui/progress';
+
 
 const budgetData = [
   { name: 'स्मार्ट ERP सिस्टम', value: 450000, fill: 'hsl(var(--chart-1))' },
