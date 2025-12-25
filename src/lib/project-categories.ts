@@ -1,18 +1,18 @@
 'use client';
 
 import {
-  Store, Briefcase, Pencil, GraduationCap, Building, LandPlot, Clapperboard,
+  Briefcase, Pencil, GraduationCap, Building, LandPlot, Clapperboard,
   HeartPulse, Utensils, Car, Ticket, Palette, Camera, Music, Film, Bot,
   Cloud, Smartphone, Link, Shirt, Carrot, Pill, BookOpen, Banknote,
-  Home, Handshake, Users, Globe, Factory, Truck, Building2, BrainCircuit, Gamepad, Podcast, Drama, UserCheck, Heart, ShieldQuestion
+  Home, Handshake, Users, Globe, Factory, Truck, Building2, BrainCircuit, Gamepad, Podcast, Drama, UserCheck, Heart, ShieldQuestion, ShoppingBasket
 } from 'lucide-react';
 
 export const categoryIcons: { [key: string]: React.ReactNode } = {
-  'ई-कॉमर्स': <Store className="h-6 w-6" />,
+  'ई-कॉमर्स': <ShoppingBasket className="h-6 w-6" />,
   'कॉर्पोरेट': <Briefcase className="h-6 w-6" />,
   'ब्लॉग': <Pencil className="h-6 w-6" />,
   'शैक्षिक': <GraduationCap className="h-6 w-6" />,
-  'रिटेल': <Store className="h-6 w-6" />,
+  'रिटेल': <Building2 className="h-6 w-6" />,
   'उद्योग': <Factory className="h-6 w-6" />,
   'स्वास्थ्य': <HeartPulse className="h-6 w-6" />,
   'कानूनी': <LandPlot className="h-6 w-6" />,
@@ -42,7 +42,7 @@ export const categoryIcons: { [key: string]: React.ReactNode } = {
 
   // specialized
   'B2B पोर्टल': <Building2 className="h-6 w-6" />,
-  'फ्रेंचाइजी': <Store className="h-6 w-6" />,
+  'फ्रेंचाइजी': <Building2 className="h-6 w-6" />,
   'ट्यूटर पोर्टल': <UserCheck className="h-6 w-6" />,
   'रिसर्च पोर्टल': <BookOpen className="h-6 w-6" />,
   'मेंटल हेल्थ': <Heart className="h-6 w-6" />,
