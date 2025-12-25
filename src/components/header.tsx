@@ -96,18 +96,12 @@ export default function Header() {
     if (user) {
       return <UserNav />;
     }
-    // Default to Sign Up unless on the login page
-    if (pathname === '/login') {
-        return (
-            <Button asChild>
-                <Link href="/signup">साइन अप करें</Link>
-            </Button>
-        );
-    }
-    // For all other pages, show Sign Up if not logged in.
+    
     return (
       <Button asChild variant="default" className="animate-fast-blinking-glow">
-        <Link href="/signup">साइन अप करें</Link>
+        <Link href={pathname === '/login' ? "/signup" : "/login"}>
+            {pathname === '/login' ? 'साइन अप करें' : 'लॉग इन / साइन अप'}
+        </Link>
       </Button>
     );
   };
@@ -116,20 +110,11 @@ export default function Header() {
     if (user) {
       return <UserNav />;
     }
-    // Default to Sign Up
-     if (pathname === '/login') {
-        return (
-            <Button asChild className="w-full justify-center">
-                <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
-                साइन अप करें
-                </Link>
-            </Button>
-        );
-    }
+
     return (
       <Button asChild className="w-full justify-center">
-        <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
-          साइन अप करें
+        <Link href={pathname === '/login' ? "/signup" : "/login"} onClick={() => setIsMenuOpen(false)}>
+           {pathname === '/login' ? 'साइन अप करें' : 'लॉग इन / साइन अप'}
         </Link>
       </Button>
     );
