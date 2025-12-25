@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 import {
   ProjectScopeInputSchema,
   type ProjectScopeInput,
@@ -41,11 +43,61 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore, useUser } from '@/firebase';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc } from 'firebase/firestore';
 import { customAlphabet } from 'nanoid';
+import { Icons } from '@/components/icons';
 
 const nanoid = customAlphabet('1234567890', 5);
 
+// Hidden component for PDF generation styling
+const ProposalTemplate = ({ result, description }: { result: ProjectScopeOutput, description: string }) => (
+  <div
+    id="pdf-template"
+    className="fixed -left-[9999px] top-0 w-[800px] p-10 bg-background text-foreground font-body"
+    style={{ fontFamily: 'Arial, sans-serif' }}
+  >
+    <div className="border-b-2 border-primary pb-4 mb-6 text-center">
+      <h1 className="text-4xl font-bold font-headline text-primary">प्रोजेक्ट स्कोप प्रस्ताव</h1>
+      <p className="text-sm">HAJARO GRAHAKO द्वारा तैयार</p>
+    </div>
+    <div className="mb-6">
+      <h2 className="text-xl font-bold mb-2 font-headline">ग्राहक का विचार:</h2>
+      <p className="italic text-muted-foreground p-4 border-l-4 border-primary/50 bg-secondary/30 rounded-md">"{description}"</p>
+    </div>
+    <div className="grid grid-cols-2 gap-8">
+      <div>
+        <h2 className="text-xl font-bold mb-4 font-headline border-b pb-2">अनुशंसित सुविधाएँ</h2>
+        <ul className="list-disc list-inside space-y-2 mt-4">
+          {result.recommendedFeatures.map((feature, i) => (
+            <li key={i}>{feature}</li>
+          ))}
+        </ul>
+      </div>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-bold font-headline border-b pb-2">अनुमानित बजट</h2>
+          <p className="text-2xl font-bold text-primary mt-2">{result.estimatedBudget}</p>
+        </div>
+        <div>
+          <h2 className="text-xl font-bold font-headline border-b pb-2">अनुमानित समय</h2>
+          <p className="text-2xl font-bold mt-2">{result.estimatedTimeline}</p>
+        </div>
+        <div>
+          <h2 className="text-xl font-bold font-headline border-b pb-2">तकनीकी स्टैक</h2>
+          <div className="mt-2 space-y-1 text-sm">
+            <p><strong>फ्रंटएंड:</strong> {result.techStack.frontend}</p>
+            <p><strong>बैकएंड:</strong> {result.techStack.backend}</p>
+            <p><strong>डेटाबेस:</strong> {result.techStack.database}</p>
+            <p><strong>होस्टिंग:</strong> {result.techStack.hosting}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div className="text-center mt-10 pt-4 border-t text-xs text-muted-foreground">
+      <p>&copy; {new Date().getFullYear()} Hajaro Grahako. यह एक AI-जनरेटेड अनुमान है।</p>
+    </div>
+  </div>
+);
 
 function ScopeResultDialog({
   result,
@@ -65,6 +117,7 @@ function ScopeResultDialog({
   const firestore = useFirestore();
   const { user } = useUser();
   const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const proposalRef = useRef<HTMLDivElement>(null);
 
   const handleCreateProject = async () => {
     if (!firestore || !user) {
@@ -82,13 +135,12 @@ function ScopeResultDialog({
         const projectId = `Project-AI-Scoper-${nanoid()}`;
         const newProject = {
             clientId: user.uid,
-            name: `AI आधारित प्रोजेक्ट`,
+            name: `AI आधारित प्रोजेक्ट: ${description.substring(0, 20)}...`,
             description: description,
             budget: parseFloat(result.estimatedBudget.replace(/[^0-9-]/g, '').split('-')[0] || '0'),
             serviceTier: 'Standard', // Default for AI scoper
             status: 'प्रारंभिक',
             startDate: new Date().toISOString(),
-            // Estimate end date based on timeline
             endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
             progress: 5,
             id: projectId,
@@ -97,7 +149,6 @@ function ScopeResultDialog({
         const projectRef = doc(firestore, 'projects', projectId);
         await setDoc(projectRef, newProject);
         
-
         toast({
             title: 'प्रोजेक्ट बनाया गया!',
             description: 'आपको प्रोजेक्ट विवरण पेज पर रीडायरेक्ट किया जा रहा है।',
@@ -114,6 +165,25 @@ function ScopeResultDialog({
         });
     } finally {
         setIsCreatingProject(false);
+    }
+  };
+  
+  const handleDownloadPdf = () => {
+    const template = document.getElementById('pdf-template');
+    if (template) {
+      toast({ title: 'PDF तैयार हो रहा है...', description: 'कृपया कुछ क्षण प्रतीक्षा करें।' });
+      html2canvas(template, { scale: 2 }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgProps = pdf.getImageProperties(imgData);
+        const ratio = Math.min(pdfWidth / imgProps.width, pdfHeight / imgProps.height);
+        const width = imgProps.width * ratio;
+        const height = imgProps.height * ratio;
+        pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+        pdf.save('Project-Scope-Proposal.pdf');
+      });
     }
   };
   
@@ -197,15 +267,15 @@ function ScopeResultDialog({
               📄 स्वचालित प्रस्ताव तैयार:
             </h3>
             <div className="flex flex-wrap gap-2">
-              <Button variant="outline" onClick={() => handleAction('प्रस्ताव को कस्टमाइज़ करने की सुविधा जल्द ही आ रही है।')}>
+              <Button variant="outline" onClick={() => handleAction('प्रस्ताव को कस्टमाइज़ करने की सुविधा जल्द ही आ रही है।', 'भविष्य की सुविधा')}>
                 <Pencil className="mr-2 h-4 w-4" />
                 कस्टमाइज़ करें
               </Button>
-              <Button variant="outline" onClick={() => handleAction('PDF डाउनलोड करने की सुविधा जल्द ही आ रही है।')}>
+              <Button onClick={handleDownloadPdf}>
                 <Download className="mr-2 h-4 w-4" />
                 PDF डाउनलोड
               </Button>
-              <Button variant="outline" onClick={() => handleAction('क्लाइंट को ईमेल भेजने की सुविधा जल्द ही आ रही है।')}>
+              <Button variant="outline" onClick={() => handleAction('क्लाइंट को ईमेल भेजने की सुविधा जल्द ही आ रही है।', 'भविष्य की सुविधा')}>
                 <Mail className="mr-2 h-4 w-4" />
                 क्लाइंट को भेजें
               </Button>
@@ -224,6 +294,7 @@ function ScopeResultDialog({
             </Button>
           </DialogFooter>
         </div>
+        <ProposalTemplate result={result} description={description} />
       </DialogContent>
     </Dialog>
   );
