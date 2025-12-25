@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -96,14 +97,15 @@ export default function AdminDashboard() {
   const router = useRouter();
   const { user } = useUser();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+  const displayName = user?.displayName?.split(' ')[0] || 'उपयोगकर्ता';
 
   return (
     <>
     <div className="p-4 md:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold font-headline flex items-center gap-3">
-            नमस्ते {user?.displayName || 'उपयोगकर्ता'} <span className="text-2xl">👋</span>
+          <h1 className="text-3xl font-bold font-headline flex items-baseline gap-3">
+            नमस्ते {displayName} <span className="text-2xl">👋</span>
           </h1>
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
@@ -294,3 +296,5 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+    
