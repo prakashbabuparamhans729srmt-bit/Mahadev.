@@ -64,7 +64,7 @@ export function BillingSettings() {
         <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-4">
-                    <Image src="https://placehold.co/40x26/D1D5DB/374151?text=VISA" alt="Visa" width={40} height={26} />
+                    <Image src="https://picsum.photos/seed/visa/40/26" alt="Visa" width={40} height={26} />
                     <div>
                         <p className="font-semibold">Visa ending in 1234</p>
                         <p className="text-sm text-muted-foreground">समाप्ति 12/25</p>
@@ -77,7 +77,7 @@ export function BillingSettings() {
             </div>
              <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="flex items-center gap-4">
-                    <Image src="https://placehold.co/40x26/D1D5DB/374151?text=UPI" alt="UPI" width={40} height={26} />
+                    <Image src="https://picsum.photos/seed/upi/40/26" alt="UPI" width={40} height={26} />
                     <div>
                         <p className="font-semibold">UPI</p>
                         <p className="text-sm text-muted-foreground">example@upi</p>

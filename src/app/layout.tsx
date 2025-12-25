@@ -4,6 +4,21 @@ import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { HelpAssistant } from '@/components/help-assistant';
 import { CookieConsent } from '@/components/cookie-consent';
+import { Playfair_Display, PT_Sans } from 'next/font/google';
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-playfair-display',
+});
+
+const ptSans = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  display: 'swap',
+  variable: '--font-pt-sans',
+});
+
 
 export const metadata: Metadata = {
   title: 'HG Hub - Hajaro Grahako',
@@ -17,12 +32,7 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="hi" className="dark">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="hi" className={`dark ${playfair.variable} ${ptSans.variable}`}>
       <body className="font-body antialiased">
         <FirebaseClientProvider>
           {children}
