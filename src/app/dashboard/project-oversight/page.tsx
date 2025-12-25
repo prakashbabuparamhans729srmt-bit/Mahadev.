@@ -9,23 +9,29 @@ import { Briefcase } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const projects = [
     {
-        id: '#1042',
+        id: '1042',
         name: 'स्मार्ट ERP सिस्टम',
         type: 'CUSTOM SOLUTION',
         progress: 75,
-        imageUrl: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=600',
-        imageHint: 'team meeting',
+        imageId: 'hero-carousel-1'
     },
     {
-        id: '#1043',
+        id: '1043',
         name: 'ई-कॉमर्स पोर्टल',
         type: 'WEB APP',
         progress: 90,
-        imageUrl: 'https://images.unsplash.com/photo-1521737711867-e3b97375f902?q=80&w=600',
-        imageHint: 'modern office',
+        imageId: 'hero-carousel-2'
+    },
+    {
+        id: '1044',
+        name: 'मोबाइल ऐप',
+        type: 'MOBILE APP',
+        progress: 40,
+        imageId: 'hero-carousel-4'
     }
 ]
 
@@ -43,18 +49,22 @@ export default function ProjectOversightPage() {
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {projects.map((project) => (
+        {projects.map((project) => {
+            const image = PlaceHolderImages.find(p => p.id === project.imageId);
+            if (!image) return null; // Safely skip if image not found
+
+            return (
              <Link href={`/dashboard/project/${encodeURIComponent(project.id)}`} key={project.id}>
                 <Card className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 bg-card border border-border/50 h-full flex flex-col cursor-pointer">
                     <div className="relative aspect-video">
                         <Image 
-                            src={project.imageUrl}
+                            src={image.imageUrl}
                             alt={project.name}
                             fill
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
-                            data-ai-hint={project.imageHint}
+                            data-ai-hint={image.imageHint}
                         />
-                        <Badge variant="secondary" className="absolute top-3 right-3">{project.id}</Badge>
+                        <Badge variant="secondary" className="absolute top-3 right-3">#{project.id}</Badge>
                     </div>
                     <CardContent className="p-4 flex-1 flex flex-col">
                         <div className="flex-1">
@@ -67,7 +77,8 @@ export default function ProjectOversightPage() {
                     </CardContent>
                 </Card>
             </Link>
-        ))}
+            )
+        })}
       </div>
     </div>
   );
