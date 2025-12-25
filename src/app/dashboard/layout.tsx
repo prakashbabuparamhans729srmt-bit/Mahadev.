@@ -50,6 +50,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useState } from 'react';
 import { StartProjectDialog } from '@/components/start-project-dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const notifications = [
     {
@@ -112,7 +113,7 @@ function NotificationsNav() {
 }
 
 function UserNav() {
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
 
@@ -123,18 +124,35 @@ function UserNav() {
     }
   };
 
+  if (isUserLoading) {
+    return (
+      <div className="flex items-center gap-3">
+        <Skeleton className="h-10 w-10 rounded-full" />
+        <div className="hidden sm:block space-y-1">
+          <Skeleton className="h-4 w-24" />
+          <Skeleton className="h-3 w-20" />
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    // This could be a sign-in button or null if the user is redirected
+    return null;
+  }
+  
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-                <AvatarImage src={user?.photoURL ?? "https://picsum.photos/seed/1/100/100"} alt={user?.displayName ?? 'प्रकाश कुमार'} />
+                <AvatarImage src={user.photoURL ?? ""} alt={user.displayName ?? 'User'} />
                 <AvatarFallback>
-                {user?.displayName?.[0]?.toUpperCase() ?? 'P'}
+                  {user.displayName?.[0]?.toUpperCase() ?? user.email?.[0]?.toUpperCase() ?? 'U'}
                 </AvatarFallback>
             </Avatar>
             <div className="text-right hidden sm:block">
-                <p className="font-semibold text-sm">{user?.displayName ?? 'प्रकाश कुमार'}</p>
+                <p className="font-semibold text-sm">{user.displayName ?? 'उपयोगकर्ता'}</p>
                 <p className="text-xs text-primary">प्रीमियम क्लाइंट</p>
             </div>
         </Button>
@@ -142,9 +160,9 @@ function UserNav() {
       <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.displayName ?? 'प्रकाश कुमार'}</p>
+            <p className="text-sm font-medium leading-none">{user.displayName ?? 'उपयोगकर्ता'}</p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user?.email ?? 'प्रीमियम क्लाइंट'}
+              {user.email}
             </p>
           </div>
         </DropdownMenuLabel>
