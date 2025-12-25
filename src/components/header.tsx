@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { useAuth, useUser } from "@/firebase";
+import { useAuth, useUser } from "@/firebase/provider";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useCookieConsent } from "@/hooks/use-cookie-consent";
 
 
 const navLinks = [
@@ -95,6 +96,7 @@ function UserNav() {
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+  const { hasMadeChoice } = useCookieConsent();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -117,15 +119,18 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
-           <Button asChild className="hidden md:flex animate-fast-blinking-glow">
-             <Link href="/login">
-              <Rocket className="mr-2 h-4 w-4" />
-               प्रोजेक्ट शुरू करें
-             </Link>
-           </Button>
-          <div className="hidden md:flex items-center gap-4">
-            <UserNav />
-          </div>
+           <div className="hidden md:flex items-center space-x-4">
+                {!hasMadeChoice ? (
+                  <Button asChild variant="default" className="animate-fast-blinking-glow">
+                    <Link href="/signup">साइन अप करें</Link>
+                  </Button>
+                ) : (
+                  <Button asChild variant="default" className="animate-fast-blinking-glow">
+                    <Link href="/login">लॉग इन करें</Link>
+                  </Button>
+                )}
+                <UserNav />
+              </div>
         </div>
 
         <button
