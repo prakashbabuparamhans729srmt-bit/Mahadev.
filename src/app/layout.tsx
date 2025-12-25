@@ -23,6 +23,7 @@ const ptSans = PT_Sans({
 export const metadata: Metadata = {
   title: 'HG Hub - Hajaro Grahako',
   description: 'पूर्ण विकास समाधान - वेबसाइट, मोबाइल ऐप और कस्टम सॉफ्टवेयर।',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
