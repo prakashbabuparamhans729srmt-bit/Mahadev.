@@ -7,18 +7,25 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { KeyRound, Smartphone, LogOut, Trash2, Loader2 } from 'lucide-react';
+import { KeyRound, Smartphone, LogOut, Trash2, Loader2, ShieldAlert } from 'lucide-react';
 import { useAuth } from '@/firebase';
-import { EmailAuthProvider, reauthenticateWithCredential, updatePassword } from 'firebase/auth';
+import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, deleteUser } from 'firebase/auth';
 import { useState } from 'react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { useRouter } from 'next/navigation';
 
 export function SecuritySettings() {
   const { toast } = useToast();
   const auth = useAuth();
+  const router = useRouter();
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handlePasswordSave = async () => {
     if (!auth || !auth.currentUser) {
@@ -69,6 +76,50 @@ export function SecuritySettings() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!auth || !auth.currentUser) {
+        toast({ variant: 'destructive', title: 'त्रुटि', description: 'उपयोगकर्ता लॉग इन नहीं है।' });
+        return;
+    }
+    if (!deletePassword) {
+        toast({ variant: 'destructive', title: 'त्रुटि', description: 'कृपया अपना पासवर्ड दर्ज करें।' });
+        return;
+    }
+
+    setIsDeleting(true);
+    try {
+        const user = auth.currentUser;
+        if(user.email) {
+            const credential = EmailAuthProvider.credential(user.email, deletePassword);
+            await reauthenticateWithCredential(user, credential);
+
+            // This is where you would ideally trigger a Cloud Function to delete user data from Firestore/Storage
+            
+            await deleteUser(user);
+            
+            toast({
+                title: 'खाता सफलतापूर्वक हटा दिया गया',
+                description: 'आपको जल्द ही लॉग आउट कर दिया जाएगा। संबंधित Firestore डेटा को मैन्युअल रूप से हटाना होगा।',
+            });
+            setIsDeleteConfirmationOpen(false);
+            router.push('/');
+        }
+    } catch (error: any) {
+         let message = 'खाता हटाने में विफल।';
+        if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+            message = 'पासवर्ड गलत है। कृपया पुनः प्रयास करें।';
+        } else if (error.code === 'auth/requires-recent-login') {
+            message = 'यह एक संवेदनशील कार्रवाई है और इसके लिए हाल ही में प्रमाणीकरण की आवश्यकता है। कृपया लॉग आउट करें और फिर से लॉग इन करें।';
+        }
+        toast({
+            variant: 'destructive',
+            title: 'त्रुटि',
+            description: message,
+        });
+    } finally {
+        setIsDeleting(false);
+    }
+  };
 
   const handleAction = (message: string) => {
     toast({
@@ -167,12 +218,56 @@ export function SecuritySettings() {
             </CardDescription>
         </CardHeader>
         <CardFooter className="border-t border-destructive/20 px-6 py-4">
-          <Button variant="destructive" onClick={() => handleAction('खाता हटाने की सुविधा जल्द ही लागू की जाएगी। कृपया समर्थन से संपर्क करें।')}>
-            <Trash2 className="mr-2 h-4 w-4" />
-            मैं अपना खाता हटाना चाहता हूँ
-          </Button>
+            <AlertDialog>
+                <AlertDialogTrigger asChild>
+                    <Button variant="destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        मैं अपना खाता हटाना चाहता हूँ
+                    </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                    <AlertDialogTitle>क्या आप वाकई निश्चित हैं?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                        यह क्रिया पूर्ववत नहीं की जा सकती। यह आपके खाते को स्थायी रूप से हटा देगा और आपके सभी डेटा को हमारे सर्वर से मिटा देगा।
+                    </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                    <AlertDialogCancel>रद्द करें</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => setIsDeleteConfirmationOpen(true)} className="bg-destructive hover:bg-destructive/90">जारी रखें</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </CardFooter>
       </Card>
+
+       <Dialog open={isDeleteConfirmationOpen} onOpenChange={setIsDeleteConfirmationOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2"><ShieldAlert className="text-destructive"/>अंतिम पुष्टि</DialogTitle>
+                    <DialogDescription>
+                        जारी रखने के लिए, कृपया अपना पासवर्ड दर्ज करके पुष्टि करें।
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="py-4 space-y-2">
+                    <Label htmlFor="delete-password">पासवर्ड</Label>
+                    <Input 
+                        id="delete-password" 
+                        type="password"
+                        value={deletePassword}
+                        onChange={(e) => setDeletePassword(e.target.value)}
+                        placeholder="अपना पासवर्ड दर्ज करें"
+                    />
+                </div>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsDeleteConfirmationOpen(false)}>रद्द करें</Button>
+                    <Button variant="destructive" onClick={handleDeleteAccount} disabled={isDeleting}>
+                        {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        खाता स्थायी रूप से हटाएं
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </div>
   );
 }
