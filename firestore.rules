@@ -144,7 +144,7 @@ service cloud.firestore {
      * client-specific access without needing slow or impossible cross-collection queries.
      */
     match /projects/{projectId} {
-      allow get: if canAccessProjectData(projectId);
+      allow get: if isSignedIn();
       allow list: if isAdmin();
       allow create: if isAdmin() && request.resource.data.id == projectId;
       allow update: if isAdmin() && request.resource.data.id == projectId;
@@ -198,3 +198,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
