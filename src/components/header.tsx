@@ -5,7 +5,7 @@ import * as React from "react";
 import Link from "next/link";
 import { Menu, Rocket, X, LogOut, LayoutDashboard, User } from "lucide-react";
 import { signOut } from "firebase/auth";
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
@@ -19,8 +19,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useCookieConsent } from "@/hooks/use-cookie-consent";
-
 
 const navLinks = [
   { href: "/#services", label: "सेवाएं" },
@@ -48,7 +46,7 @@ function UserNav() {
   }
 
   if (!user) {
-    return null; // The login/signup button is handled separately in the header
+    return null; // This case should not be hit if logic is correct
   }
 
   return (
@@ -89,28 +87,27 @@ function UserNav() {
   );
 }
 
-
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
-  const { hasMadeChoice } = useCookieConsent();
   const { user } = useUser();
+  const pathname = usePathname();
 
   const AuthButton = () => {
     if (user) {
       return <UserNav />;
     }
-    
-    if (!hasMadeChoice) {
-      return (
-        <Button asChild variant="default" className="animate-fast-blinking-glow">
-          <Link href="/signup">साइन अप करें</Link>
-        </Button>
-      );
+    // Default to Sign Up unless on the login page
+    if (pathname === '/login') {
+        return (
+            <Button asChild>
+                <Link href="/signup">साइन अप करें</Link>
+            </Button>
+        );
     }
-  
+    // For all other pages, show Sign Up if not logged in.
     return (
-      <Button asChild>
-        <Link href="/login">लॉग इन करें</Link>
+      <Button asChild variant="default" className="animate-fast-blinking-glow">
+        <Link href="/signup">साइन अप करें</Link>
       </Button>
     );
   };
@@ -119,20 +116,24 @@ export default function Header() {
     if (user) {
       return <UserNav />;
     }
-
-    const buttonProps = hasMadeChoice
-      ? { href: '/login', label: 'लॉग इन करें' }
-      : { href: '/signup', label: 'साइन अप करें' };
-
+    // Default to Sign Up
+     if (pathname === '/login') {
+        return (
+            <Button asChild className="w-full justify-center">
+                <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+                साइन अप करें
+                </Link>
+            </Button>
+        );
+    }
     return (
       <Button asChild className="w-full justify-center">
-        <Link href={buttonProps.href} onClick={() => setIsMenuOpen(false)}>
-          {buttonProps.label}
+        <Link href="/signup" onClick={() => setIsMenuOpen(false)}>
+          साइन अप करें
         </Link>
       </Button>
     );
   };
-
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
