@@ -178,7 +178,12 @@ export default function DashboardLayout({
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
 
-  const isActive = (path: string) => pathname.startsWith(path) && (pathname === path || pathname.startsWith(`${path}/`));
+  const isActive = (path: string) => {
+    if (path === '/dashboard') {
+      return pathname === path;
+    }
+    return pathname.startsWith(path);
+  }
 
   const handleLogout = async () => {
     if (auth) {
@@ -213,7 +218,7 @@ export default function DashboardLayout({
             
             <SidebarMenu className="flex-1 px-1">
                <SidebarMenuItem>
-                <Button variant="default" size="lg" className="w-full !justify-start mb-4" onClick={() => setIsProjectModalOpen(true)}>
+                <Button variant="secondary" size="lg" className="w-full !justify-start mb-4" onClick={() => setIsProjectModalOpen(true)}>
                     <Plus />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">नया प्रोजेक्ट</span>
                 </Button>
