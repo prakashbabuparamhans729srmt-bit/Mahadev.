@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
                 <p className="text-muted-foreground mt-2 mb-6">
                     हमने आपके पासवर्ड को रीसेट करने के लिए एक लिंक <strong>{email}</strong> पर भेज दिया है। कृपया अपना इनबॉक्स जांचें।
                 </p>
-                <Button onClick={() => router.push('/login')} className="w-full">
+                <Button onClick={() => window.location.href = '/login'} className="w-full">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     लॉगिन पर वापस जाएं
                 </Button>
