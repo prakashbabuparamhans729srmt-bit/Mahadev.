@@ -54,6 +54,12 @@ interface IFile {
     url: string;
 }
 
+const dummyTeam = [
+    { id: '1', name: 'राहुल शर्मा', role: 'प्रोजेक्ट मैनेजर' },
+    { id: '2', name: 'प्रिया गुप्ता', role: 'UI/UX डिजाइनर' },
+    { id: '3', name: 'सुमित पटेल', role: 'लीड डेवलपर' },
+];
+
 export default function ProjectDetailsPage() {
     const params = useParams();
     const { toast } = useToast();
@@ -74,14 +80,6 @@ export default function ProjectDetailsPage() {
 
     const { data: client, isLoading: isClientLoading } = useDoc(clientRef);
     
-    const teamQuery = useMemo(() => {
-        if (!firestore || !projectId) return null;
-        // In a real app, this would probably involve querying a 'team_members' collection
-        // based on IDs stored in the project document. For now, we assume a subcollection.
-        return collection(firestore, `projects/${projectId}/team`);
-    }, [firestore, projectId]);
-    const { data: team, isLoading: isTeamLoading } = useCollection(teamQuery);
-
     const filesQuery = useMemo(() => {
         if (!firestore || !projectId) return null;
         return collection(firestore, `projects/${projectId}/files`);
@@ -102,7 +100,7 @@ export default function ProjectDetailsPage() {
         });
     };
 
-    if (isProjectLoading || isClientLoading || isTeamLoading || isFilesLoading || isTimelineLoading) {
+    if (isProjectLoading || isClientLoading || isFilesLoading || isTimelineLoading) {
         return (
             <div className="flex h-full items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
@@ -285,7 +283,7 @@ export default function ProjectDetailsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              {team?.map((t: any) => (
+              {dummyTeam.map((t: any) => (
                 <div key={t.id} className="flex items-center gap-3">
                   <Avatar>
                     <AvatarFallback>{t.name?.[0] || 'U'}</AvatarFallback>
@@ -296,7 +294,7 @@ export default function ProjectDetailsPage() {
                   </div>
                 </div>
               ))}
-              {(!team || team.length === 0) && <p className="text-sm text-muted-foreground">कोई टीम सदस्य असाइन नहीं किया गया है।</p>}
+              {(dummyTeam.length === 0) && <p className="text-sm text-muted-foreground">कोई टीम सदस्य असाइन नहीं किया गया है।</p>}
             </CardContent>
             <CardFooter>
               <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('नए सदस्यों को जोड़ने की सुविधा जल्द ही आ रही है।')}>

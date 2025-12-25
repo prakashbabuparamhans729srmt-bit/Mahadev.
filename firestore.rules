@@ -56,16 +56,10 @@ service cloud.firestore {
       let projectData = get(/databases/$(database)/documents/projects/$(projectId)).data;
       return isOwner(projectData.clientId);
     }
-    
-    // Checks if the user is a team member of the given project.
-    function isTeamMemberOfProject(projectId) {
-      let projectData = get(/databases/$(database)/documents/projects/$(projectId)).data;
-      return isSignedIn() && request.auth.uid in projectData.get('teamMembers', []);
-    }
 
     // Grants access if user is an admin or the designated client for the project.
     function canAccessProjectData(projectId) {
-      return isAdmin() || isClientOfProject(projectId) || isTeamMemberOfProject(projectId);
+      return isAdmin() || isClientOfProject(projectId);
     }
     
     /**
@@ -198,5 +192,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
