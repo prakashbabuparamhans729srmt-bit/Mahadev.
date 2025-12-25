@@ -2,6 +2,7 @@
 'use client';
 
 import React from 'react';
+import dynamic from 'next/dynamic';
 import {
   Card,
   CardContent,
@@ -12,8 +13,6 @@ import {
 } from '@/components/ui/card';
 import {
   AreaChart,
-  Area,
-  XAxis,
 } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -34,7 +33,7 @@ import {
   User,
   Star
 } from 'lucide-react';
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { type ChartConfig } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -45,6 +44,21 @@ import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useUser } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+const ChartContainer = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartContainer), {
+  loading: () => <Skeleton className="h-[300px] w-full" />,
+  ssr: false,
+});
+const ChartTooltip = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartTooltip), { ssr: false });
+const ChartTooltipContent = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartTooltipContent), { ssr: false });
+const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
+const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+const RechartsAreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), {
+    loading: () => <Skeleton className="h-[300px] w-full" />,
+    ssr: false
+});
 
 
 const chartData = [
@@ -136,7 +150,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent className="h-[300px] w-full">
              <ChartContainer config={chartConfig} className="w-full h-full">
-              <AreaChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 0 }}>
+              <RechartsAreaChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorCommits" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.4}/>
@@ -149,7 +163,7 @@ export default function AdminDashboard() {
                   content={<ChartTooltipContent indicator="line" />}
                 />
                 <Area type="monotone" dataKey="commits" stroke="hsl(var(--primary))" strokeWidth={3} fillOpacity={1} fill="url(#colorCommits)" />
-              </AreaChart>
+              </RechartsAreaChart>
             </ChartContainer>
           </CardContent>
         </Card>
