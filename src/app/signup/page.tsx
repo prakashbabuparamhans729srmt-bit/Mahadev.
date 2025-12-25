@@ -256,9 +256,8 @@ export default function SignupPage() {
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               खाता बनाएं
             </Button>
-          </form>
-          <div className="mt-6 text-center text-sm">
-            <p className="px-8 text-center text-sm text-muted-foreground mb-4">
+            
+            <p className="px-8 text-center text-sm text-muted-foreground mt-4">
                 साइन अप करके, आप हमारी{' '}
                 <Link
                     href="/terms"
@@ -268,13 +267,16 @@ export default function SignupPage() {
                 </Link>{' '}
                 और{' '}
                 <Link
-                    href="/privacy"
+                    href="/terms"
                     className="underline underline-offset-4 hover:text-primary"
                 >
                     गोपनीयता नीति
                 </Link>
                 {' '}से सहमत होते हैं।
             </p>
+
+          </form>
+          <div className="mt-6 text-center text-sm">
             पहले से ही एक खाता है?{' '}
             <Link href="/login" className="font-semibold text-primary hover:underline">
               लॉग इन करें
