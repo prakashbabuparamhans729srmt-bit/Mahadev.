@@ -40,6 +40,8 @@ import {
   Cpu,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useFirestore, useUser } from '@/firebase';
+import { addDoc, collection } from 'firebase/firestore';
 
 function ScopeResultDialog({
   result,
@@ -56,22 +58,55 @@ function ScopeResultDialog({
 }) {
   const router = useRouter();
   const { toast } = useToast();
+  const firestore = useFirestore();
+  const { user } = useUser();
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
 
-  const handleCreateProject = () => {
-    // In a real app, this would create a project in the database.
-    // For now, we'll just navigate to a generic project page.
-    toast({
-      title: 'प्रोजेक्ट बनाया गया!',
-      description: 'आपको प्रोजेक्ट विवरण पेज पर रीडायरेक्ट किया जा रहा है।',
-    });
-    // Let's pass some data via query params for demonstration
-    const query = new URLSearchParams({
-        name: "नया AI आधारित प्रोजेक्ट",
-        budget: result.estimatedBudget,
-        timeline: result.estimatedTimeline
-    }).toString();
+  const handleCreateProject = async () => {
+    if (!firestore || !user) {
+        toast({
+            variant: "destructive",
+            title: "त्रुटि",
+            description: "प्रोजेक्ट बनाने के लिए आपको लॉग इन होना चाहिए।",
+        });
+        return;
+    }
     
-    router.push(`/dashboard/project/new-ai-project?${query}`);
+    setIsCreatingProject(true);
+
+    try {
+        const newProject = {
+            clientId: user.uid,
+            name: `AI आधारित प्रोजेक्ट: ${description.substring(0, 20)}...`,
+            description: description,
+            budget: parseFloat(result.estimatedBudget.replace(/[^0-9-]/g, '').split('-')[0] || '0'),
+            serviceTier: 'Standard', // Default for AI scoper
+            status: 'प्रारंभिक',
+            startDate: new Date().toISOString(),
+            // Estimate end date based on timeline
+            endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
+        };
+
+        const projectsCollection = collection(firestore, 'projects');
+        const docRef = await addDoc(projectsCollection, newProject);
+
+        toast({
+            title: 'प्रोजेक्ट बनाया गया!',
+            description: 'आपको प्रोजेक्ट विवरण पेज पर रीडायरेक्ट किया जा रहा है।',
+        });
+        
+        router.push(`/dashboard/project/${docRef.id}`);
+
+    } catch (error) {
+        console.error("Error creating project:", error);
+        toast({
+            variant: "destructive",
+            title: "त्रुटि",
+            description: "प्रोजेक्ट बनाने में विफल। कृपया बाद में पुनः प्रयास करें।",
+        });
+    } finally {
+        setIsCreatingProject(false);
+    }
   };
   
   const handleAction = (message: string) => {
@@ -175,7 +210,10 @@ function ScopeResultDialog({
                 ⬅️ नया स्कोप
               </Button>
             </DialogClose>
-            <Button onClick={handleCreateProject}>✅ प्रोजेक्ट शुरू करें</Button>
+            <Button onClick={handleCreateProject} disabled={isCreatingProject}>
+              {isCreatingProject && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {isCreatingProject ? 'बनाया जा रहा है...' : '✅ प्रोजेक्ट शुरू करें'}
+            </Button>
           </DialogFooter>
         </div>
       </DialogContent>

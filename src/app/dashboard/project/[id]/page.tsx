@@ -29,6 +29,8 @@ import {
   Users,
   Upload,
   ChevronRight,
+  Loader2,
+  AlertTriangle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -36,34 +38,11 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useParams } from 'next/navigation';
-
-// Dummy data, in a real app this would come from a database based on params.id
-const project = {
-  id: '#1042',
-  name: 'स्मार्ट ERP सिस्टम',
-  client: {
-    name: 'राजेश इंडस्ट्रीज',
-    phone: '+91-98XXXXXX21',
-    email: 'ra@example.com',
-  },
-  timeline: {
-    start: '01/04/24',
-    end: '30/06/24',
-  },
-  budget: {
-    total: 875000,
-    spent: 520000,
-  },
-  health: {
-    overall: 68,
-    time: 80,
-    budget: 50,
-    quality: 60,
-    satisfaction: 70,
-  },
-};
+import { useDoc, useFirestore } from '@/firebase';
+import { doc } from 'firebase/firestore';
+import { format } from 'date-fns';
 
 const phases = [
   { name: '1. डिस्कवरी', progress: 100, status: 'completed' },
@@ -103,12 +82,70 @@ const files = [
 export default function ProjectDetailsPage() {
     const params = useParams();
     const { toast } = useToast();
+    const firestore = useFirestore();
+    const projectId = typeof params.id === 'string' ? params.id : '';
+
+    const projectRef = useMemo(() => {
+        if (!firestore || !projectId) return null;
+        return doc(firestore, 'projects', projectId);
+    }, [firestore, projectId]);
+
+    const { data: project, isLoading: isProjectLoading, error: projectError } = useDoc(projectRef);
+
+    const clientRef = useMemo(() => {
+        if (!firestore || !project?.clientId) return null;
+        return doc(firestore, 'clients', project.clientId);
+    }, [firestore, project?.clientId]);
+
+    const { data: client, isLoading: isClientLoading } = useDoc(clientRef);
 
     const handleAction = (message: string) => {
         toast({
             title: 'सुविधा जल्द ही आ रही है',
             description: message,
         });
+    };
+
+    if (isProjectLoading || isClientLoading) {
+        return (
+            <div className="flex h-full items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        );
+    }
+    
+    if (projectError) {
+        return (
+             <div className="flex h-full flex-col items-center justify-center text-center text-destructive">
+                <AlertTriangle className="h-12 w-12" />
+                <h2 className="mt-4 text-xl font-semibold">प्रोजेक्ट लोड करने में त्रुटि</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                    यह प्रोजेक्ट मौजूद नहीं हो सकता है या आपके पास इसे देखने की अनुमति नहीं है।
+                </p>
+             </div>
+        )
+    }
+
+    if (!project) {
+        return (
+             <div className="flex h-full flex-col items-center justify-center text-center">
+                <AlertTriangle className="h-12 w-12 text-muted-foreground" />
+                <h2 className="mt-4 text-xl font-semibold">प्रोजेक्ट नहीं मिला</h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                    प्रोजेक्ट आईडी '{projectId}' से कोई प्रोजेक्ट नहीं मिला।
+                </p>
+             </div>
+        )
+    }
+
+    const budgetSpent = project.budget ? (project.budget / 100) * 60 : 0; // Dummy spent amount
+    const budgetRemaining = project.budget - budgetSpent;
+    const health = {
+        overall: 68,
+        time: 80,
+        budget: 50,
+        quality: 60,
+        satisfaction: 70,
     };
 
   return (
@@ -122,7 +159,7 @@ export default function ProjectDetailsPage() {
                     </Link>
                 </Button>
                 <h1 className="text-xl md:text-2xl font-bold font-headline flex items-center gap-2">
-                    <span className="hidden md:inline">प्रोजेक्ट {decodeURIComponent(params.id as string)}: </span>"
+                    <span className="hidden md:inline">प्रोजेक्ट: </span>"
                     {project.name}"
                 </h1>
             </div>
@@ -147,15 +184,19 @@ export default function ProjectDetailsPage() {
                   <User className="mr-2 h-4 w-4" />
                   क्लाइंट
                 </h3>
-                <p className="font-bold">{project.client.name}</p>
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Phone className="h-3 w-3" />
-                  {project.client.phone}
-                </p>
-                <p className="text-sm text-muted-foreground flex items-center gap-2">
-                  <Mail className="h-3 w-3" />
-                  {project.client.email}
-                </p>
+                {client ? (
+                    <>
+                        <p className="font-bold">{client.companyName || `${client.firstName} ${client.lastName}`}</p>
+                        <p className="text-sm text-muted-foreground flex items-center gap-2">
+                          <Phone className="h-3 w-3" />
+                          {client.phone || 'उपलब्ध नहीं'}
+                        </p>
+                        <p className="text-sm text-muted-foreground flex items-center gap-2">
+                          <Mail className="h-3 w-3" />
+                          {client.email}
+                        </p>
+                    </>
+                ) : <p className="text-sm text-muted-foreground">लोड हो रहा है...</p>}
               </Card>
               <Card className="p-4 bg-secondary/30 border-l-4 border-accent">
                 <h3 className="font-semibold flex items-center text-sm mb-2">
@@ -163,10 +204,10 @@ export default function ProjectDetailsPage() {
                   टाइमलाइन
                 </h3>
                 <p className="text-sm text-muted-foreground">
-                  प्रारंभ: {project.timeline.start}
+                  प्रारंभ: {project.startDate ? format(new Date(project.startDate), 'dd/MM/yy') : '-'}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  समाप्ति: {project.timeline.end}
+                  समाप्ति: {project.endDate ? format(new Date(project.endDate), 'dd/MM/yy') : '-'}
                 </p>
               </Card>
               <Card className="p-4 bg-secondary/30 border-l-4 border-green-500">
@@ -174,16 +215,13 @@ export default function ProjectDetailsPage() {
                   <Wallet className="mr-2 h-4 w-4" />💰 बजट
                 </h3>
                 <p className="font-bold text-foreground">
-                  ₹{project.budget.total.toLocaleString('en-IN')}
+                  ₹{project.budget.toLocaleString('en-IN')}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  खर्च: ₹{project.budget.spent.toLocaleString('en-IN')}
+                  खर्च: ₹{budgetSpent.toLocaleString('en-IN')}
                 </p>
                 <p className="text-sm text-green-600">
-                  शेष: ₹
-                  {(project.budget.total - project.budget.spent).toLocaleString(
-                    'en-IN'
-                  )}
+                  शेष: ₹{budgetRemaining.toLocaleString('en-IN')}
                 </p>
               </Card>
             </div>
@@ -193,27 +231,27 @@ export default function ProjectDetailsPage() {
                 प्रोजेक्ट हेल्थ स्कोर:
               </label>
               <div className="flex items-center gap-4 mt-2">
-                <Progress value={project.health.overall} className="h-4" />
+                <Progress value={health.overall} className="h-4" />
                 <span className="font-bold text-lg text-primary">
-                  {project.health.overall}%
+                  {health.overall}%
                 </span>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-muted-foreground mt-4">
                 <div className="flex items-center gap-2">
                   <Clock className="h-4 w-4" />
-                  <span>समय: {project.health.time}%</span>
+                  <span>समय: {health.time}%</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Wallet className="h-4 w-4" />
-                  <span>बजट: {project.health.budget}%</span>
+                  <span>बजट: {health.budget}%</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle className="h-4 w-4" />
-                  <span>गुणवत्ता: {project.health.quality}%</span>
+                  <span>गुणवत्ता: {health.quality}%</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Smile className="h-4 w-4" />
-                  <span>संतुष्टि: {project.health.satisfaction}%</span>
+                  <span>संतुष्टि: {health.satisfaction}%</span>
                 </div>
               </div>
             </div>
