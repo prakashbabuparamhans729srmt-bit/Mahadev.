@@ -22,6 +22,7 @@ export default function ProjectOversightPage() {
 
   const projectsQuery = useMemo(() => {
     if (!firestore || !user) return null;
+    // SECURE QUERY: Only fetch projects belonging to the current user
     return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
   }, [firestore, user]);
 
