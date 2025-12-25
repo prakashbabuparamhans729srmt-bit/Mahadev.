@@ -5,11 +5,11 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState, type FormEvent } from 'react';
+import { useState, type FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { Loader2, Mail, ArrowLeft } from 'lucide-react';
+import { Loader2, Mail, ArrowLeft, RefreshCw } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,10 +23,32 @@ export default function ForgotPasswordPage() {
   const [isPending, setIsPending] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
 
+  const [captchaNum1, setCaptchaNum1] = useState(0);
+  const [captchaNum2, setCaptchaNum2] = useState(0);
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
+
+  const generateCaptcha = () => {
+    setCaptchaNum1(Math.floor(Math.random() * 10) + 1);
+    setCaptchaNum2(Math.floor(Math.random() * 10) + 1);
+    setCaptchaAnswer('');
+  };
+
+  useEffect(() => {
+    generateCaptcha();
+  }, []);
+
   const handleResetPassword = async (e: FormEvent) => {
     e.preventDefault();
-    setIsPending(true);
     setError(null);
+
+    const expectedAnswer = captchaNum1 + captchaNum2;
+    if (parseInt(captchaAnswer, 10) !== expectedAnswer) {
+      setError('कैप्चा का उत्तर गलत है। कृपया पुनः प्रयास करें।');
+      generateCaptcha();
+      return;
+    }
+    
+    setIsPending(true);
 
     if (!auth) {
       setError('प्रमाणीकरण सेवा उपलब्ध नहीं है।');
@@ -78,26 +100,48 @@ export default function ForgotPasswordPage() {
                 </p>
 
                 <form onSubmit={handleResetPassword} className="grid gap-4">
-                <div className="grid gap-2">
-                    <Label htmlFor="email">ईमेल</Label>
-                    <Input
-                    id="email"
-                    type="email"
-                    name="email"
-                    placeholder="m@example.com"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-secondary/50 border-border h-11"
-                    />
-                </div>
-                {error && (
-                    <p className="text-sm font-medium text-destructive">{error}</p>
-                )}
-                <Button className="w-full mt-4 h-12 text-base" type="submit" disabled={isPending}>
-                    {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    रीसेट लिंक भेजें
-                </Button>
+                  <div className="grid gap-2">
+                      <Label htmlFor="email">ईमेल</Label>
+                      <Input
+                      id="email"
+                      type="email"
+                      name="email"
+                      placeholder="m@example.com"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="bg-secondary/50 border-border h-11"
+                      />
+                  </div>
+
+                  <div className="grid gap-2">
+                    <Label htmlFor="captcha">सुरक्षा प्रश्न</Label>
+                    <div className="flex items-center gap-3">
+                      <span className="font-mono text-lg p-2 bg-secondary/50 rounded-md">
+                        {captchaNum1} + {captchaNum2} = ?
+                      </span>
+                      <Input
+                        id="captcha"
+                        type="number"
+                        placeholder="उत्तर"
+                        required
+                        value={captchaAnswer}
+                        onChange={(e) => setCaptchaAnswer(e.target.value)}
+                        className="bg-secondary/50 border-border h-11"
+                      />
+                       <Button type="button" variant="ghost" size="icon" onClick={generateCaptcha}>
+                          <RefreshCw className="h-4 w-4"/>
+                       </Button>
+                    </div>
+                  </div>
+
+                  {error && (
+                      <p className="text-sm font-medium text-destructive">{error}</p>
+                  )}
+                  <Button className="w-full mt-4 h-12 text-base" type="submit" disabled={isPending}>
+                      {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      रीसेट लिंक भेजें
+                  </Button>
                 </form>
                 <div className="mt-6 text-center text-sm">
                     <Link href="/login" className="font-semibold text-primary hover:underline">
@@ -111,4 +155,3 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
-

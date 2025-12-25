@@ -128,13 +128,13 @@ function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
-                <AvatarImage src={user?.photoURL ?? "https://picsum.photos/seed/1/100/100"} alt={user?.displayName ?? 'अमित कुमार'} />
+                <AvatarImage src={user?.photoURL ?? "https://picsum.photos/seed/1/100/100"} alt={user?.displayName ?? 'प्रकाश कुमार'} />
                 <AvatarFallback>
-                {user?.displayName?.[0]?.toUpperCase() ?? 'A'}
+                {user?.displayName?.[0]?.toUpperCase() ?? 'P'}
                 </AvatarFallback>
             </Avatar>
             <div className="text-right hidden sm:block">
-                <p className="font-semibold text-sm">{user?.displayName ?? 'अमित कुमार'}</p>
+                <p className="font-semibold text-sm">{user?.displayName ?? 'प्रकाश कुमार'}</p>
                 <p className="text-xs text-primary">प्रीमियम क्लाइंट</p>
             </div>
         </Button>
@@ -142,7 +142,7 @@ function UserNav() {
       <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.displayName ?? 'अमित कुमार'}</p>
+            <p className="text-sm font-medium leading-none">{user?.displayName ?? 'प्रकाश कुमार'}</p>
             <p className="text-xs leading-none text-muted-foreground">
               {user?.email ?? 'प्रीमियम क्लाइंट'}
             </p>

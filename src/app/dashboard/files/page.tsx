@@ -21,7 +21,7 @@ import { collection, deleteDoc, doc } from 'firebase/firestore';
 
 
 const versions = [
-    { version: 'v1.2', date: '20/04/24', author: 'अमित', comment: '"कलर करेक्शन"' },
+    { version: 'v1.2', date: '20/04/24', author: 'प्रकाश', comment: '"कलर करेक्शन"' },
     { version: 'v1.1', date: '19/04/24', author: 'प्रिया', comment: '"लोगो अपडेट"' },
     { version: 'v1.0', date: '18/04/24', author: 'राहुल', comment: '"प्रारंभिक ड्राफ्ट"' },
 ];
@@ -303,5 +303,3 @@ export default function FileManagerPage() {
     </div>
   );
 }
-
-    

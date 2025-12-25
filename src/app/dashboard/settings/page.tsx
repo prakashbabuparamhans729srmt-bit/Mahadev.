@@ -25,7 +25,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (user) {
-      setDisplayName(user.displayName || 'अमित कुमार');
+      setDisplayName(user.displayName || 'प्रकाश कुमार');
       setPhotoURL(user.photoURL);
     }
   }, [user]);
@@ -175,5 +175,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
-    

@@ -246,7 +246,7 @@ export default function TermsPage() {
                     <Section icon={<FileText />} title="7.0 विवाद समाधान" id="section-7">
                     <p>किसी भी विवाद को पहले आपसी चर्चा (7 दिन) के माध्यम से हल किया जाएगा। यदि आवश्यक हो, तो एक तटस्थ मध्यस्थ (14 दिन) की नियुक्ति की जाएगी। सभी कानूनी मामले नोएडा, उत्तर प्रदेश (भारत) के न्यायालयों के अनन्य अधिकार क्षेत्र में होंगे।</p>
                      <p className="font-semibold mt-4">विवाद समाधान अधिकारी:</p>
-                     <p>श्री अमित कुमार (COO) | +91-120-1234567 (Ext: 101) | <a href="mailto:grievance@hajarograhako.com" className="text-primary">grievance@hajarograhako.com</a></p>
+                     <p>श्री प्रकाश कुमार (COO) | +91-120-1234567 (Ext: 101) | <a href="mailto:grievance@hajarograhako.com" className="text-primary">grievance@hajarograhako.com</a></p>
                     </Section>
                 </Accordion>
 
