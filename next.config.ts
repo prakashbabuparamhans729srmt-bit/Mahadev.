@@ -10,7 +10,7 @@ const securityHeaders = [
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       img-src 'self' https://images.unsplash.com https://picsum.photos https://*.googleusercontent.com;
       font-src 'self' https://fonts.gstatic.com;
-      connect-src 'self' wss: *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com *.cloudworkstations.dev;
+      connect-src 'self' wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com *.cloudworkstations.dev;
       frame-src 'self' *.firebaseapp.com https://*.firebaseapp.com;
     `.replace(/\s{2,}/g, ' ').trim()
   }

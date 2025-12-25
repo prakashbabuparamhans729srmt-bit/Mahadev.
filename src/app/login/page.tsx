@@ -157,10 +157,11 @@ export default function LoginPage() {
                 <Label htmlFor="email">ईमेल</Label>
                 <Input
                   id="email"
-                  type="email"
                   name="email"
+                  type="email"
                   placeholder="m@example.com"
                   required
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-secondary/50 border-border"
@@ -178,9 +179,10 @@ export default function LoginPage() {
                 </div>
                 <Input 
                   id="password" 
-                  type="password" 
                   name="password" 
+                  type="password" 
                   required
+                  autoComplete="current-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="bg-secondary/50 border-border"

@@ -207,11 +207,11 @@ export default function SignupPage() {
                <div className="grid grid-cols-2 gap-4">
                     <div className="grid gap-2">
                         <Label htmlFor="first-name">पहला नाम</Label>
-                        <Input id="first-name" placeholder="उदा. राहुल" required onChange={(e) => setFirstName(e.target.value)} value={firstName} className="bg-secondary/50 border-border" />
+                        <Input id="first-name" name="first-name" placeholder="उदा. राहुल" required autoComplete="given-name" onChange={(e) => setFirstName(e.target.value)} value={firstName} className="bg-secondary/50 border-border" />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="last-name">अंतिम नाम</Label>
-                        <Input id="last-name" placeholder="उदा. कुमार" required onChange={(e) => setLastName(e.target.value)} value={lastName} className="bg-secondary/50 border-border" />
+                        <Input id="last-name" name="last-name" placeholder="उदा. कुमार" required autoComplete="family-name" onChange={(e) => setLastName(e.target.value)} value={lastName} className="bg-secondary/50 border-border" />
                     </div>
                 </div>
 
@@ -223,6 +223,7 @@ export default function SignupPage() {
                   type="email"
                   placeholder="m@example.com"
                   required
+                  autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-secondary/50 border-border"
@@ -236,6 +237,7 @@ export default function SignupPage() {
                   name="phone"
                   type="tel"
                   placeholder="+91-XXXXXXXXXX"
+                  autoComplete="tel"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   className="bg-secondary/50 border-border"
@@ -249,6 +251,7 @@ export default function SignupPage() {
                   name="password" 
                   type="password" 
                   required 
+                  autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="bg-secondary/50 border-border"

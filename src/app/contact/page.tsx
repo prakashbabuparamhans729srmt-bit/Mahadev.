@@ -10,6 +10,7 @@ import { Mail, Phone, MessageSquare, Loader2 } from 'lucide-react';
 import React, { type FormEvent, useState } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { Label } from '@/components/ui/label';
 
 export default function ContactPage() {
   const { toast } = useToast();
@@ -95,9 +96,18 @@ export default function ContactPage() {
               </div>
               <div className="flex flex-col justify-center">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <Input name="name" type="text" placeholder="आपका नाम" className="w-full" required />
-                  <Input name="email" type="email" placeholder="आपका ईमेल" className="w-full" required />
-                  <Textarea name="message" placeholder="आपका संदेश..." className="w-full" rows={5} required />
+                  <div className="space-y-2">
+                    <Label htmlFor="name">आपका नाम</Label>
+                    <Input id="name" name="name" type="text" placeholder="आपका नाम" className="w-full" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email">आपका ईमेल</Label>
+                    <Input id="email" name="email" type="email" placeholder="आपका ईमेल" className="w-full" required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="message">आपका संदेश</Label>
+                    <Textarea id="message" name="message" placeholder="आपका संदेश..." className="w-full" rows={5} required />
+                  </div>
                   <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isLoading}>
                     {isLoading ? (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
