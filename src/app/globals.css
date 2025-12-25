@@ -171,4 +171,17 @@ body {
       opacity: 0.4;
     }
   }
+  
+  .animate-fade {
+    animation: fade 40s infinite;
+    opacity: 0;
+  }
+
+  @keyframes fade {
+    0% { opacity: 0; }
+    5% { opacity: 1; } /* Fade in */
+    20% { opacity: 1; } /* Stay visible */
+    25% { opacity: 0; } /* Fade out */
+    100% { opacity: 0; }
+  }
 }
