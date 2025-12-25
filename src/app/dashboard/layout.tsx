@@ -2,6 +2,7 @@
 
 import {
   Sidebar,
+  SidebarProvider,
   SidebarContent,
   SidebarGroup,
   SidebarMenu,
