@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -36,8 +37,8 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection } from 'firebase/firestore';
+import { useCollection, useFirestore, useUser } from '@/firebase';
+import { collection, query, where } from 'firebase/firestore';
 import React, { useMemo } from 'react';
 
 const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), {
@@ -77,11 +78,12 @@ const timeData = [
 
 export default function ReportsPage() {
   const firestore = useFirestore();
+  const { user } = useUser();
 
   const projectsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'projects');
-  }, [firestore]);
+    if (!firestore || !user) return null;
+    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
+  }, [firestore, user]);
 
   const { data: projects, isLoading, error } = useCollection(projectsQuery);
 
@@ -215,5 +217,3 @@ export default function ReportsPage() {
     </div>
   );
 }
-
-    

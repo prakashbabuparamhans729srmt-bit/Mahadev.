@@ -8,12 +8,24 @@ import { Skeleton } from '@/components/ui/skeleton';
 const ImageCarouselSection = dynamic(() => import('@/components/sections/image-carousel'), {
   loading: () => <Skeleton className="h-[50vh] w-full" />,
 });
-const ServicesSection = dynamic(() => import('@/components/sections/services'));
-const PortfolioSection = dynamic(() => import('@/components/sections/portfolio'));
-const ProcessSection = dynamic(() => import('@/components/sections/process'));
-const TestimonialsSection = dynamic(() => import('@/components/sections/testimonials'));
-const CtaSection = dynamic(() => import('@/components/sections/cta'));
-const PricingSection = dynamic(() => import('@/components/sections/pricing'));
+const ServicesSection = dynamic(() => import('@/components/sections/services'), {
+    loading: () => <Skeleton className="h-[50vh] w-full" />,
+});
+const PortfolioSection = dynamic(() => import('@/components/sections/portfolio'), {
+    loading: () => <Skeleton className="h-[50vh] w-full" />,
+});
+const ProcessSection = dynamic(() => import('@/components/sections/process'), {
+    loading: () => <Skeleton className="h-[50vh] w-full" />,
+});
+const TestimonialsSection = dynamic(() => import('@/components/sections/testimonials'), {
+    loading: () => <Skeleton className="h-[50vh] w-full" />,
+});
+const CtaSection = dynamic(() => import('@/components/sections/cta'), {
+    loading: () => <Skeleton className="h-[50vh] w-full" />,
+});
+const PricingSection = dynamic(() => import('@/components/sections/pricing'), {
+    loading: () => <Skeleton className="h-[50vh] w-full" />,
+});
 
 
 export default function Home() {
