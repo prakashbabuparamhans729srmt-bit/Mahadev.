@@ -129,7 +129,7 @@ function UserNav() {
             <Avatar className="h-10 w-10">
                 <AvatarImage src={user?.photoURL ?? "https://picsum.photos/seed/1/100/100"} alt={user?.displayName ?? 'अमित कुमार'} />
                 <AvatarFallback>
-                {user?.email?.[0]?.toUpperCase() ?? 'A'}
+                {user?.displayName?.[0]?.toUpperCase() ?? 'A'}
                 </AvatarFallback>
             </Avatar>
             <div className="text-right hidden sm:block">
