@@ -5,22 +5,25 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Bell, Mail, Smartphone } from 'lucide-react';
+import { useNotificationSettings, type NotificationPreferences } from '@/hooks/use-notification-settings';
 
-const notificationTypes = [
-  { id: 'new-messages', label: 'नए संदेश', description: 'जब कोई आपको संदेश भेजता है।' },
-  { id: 'project-updates', label: 'प्रोजेक्ट अपडेट', description: 'महत्वपूर्ण प्रोजेक्ट मील के पत्थर और स्थिति परिवर्तन।' },
-  { id: 'file-uploads', label: 'फ़ाइल अपलोड', description: 'जब कोई नई फ़ाइल प्रोजेक्ट में जोड़ी जाती है।' },
+const notificationTypes: { id: keyof NotificationPreferences['detailed']; label: string; description: string }[] = [
+  { id: 'newMessages', label: 'नए संदेश', description: 'जब कोई आपको संदेश भेजता है।' },
+  { id: 'projectUpdates', label: 'प्रोजेक्ट अपडेट', description: 'महत्वपूर्ण प्रोजेक्ट मील के पत्थर और स्थिति परिवर्तन।' },
+  { id: 'fileUploads', label: 'फ़ाइल अपलोड', description: 'जब कोई नई फ़ाइल प्रोजेक्ट में जोड़ी जाती है।' },
   { id: 'invoices', label: 'चालान और भुगतान', description: 'नए चालान और भुगतान की पुष्टि।' },
   { id: 'promotions', label: 'प्रचार और घोषणाएँ', description: 'Hajaro Grahako से विशेष ऑफ़र और समाचार।' },
 ];
 
 export function NotificationSettings() {
   const { toast } = useToast();
+  const { preferences, setPreference, savePreferences } = useNotificationSettings();
 
-  const handleAction = (message: string) => {
+  const handleSave = () => {
+    savePreferences();
     toast({
-      title: "सेटिंग्स अपडेट की गईं",
-      description: message,
+      title: "सेटिंग्स सहेजी गईं",
+      description: "आपकी नोटिफिकेशन प्राथमिकताएँ सफलतापूर्वक अपडेट हो गई हैं।",
     });
   };
 
@@ -42,7 +45,10 @@ export function NotificationSettings() {
                 आपके पंजीकृत ईमेल पर अपडेट प्राप्त करें।
               </p>
             </div>
-            <Switch defaultChecked onCheckedChange={(checked) => handleAction(`ईमेल नोटिफिकेशन्स ${checked ? 'चालू' : 'बंद'} की गईं।`)} />
+            <Switch
+              checked={preferences.channels.email}
+              onCheckedChange={(checked) => setPreference('channels', 'email', checked)}
+            />
           </div>
           <div className="flex items-center space-x-4 p-4 bg-secondary/50 rounded-lg">
             <Smartphone className="h-6 w-6 text-primary" />
@@ -52,7 +58,10 @@ export function NotificationSettings() {
                 अपने डिवाइस पर रीयल-टाइम अलर्ट प्राप्त करें।
               </p>
             </div>
-            <Switch onCheckedChange={(checked) => handleAction(`पुश नोटिफिकेशन्स ${checked ? 'चालू' : 'बंद'} की गईं।`)} />
+            <Switch
+              checked={preferences.channels.push}
+              onCheckedChange={(checked) => setPreference('channels', 'push', checked)}
+            />
           </div>
         </CardContent>
       </Card>
@@ -71,12 +80,15 @@ export function NotificationSettings() {
                 <h4 className="font-medium">{type.label}</h4>
                 <p className="text-sm text-muted-foreground">{type.description}</p>
               </div>
-              <Switch defaultChecked onCheckedChange={(checked) => handleAction(`"${type.label}" के लिए नोटिफिकेशन्स ${checked ? 'सक्षम' : 'अक्षम'} की गईं।`)} />
+              <Switch
+                checked={preferences.detailed[type.id]}
+                onCheckedChange={(checked) => setPreference('detailed', type.id, checked)}
+              />
             </div>
           ))}
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-            <Button onClick={() => handleAction('सभी नोटिफिकेशन सेटिंग्स सहेज ली गई हैं।')}>
+            <Button onClick={handleSave}>
                 सेटिंग्स सहेजें
             </Button>
         </CardFooter>
