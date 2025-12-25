@@ -108,10 +108,6 @@ export default function SignupPage() {
     } else if (providerName === 'GitHub') {
       provider = new GithubAuthProvider();
     } else {
-      toast({
-          title: "सुविधा उपलब्ध नहीं है",
-          description: `${providerName} से साइन अप करने की सुविधा जल्द ही आ रही है।`,
-      });
       return;
     }
 
@@ -122,7 +118,9 @@ export default function SignupPage() {
     } catch (error: any) {
       console.error("Social login error:", error);
       let message = 'सोशल साइन-अप विफल।';
-      if (error.code === 'auth/account-exists-with-different-credential') {
+      if (error.code === 'auth/popup-blocked') {
+        message = 'पॉप-अप ब्लॉक कर दिया गया था। कृपया इस साइट के लिए पॉप-अप की अनुमति दें।';
+      } else if (error.code === 'auth/account-exists-with-different-credential') {
         message = 'इस ईमेल से पहले से ही एक खाता मौजूद है, लेकिन एक अलग प्रदाता के साथ।';
       }
       setError(message);
