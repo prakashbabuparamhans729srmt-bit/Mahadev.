@@ -45,7 +45,7 @@ import Link from 'next/link';
 import { useUser, useFirestore, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { collection, query, orderBy, limit } from 'firebase/firestore';
+import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 
 
 const ChartContainer = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartContainer), {
@@ -107,9 +107,9 @@ export default function AdminDashboard() {
   const { toast } = useToast();
 
   const projectsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'projects');
-  }, [firestore]);
+    if (!firestore || !user) return null;
+    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
+  }, [firestore, user]);
   const { data: projects, isLoading: projectsLoading, error: projectsError } = useCollection(projectsQuery);
 
   const { totalBudget, totalSpent } = useMemo(() => {
@@ -367,3 +367,5 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+    

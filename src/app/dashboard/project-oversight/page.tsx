@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -10,17 +11,19 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useCollection, useFirestore } from '@/firebase';
+import { useCollection, useFirestore, useUser } from '@/firebase';
 import React, { useMemo } from 'react';
-import { collection } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 
 
 export default function ProjectOversightPage() {
   const firestore = useFirestore();
+  const { user } = useUser();
+
   const projectsQuery = useMemo(() => {
-    if (!firestore) return null;
-    return collection(firestore, 'projects');
-  }, [firestore]);
+    if (!firestore || !user) return null;
+    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
+  }, [firestore, user]);
 
   const { data: projects, isLoading, error } = useCollection(projectsQuery);
 

@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
@@ -26,7 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { addDoc, collection, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
 
 const DUMMY_PROJECT_ID = '1042';
 
@@ -48,11 +49,10 @@ export default function MessagesPage() {
     const { user } = useUser();
 
     // In a real app, you would fetch a list of user's projects/chats
-    // For now, we'll hardcode one project chat.
     const projectsQuery = useMemo(() => {
-        if (!firestore) return null;
-        return collection(firestore, 'projects');
-    }, [firestore]);
+        if (!firestore || !user) return null;
+        return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
+    }, [firestore, user]);
     const { data: projects, isLoading: projectsLoading } = useCollection(projectsQuery);
     
     // Default to the first project, or a dummy one.
@@ -236,3 +236,5 @@ export default function MessagesPage() {
     </div>
   );
 }
+
+    
