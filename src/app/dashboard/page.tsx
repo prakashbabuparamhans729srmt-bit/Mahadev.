@@ -42,6 +42,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { useUser } from '@/firebase';
 
 
 const chartData = [
@@ -93,6 +94,7 @@ const recentMessages = [
 
 export default function AdminDashboard() {
   const router = useRouter();
+  const { user } = useUser();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
   return (
@@ -101,7 +103,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold font-headline flex items-center gap-3">
-            नमस्ते अमित <span className="text-2xl">👋</span>
+            नमस्ते {user?.displayName || 'उपयोगकर्ता'} <span className="text-2xl">👋</span>
           </h1>
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
         </div>
