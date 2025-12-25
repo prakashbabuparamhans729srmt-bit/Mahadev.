@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -14,6 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 const initialFiles = [
@@ -31,6 +33,76 @@ const versions = [
     { version: 'v1.1', date: '19/04/24', author: 'प्रिया', comment: '"लोगो अपडेट"' },
     { version: 'v1.0', date: '18/04/24', author: 'राहुल', comment: '"प्रारंभिक ड्राफ्ट"' },
 ];
+
+const ImagePreviewCard = dynamic(() => Promise.resolve(({ handleAction }: { handleAction: (message: string) => void }) => (
+    <Card>
+        <CardHeader>
+            <CardTitle className="font-headline text-lg">🖼️ फोटो प्रीव्यू: color_palette.png</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+            <div className="aspect-video bg-secondary rounded-md flex items-center justify-center text-muted-foreground overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1593693397649-3ca9c877a192?q=80&w=800" alt="Color Palette" className="w-full h-full object-cover" />
+            </div>
+             <div className="flex justify-between items-center">
+                 <div className="flex gap-2">
+                    <Button variant="outline" size="icon" onClick={() => handleAction('अभी कोई पिछली छवि नहीं है।')}><ArrowLeft className="h-4 w-4"/></Button>
+                    <Button variant="outline" size="icon" onClick={() => handleAction('अभी कोई अगली छवि नहीं है।')}><ArrowRight className="h-4 w-4"/></Button>
+                 </div>
+                 <div className="flex gap-2">
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="sm" className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive">
+                                <Trash2 className="mr-2 h-4 w-4"/> हटाएं
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                            <AlertDialogTitle>क्या आप निश्चित हैं?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                यह क्रिया स्थायी रूप से इस छवि को हटा देगी।
+                            </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                            <AlertDialogCancel>रद्द करें</AlertDialogCancel>
+                            <AlertDialogAction onClick={() => handleAction('छवि हटा दी गई।')}>हटाएं</AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                    <Button variant="outline" size="sm" onClick={() => handleAction('छवि संपादन इंटरफ़ेस जल्द ही आ रहा है।')}>
+                        <Edit2 className="mr-2 h-4 w-4"/> एडिट
+                    </Button>
+                </div>
+             </div>
+        </CardContent>
+    </Card>
+)), {
+    loading: () => <Skeleton className="h-[400px] w-full" />,
+    ssr: false,
+});
+
+const VersionHistoryCard = dynamic(() => Promise.resolve(({ handleAction }: { handleAction: (message: string) => void }) => (
+    <Card>
+        <CardHeader>
+            <CardTitle className="font-headline text-lg">📊 वर्जन हिस्ट्री:</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+             {versions.map(v => (
+                 <div key={v.version} className="text-sm">
+                    <p className="font-semibold">{v.version} ({v.date}) - {v.author}:</p>
+                    <p className="text-muted-foreground text-xs">{v.comment}</p>
+                 </div>
+             ))}
+        </CardContent>
+        <CardFooter className="flex flex-col gap-2">
+            <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('v1.1 को पुनर्स्थापित करने की सुविधा जल्द ही आएगी।')}>↩️ पिछला वर्जन रिस्टोर</Button>
+            <Button variant="link" size="sm" onClick={() => handleAction('पूर्ण चेंज लॉग दिखाने की सुविधा जल्द ही आएगी।')}>📋 चेंज लॉग</Button>
+        </CardFooter>
+    </Card>
+)), {
+    loading: () => <Skeleton className="h-[300px] w-full" />,
+    ssr: false,
+});
+
 
 export default function FileManagerPage() {
     const { toast } = useToast();
@@ -180,65 +252,10 @@ export default function FileManagerPage() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <div className="lg:col-span-2">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-lg">🖼️ फोटो प्रीव्यू: color_palette.png</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="aspect-video bg-secondary rounded-md flex items-center justify-center text-muted-foreground overflow-hidden">
-                            <img src="https://images.unsplash.com/photo-1593693397649-3ca9c877a192?q=80&w=800" alt="Color Palette" className="w-full h-full object-cover" />
-                        </div>
-                         <div className="flex justify-between items-center">
-                             <div className="flex gap-2">
-                                <Button variant="outline" size="icon" onClick={() => handleAction('अभी कोई पिछली छवि नहीं है।')}><ArrowLeft className="h-4 w-4"/></Button>
-                                <Button variant="outline" size="icon" onClick={() => handleAction('अभी कोई अगली छवि नहीं है।')}><ArrowRight className="h-4 w-4"/></Button>
-                             </div>
-                             <div className="flex gap-2">
-                                <AlertDialog>
-                                    <AlertDialogTrigger asChild>
-                                        <Button variant="outline" size="sm" className="text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive">
-                                            <Trash2 className="mr-2 h-4 w-4"/> हटाएं
-                                        </Button>
-                                    </AlertDialogTrigger>
-                                    <AlertDialogContent>
-                                        <AlertDialogHeader>
-                                        <AlertDialogTitle>क्या आप निश्चित हैं?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            यह क्रिया स्थायी रूप से इस छवि को हटा देगी।
-                                        </AlertDialogDescription>
-                                        </AlertDialogHeader>
-                                        <AlertDialogFooter>
-                                        <AlertDialogCancel>रद्द करें</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleAction('छवि हटा दी गई।')}>हटाएं</AlertDialogAction>
-                                        </AlertDialogFooter>
-                                    </AlertDialogContent>
-                                </AlertDialog>
-                                <Button variant="outline" size="sm" onClick={() => handleAction('छवि संपादन इंटरफ़ेस जल्द ही आ रहा है।')}>
-                                    <Edit2 className="mr-2 h-4 w-4"/> एडिट
-                                </Button>
-                            </div>
-                         </div>
-                    </CardContent>
-                </Card>
+                <ImagePreviewCard handleAction={handleAction} />
             </div>
              <div>
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-lg">📊 वर्जन हिस्ट्री:</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                         {versions.map(v => (
-                             <div key={v.version} className="text-sm">
-                                <p className="font-semibold">{v.version} ({v.date}) - {v.author}:</p>
-                                <p className="text-muted-foreground text-xs">{v.comment}</p>
-                             </div>
-                         ))}
-                    </CardContent>
-                    <CardFooter className="flex flex-col gap-2">
-                        <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('v1.1 को पुनर्स्थापित करने की सुविधा जल्द ही आएगी।')}>↩️ पिछला वर्जन रिस्टोर</Button>
-                        <Button variant="link" size="sm" onClick={() => handleAction('पूर्ण चेंज लॉग दिखाने की सुविधा जल्द ही आएगी।')}>📋 चेंज लॉग</Button>
-                    </CardFooter>
-                </Card>
+                <VersionHistoryCard handleAction={handleAction} />
              </div>
         </div>
       </div>
