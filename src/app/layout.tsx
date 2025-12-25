@@ -34,7 +34,7 @@ export default function RootLayout({
 
   return (
     <html lang="hi" className={`dark ${playfair.variable} ${ptSans.variable}`}>
-      <body className="font-body antialiased">
+      <body>
         <FirebaseClientProvider>
           {children}
           <Toaster />
