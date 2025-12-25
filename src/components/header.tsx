@@ -48,11 +48,7 @@ function UserNav() {
   }
 
   if (!user) {
-    return (
-      <Button asChild>
-        <Link href="/login">लॉग इन करें</Link>
-      </Button>
-    );
+    return null; // The login/signup button is handled separately in the header
   }
 
   return (
@@ -97,6 +93,46 @@ function UserNav() {
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { hasMadeChoice } = useCookieConsent();
+  const { user } = useUser();
+
+  const AuthButton = () => {
+    if (user) {
+      return <UserNav />;
+    }
+    
+    if (!hasMadeChoice) {
+      return (
+        <Button asChild variant="default" className="animate-fast-blinking-glow">
+          <Link href="/signup">साइन अप करें</Link>
+        </Button>
+      );
+    }
+  
+    return (
+      <Button asChild>
+        <Link href="/login">लॉग इन करें</Link>
+      </Button>
+    );
+  };
+  
+  const MobileAuthButton = () => {
+    if (user) {
+      return <UserNav />;
+    }
+
+    const buttonProps = hasMadeChoice
+      ? { href: '/login', label: 'लॉग इन करें' }
+      : { href: '/signup', label: 'साइन अप करें' };
+
+    return (
+      <Button asChild className="w-full justify-center">
+        <Link href={buttonProps.href} onClick={() => setIsMenuOpen(false)}>
+          {buttonProps.label}
+        </Link>
+      </Button>
+    );
+  };
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -120,17 +156,8 @@ export default function Header() {
         </div>
         <div className="flex flex-1 items-center justify-end space-x-2">
            <div className="hidden md:flex items-center space-x-4">
-                {!hasMadeChoice ? (
-                  <Button asChild variant="default" className="animate-fast-blinking-glow">
-                    <Link href="/signup">साइन अप करें</Link>
-                  </Button>
-                ) : (
-                  <Button asChild variant="default" className="animate-fast-blinking-glow">
-                    <Link href="/login">लॉग इन करें</Link>
-                  </Button>
-                )}
-                <UserNav />
-              </div>
+                <AuthButton />
+           </div>
         </div>
 
         <button
@@ -153,15 +180,8 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
-            <Link
-                href="/login"
-                onClick={() => setIsMenuOpen(false)}
-                className="font-medium text-primary hover:text-primary/90"
-              >
-                प्रोजेक्ट शुरू करें
-              </Link>
              <div className="pt-4 border-t border-border/40">
-              <UserNav />
+              <MobileAuthButton />
             </div>
           </div>
         </div>
