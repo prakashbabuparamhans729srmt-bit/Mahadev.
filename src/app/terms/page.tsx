@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import {
@@ -30,13 +30,15 @@ import {
   Share2,
   Download,
   Check,
-  X
+  X,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const Section = ({
   icon,
@@ -63,6 +65,39 @@ const Section = ({
 export default function TermsPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const [readChecked, setReadChecked] = useState(false);
+  const [agreeChecked, setAgreeChecked] = useState(false);
+
+  const isAcceptDisabled = !readChecked || !agreeChecked;
+
+  const handleDownloadPdf = () => {
+    const cardElement = document.getElementById('terms-card');
+    if (cardElement) {
+      toast({
+        title: 'PDF तैयार हो रहा है...',
+        description: 'कृपया कुछ क्षण प्रतीक्षा करें।',
+      });
+      html2canvas(cardElement, { scale: 2 }).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        const imgX = (pdfWidth - imgWidth * ratio) / 2;
+        const imgY = 0;
+        pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+        pdf.save('HajaroGrahako-Terms.pdf');
+      });
+    }
+  };
+  
+  const handleShareEmail = () => {
+    const subject = "Hajaro Grahako - नियम और शर्तें";
+    const body = `नमस्ते,\n\nकृपया इस लिंक पर जाकर हजारो ग्राहको की सेवा की शर्तें और गोपनीयता नीति देखें:\n\n${window.location.href}\n\nधन्यवाद!`;
+    window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
 
   const handleAction = (message: string) => {
     toast({
@@ -72,9 +107,17 @@ export default function TermsPage() {
   };
   
   const handleAccept = () => {
+    if (isAcceptDisabled) {
+        toast({
+            variant: "destructive",
+            title: 'आवश्यक',
+            description: 'आगे बढ़ने के लिए कृपया दोनों बक्सों को चेक करें।',
+        });
+        return;
+    }
     toast({
       title: 'स्वीकृत!',
-      description: 'शर्तें और नीतियां स्वीकार कर ली गई हैं।',
+      description: 'शर्तें और नीतियां स्वीकार कर ली गई हैं। डैशबोर्ड पर रीडायरेक्ट किया जा रहा है...',
     });
     router.push('/dashboard');
   }
@@ -84,7 +127,7 @@ export default function TermsPage() {
       <Header />
       <main className="flex-1 py-12 md:py-24">
         <div className="container max-w-4xl">
-          <Card className="shadow-2xl">
+          <Card className="shadow-2xl" id="terms-card">
             <CardHeader className="text-center border-b p-8 bg-secondary/30">
               <CardTitle className="font-headline text-4xl text-primary">
                 📜 शर्तें और गोपनीयता नीति
@@ -170,13 +213,13 @@ export default function TermsPage() {
                   <h3 className="font-headline text-xl mb-4 text-center">स्वीकृति और स्वीकारोक्ति</h3>
                   <div className="space-y-4 p-4 bg-secondary/30 rounded-lg">
                     <div className="flex items-start space-x-3">
-                        <Checkbox id="terms-read" />
+                        <Checkbox id="terms-read" checked={readChecked} onCheckedChange={(checked) => setReadChecked(!!checked)} />
                         <Label htmlFor="terms-read" className="font-normal text-sm">
                         मैं प्रमाणित करता हूं कि मैंने सेवा समझौते, भुगतान नीति, और गोपनीयता नीति को पढ़ और समझ लिया है।
                         </Label>
                     </div>
                      <div className="flex items-start space-x-3">
-                        <Checkbox id="terms-agree" />
+                        <Checkbox id="terms-agree" checked={agreeChecked} onCheckedChange={(checked) => setAgreeChecked(!!checked)} />
                         <Label htmlFor="terms-agree" className="font-normal text-sm">
                         मैं 18 वर्ष या उससे अधिक आयु का हूं और इन सभी शर्तों का पालन करने के लिए सहमत हूं।
                         </Label>
@@ -184,9 +227,9 @@ export default function TermsPage() {
                   </div>
                   <div className="flex flex-wrap gap-2 mt-6 justify-center">
                     <Button variant="outline" size="sm" onClick={() => handleAction('पूर्ण दस्तावेज़ का पूर्वावलोकन जल्द ही उपलब्ध होगा।')}><FileText className="mr-2 h-4 w-4"/> पूरा दस्तावेज़ देखें</Button>
-                    <Button variant="outline" size="sm" onClick={() => handleAction('PDF डाउनलोड सुविधा जल्द ही आ रही है।')}><Download className="mr-2 h-4 w-4"/> PDF डाउनलोड</Button>
+                    <Button variant="outline" size="sm" onClick={handleDownloadPdf}><Download className="mr-2 h-4 w-4"/> PDF डाउनलोड</Button>
                     <Button variant="outline" size="sm" onClick={() => window.print()}><Printer className="mr-2 h-4 w-4"/> प्रिंट करें</Button>
-                    <Button variant="outline" size="sm" onClick={() => handleAction('ईमेल सुविधा जल्द ही उपलब्ध होगी।')}><Mail className="mr-2 h-4 w-4"/> टीम को भेजें</Button>
+                    <Button variant="outline" size="sm" onClick={handleShareEmail}><Mail className="mr-2 h-4 w-4"/> टीम को भेजें</Button>
                   </div>
               </div>
 
@@ -196,7 +239,7 @@ export default function TermsPage() {
                     <X className="mr-2 h-5 w-5" />
                     अस्वीकार करें
                 </Button>
-                <Button size="lg" className="mt-4 sm:mt-0" onClick={handleAccept}>
+                <Button size="lg" className="mt-4 sm:mt-0" onClick={handleAccept} disabled={isAcceptDisabled}>
                     <Check className="mr-2 h-5 w-5" />
                     स्वीकार करें और आगे बढ़ें
                 </Button>
