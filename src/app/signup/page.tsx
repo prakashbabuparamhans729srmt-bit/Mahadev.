@@ -8,7 +8,7 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
-import { useUser, useAuth } from '@/firebase/hooks';
+import { useUser, useAuth } from '@/firebase';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useState, useEffect, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useUser } from '@/firebase/hooks';
+import { useAuth, useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { signInWithEmailAndPassword } from 'firebase/auth';

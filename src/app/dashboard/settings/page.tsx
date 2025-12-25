@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from '@/hooks/use-toast';
-import { useUser } from '@/firebase/hooks';
+import { useUser } from '@/firebase';
 import { updateProfile } from 'firebase/auth';
 import { Loader2, User, Shield, Bell, CreditCard, Camera, ArrowLeft } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
