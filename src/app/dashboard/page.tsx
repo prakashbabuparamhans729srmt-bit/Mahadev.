@@ -44,6 +44,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 import { useUser } from '@/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 
 const chartData = [
@@ -98,6 +99,14 @@ export default function AdminDashboard() {
   const { user } = useUser();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const displayName = user?.displayName?.split(' ')[0] || 'उपयोगकर्ता';
+  const { toast } = useToast();
+
+  const handleAction = (message: string) => {
+    toast({
+      title: 'सुविधा जल्द ही आ रही है',
+      description: message,
+    });
+  };
 
   return (
     <>
@@ -286,7 +295,7 @@ export default function AdminDashboard() {
                 </div>
             </CardContent>
              <CardFooter>
-                 <Button variant="outline" className="w-full">विस्तृत रिपोर्ट देखें</Button>
+                 <Button variant="outline" className="w-full" onClick={() => handleAction('विस्तृत बजट रिपोर्ट जल्द ही उपलब्ध होगी।')}>विस्तृत रिपोर्ट देखें</Button>
             </CardFooter>
         </Card>
 

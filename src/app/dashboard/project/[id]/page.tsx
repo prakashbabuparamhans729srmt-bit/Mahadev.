@@ -106,7 +106,7 @@ export default function ProjectDetailsPage() {
 
     const handleAction = (message: string) => {
         toast({
-            title: 'कार्रवाई की आवश्यकता है',
+            title: 'सुविधा जल्द ही आ रही है',
             description: message,
         });
     };

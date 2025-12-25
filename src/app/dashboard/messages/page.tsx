@@ -109,7 +109,7 @@ export default function MessagesPage() {
 
     const handleAction = (message: string) => {
         toast({
-            title: "सुविधा उपलब्ध नहीं है",
+            title: "सुविधा जल्द ही आ रही है",
             description: message,
         });
     }
