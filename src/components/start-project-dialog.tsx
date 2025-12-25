@@ -11,7 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { ArrowLeft, Search, Wand2, UserCircle, Target, Globe, Smartphone, Server, Wrench, X } from 'lucide-react';
-import { projectCategories, categoryIcons } from '@/lib/project-categories';
+import { projectCategories, categoryIcons } from '@/lib/project-categories.tsx';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
