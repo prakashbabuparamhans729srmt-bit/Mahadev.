@@ -17,7 +17,8 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, deleteDoc, doc, addDoc, query, orderBy, serverTimestamp, setDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, addDoc, query, orderBy, serverTimestamp, setDoc, where } from 'firebase/firestore';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 10);
@@ -139,27 +140,37 @@ export default function FileManagerPage() {
         if (file && firestore && activeProjectId) {
             toast({
                 title: 'फ़ाइल अपलोड हो रही है...',
-                description: `(डेमो) ${file.name} को फायरस्टोर में जोड़ा जा रहा है।`,
+                description: `${file.name} को Firebase Storage में अपलोड किया जा रहा है।`,
             });
-            
-            const fileId = nanoid();
-            const fileRef = doc(firestore, `projects/${activeProjectId}/files`, fileId);
-            
-            const newFile = {
-                id: fileId,
-                name: file.name,
-                size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
-                type: file.type.split('/')[0] || 'file',
-                modified: serverTimestamp(),
-            };
 
             try {
-                await setDoc(fileRef, newFile);
+                const storage = getStorage();
+                const fileId = nanoid();
+                const filePath = `projects/${activeProjectId}/${fileId}-${file.name}`;
+                const fileStorageRef = storageRef(storage, filePath);
+
+                const uploadResult = await uploadBytes(fileStorageRef, file);
+                const downloadURL = await getDownloadURL(uploadResult.ref);
+                
+                const fileDocRef = doc(firestore, `projects/${activeProjectId}/files`, fileId);
+                
+                const newFile = {
+                    id: fileId,
+                    name: file.name,
+                    size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+                    type: file.type.split('/')[0] || 'file',
+                    modified: serverTimestamp(),
+                    url: downloadURL,
+                };
+
+                await setDoc(fileDocRef, newFile);
+
                 toast({
                     title: 'फ़ाइल सफलतापूर्वक अपलोड हुई',
                     description: `${file.name} अब आपकी फ़ाइल सूची में है।`,
                 });
             } catch (e) {
+                 console.error("File upload error:", e);
                  toast({
                     title: 'त्रुटि',
                     description: 'फ़ाइल अपलोड करने में विफल।',

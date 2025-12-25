@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, useFirebaseApp } from '@/firebase';
+import { useUser, useFirebaseApp, useAuth } from '@/firebase';
 import { updateProfile } from 'firebase/auth';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Loader2, User, Shield, Bell, CreditCard, Camera, ArrowLeft } from 'lucide-react';
@@ -19,6 +19,7 @@ import { NotificationSettings } from './notification-settings';
 export default function SettingsPage() {
   const { user, isUserLoading } = useUser();
   const firebaseApp = useFirebaseApp();
+  const auth = useAuth();
   const [displayName, setDisplayName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [photoURL, setPhotoURL] = useState<string | null>(null);
@@ -47,15 +48,12 @@ export default function SettingsPage() {
 
     try {
         const storage = getStorage(firebaseApp);
-        // Create a unique file path for the user's avatar
         const filePath = `avatars/${user.uid}/${file.name}`;
         const fileStorageRef = storageRef(storage, filePath);
 
-        // Upload the file to Firebase Storage
         const uploadTask = await uploadBytes(fileStorageRef, file);
         const downloadURL = await getDownloadURL(uploadTask.ref);
 
-        // Update the state to show the new avatar immediately
         setPhotoURL(downloadURL);
         
         toast({
@@ -74,11 +72,10 @@ export default function SettingsPage() {
   };
 
   const handleProfileSave = async () => {
-    if (!user) return;
+    if (!user || !auth?.currentUser) return;
     setIsSaving(true);
     try {
-      // The photoURL is already the public URL from Firebase Storage
-      await updateProfile(user, { 
+      await updateProfile(auth.currentUser, { 
           displayName: displayName,
           photoURL: photoURL 
         });
@@ -89,6 +86,7 @@ export default function SettingsPage() {
       });
 
     } catch (error) {
+        console.error("Profile update error:", error);
       toast({
         variant: 'destructive',
         title: 'त्रुटि',

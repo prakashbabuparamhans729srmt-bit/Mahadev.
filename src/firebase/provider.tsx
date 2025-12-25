@@ -4,6 +4,7 @@ import React, { createContext, ReactNode, useMemo, useState, useEffect, useConte
 import { FirebaseApp, initializeApp, getApps, getApp } from 'firebase/app';
 import { Firestore, getFirestore } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { firebaseConfig } from './config';
 
@@ -13,6 +14,7 @@ export interface FirebaseContextState {
   firebaseApp: FirebaseApp | null;
   firestore: Firestore | null;
   auth: Auth | null;
+  storage: FirebaseStorage | null;
   user: User | null;
   isUserLoading: boolean;
   userError: Error | null;
@@ -25,12 +27,13 @@ export const FirebaseContext = createContext<FirebaseContextState | undefined>(u
 
 function getFirebaseServices() {
   if (typeof window === 'undefined') {
-    return { firebaseApp: null, firestore: null, auth: null };
+    return { firebaseApp: null, firestore: null, auth: null, storage: null };
   }
   const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
   const authInstance = getAuth(app);
   const firestoreInstance = getFirestore(app);
-  return { firebaseApp: app, firestore: firestoreInstance, auth: authInstance };
+  const storageInstance = getStorage(app);
+  return { firebaseApp: app, firestore: firestoreInstance, auth: authInstance, storage: storageInstance };
 }
 
 
