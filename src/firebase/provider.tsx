@@ -1,11 +1,11 @@
 'use client';
 
 import React, { createContext, useContext, ReactNode, useMemo, useState, useEffect } from 'react';
-import { FirebaseApp } from 'firebase/app';
-import { Firestore } from 'firebase/firestore';
-import { Auth, User, onAuthStateChanged } from 'firebase/auth';
+import { FirebaseApp, initializeApp, getApps, getApp } from 'firebase/app';
+import { Firestore, getFirestore } from 'firebase/firestore';
+import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
-import { initializeFirebase } from '@/firebase';
+import { firebaseConfig } from './config';
 
 // Internal state for user authentication
 interface UserAuthState {
@@ -23,6 +23,15 @@ export interface FirebaseContextState extends UserAuthState {
 
 // React Context
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
+
+// Moved initialization logic inside a function to be called on the client
+function initializeFirebase() {
+  if (!getApps().length) {
+    return initializeApp(firebaseConfig);
+  } else {
+    return getApp();
+  }
+}
 
 /**
  * FirebaseProvider manages and provides Firebase services and user authentication state.
@@ -44,11 +53,13 @@ export const FirebaseProvider: React.FC<{
   
   useEffect(() => {
     // Initialize Firebase on the client side
-    const { firebaseApp, firestore, auth } = initializeFirebase();
-    setServices({ firebaseApp, firestore, auth });
+    const app = initializeFirebase();
+    const authInstance = getAuth(app);
+    const firestoreInstance = getFirestore(app);
+    setServices({ firebaseApp: app, firestore: firestoreInstance, auth: authInstance });
 
     const unsubscribe = onAuthStateChanged(
-      auth,
+      authInstance,
       (firebaseUser) => {
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
@@ -101,4 +112,18 @@ export const useFirebaseApp = (): FirebaseApp | null => {
     throw new Error('useFirebaseApp must be used within a FirebaseProvider.');
   }
   return context.firebaseApp;
+};
+
+/**
+ * Hook specifically for accessing the authenticated user's state.
+ * This provides the User object, loading status, and any auth errors.
+ * @returns {UserAuthState} Object with user, isUserLoading, userError.
+ */
+export const useUser = (): UserAuthState => {
+  const context = useContext(FirebaseContext);
+  if (context === undefined) {
+    throw new Error("useUser must be used within a FirebaseProvider.");
+  }
+  const { user, isUserLoading, userError } = context;
+  return { user, isUserLoading, userError };
 };
