@@ -1,5 +1,6 @@
 
 import type {NextConfig} from 'next';
+import withPWA from 'next-pwa';
 
 const securityHeaders = [
   {
@@ -17,7 +18,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  /* config options here */
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -38,9 +38,14 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+       {
+        protocol: 'https',
+        hostname: '*.googleusercontent.com',
+        port: '',
+        pathname: '/**',
+      }
     ],
   },
-  allowedDevOrigins: ["*.cloudworkstations.dev"],
   async headers() {
     return [
       {
@@ -51,4 +56,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const pwaConfig = withPWA({
+  dest: 'public',
+  disable: process.env.NODE_ENV === 'development',
+  register: true,
+  skipWaiting: true,
+});
+
+export default pwaConfig(nextConfig);

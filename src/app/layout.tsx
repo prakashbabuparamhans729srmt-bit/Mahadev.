@@ -34,6 +34,9 @@ export default function RootLayout({
 
   return (
     <html lang="hi" className={`dark ${playfair.variable} ${ptSans.variable}`}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body>
         <FirebaseClientProvider>
           {children}
