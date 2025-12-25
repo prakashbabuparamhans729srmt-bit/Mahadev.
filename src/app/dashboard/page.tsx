@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useMemo } from 'react';
@@ -100,7 +99,7 @@ const recentFiles = [
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const displayName = user?.displayName?.split(' ')[0] || 'उपयोगकर्ता';
@@ -151,9 +150,13 @@ export default function AdminDashboard() {
     <div className="p-4 md:p-6 lg:p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold font-headline flex items-baseline gap-3">
-            नमस्ते {displayName} <span className="text-2xl">👋</span>
-          </h1>
+          {isUserLoading ? (
+            <Skeleton className="h-9 w-64" />
+          ) : (
+            <h1 className="text-3xl font-bold font-headline flex items-baseline gap-3">
+              नमस्ते {displayName} <span className="text-2xl">👋</span>
+            </h1>
+          )}
           <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू</p>
         </div>
         <Button
@@ -367,5 +370,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-
-    
