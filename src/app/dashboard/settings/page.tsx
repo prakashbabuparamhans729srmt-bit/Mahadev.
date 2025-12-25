@@ -53,11 +53,23 @@ export default function SettingsPage() {
     if (!user) return;
     setIsSaving(true);
     try {
-      await updateProfile(user, { displayName, photoURL });
-      toast({
-        title: 'प्रोफ़ाइल अपडेट की गई',
-        description: 'आपकी प्रोफ़ाइल सफलतापूर्वक सहेज ली गई है।',
-      });
+      // Firebase Auth photoURL update requires a public URL, not a data URI.
+      // For this demo, we'll only update the displayName and show a message for the photo.
+      await updateProfile(user, { displayName });
+      
+      // If photoURL is a data URI, it means user tried to change it.
+      if (photoURL && photoURL.startsWith('data:')) {
+          toast({
+              title: 'नाम अपडेट किया गया! फोटो स्टोरेज कॉन्फ़िगर नहीं है।',
+              description: 'वास्तविक फोटो अपलोड के लिए Firebase Storage सेटअप की आवश्यकता है।',
+              variant: 'default'
+          });
+      } else {
+        toast({
+            title: 'प्रोफ़ाइल अपडेट की गई',
+            description: 'आपका प्रोफ़ाइल नाम सफलतापूर्वक सहेज लिया गया है।',
+        });
+      }
     } catch (error) {
       toast({
         variant: 'destructive',
