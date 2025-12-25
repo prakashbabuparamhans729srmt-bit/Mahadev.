@@ -1,3 +1,4 @@
+
 /**
  * Core Philosophy: This ruleset implements a role-based security model for the HG Hub application,
  * clearly distinguishing between 'Admins' and 'Clients'. Admins, identified by the existence of a document
@@ -59,6 +60,21 @@ service cloud.firestore {
     // Grants access if user is an admin or the designated client for the project.
     function canAccessProjectData(projectId) {
       return isAdmin() || isClientOfProject(projectId);
+    }
+    
+    /**
+     * @description Publicly writable collection for contact form submissions.
+     * @path /inquiries/{inquiryId}
+     * @allow (create) Anyone can submit an inquiry.
+     * @deny (read, update, delete) No one can read or modify inquiries from the client-side.
+     * @principle Captures leads securely without requiring authentication.
+     */
+    match /inquiries/{inquiryId} {
+      allow create: if request.resource.data.name is string &&
+                       request.resource.data.email is string &&
+                       request.resource.data.idea is string &&
+                       request.resource.data.createdAt == request.time;
+      allow read, update, delete: if false;
     }
 
     /**
@@ -176,3 +192,5 @@ service cloud.firestore {
     }
   }
 }
+
+    

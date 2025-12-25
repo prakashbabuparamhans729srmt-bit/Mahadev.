@@ -1,6 +1,41 @@
 
 {
   "entities": {
+    "Inquiry": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Inquiry",
+      "type": "object",
+      "description": "Represents an inquiry submitted through the contact or CTA forms.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Inquiry entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the person making the inquiry."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the person.",
+          "format": "email"
+        },
+        "service": {
+          "type": "string",
+          "description": "The service the person is interested in."
+        },
+        "idea": {
+          "type": "string",
+          "description": "The message or idea from the person."
+        },
+        "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The timestamp when the inquiry was submitted."
+        }
+      },
+      "required": ["name", "email", "idea", "createdAt"]
+    },
     "Client": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Client",
@@ -263,6 +298,22 @@
   "firestore": {
     "structure": [
       {
+        "path": "/inquiries/{inquiryId}",
+        "definition": {
+            "entityName": "Inquiry",
+            "schema": {
+                "$ref": "#/backend/entities/Inquiry"
+            },
+            "description": "Stores inquiries from the contact and CTA forms. Publicly writable.",
+            "params": [
+                {
+                    "name": "inquiryId",
+                    "description": "The unique identifier for the inquiry."
+                }
+            ]
+        }
+      },
+      {
         "path": "/clients/{clientId}",
         "definition": {
           "entityName": "Client",
@@ -390,3 +441,5 @@
     "reasoning": "This Firestore structure is designed to support the HG Hub application, focusing on secure and scalable data management for clients, projects, team members, and related entities. The structure emphasizes Authorization Independence through denormalization, enabling robust security rules without relying on hierarchical `get()` calls.  It also incorporates Structural Segregation, ensuring that collections contain documents with similar security postures, which greatly simplifies security rules. Furthermore, standardized Access Modeling using path-based ownership for private user data and membership maps for collaborative data is used. \n\nSpecifically, Authorization Independence is achieved by denormalizing relevant authorization information into subcollections where necessary, such as client IDs within project-related collections. This allows security rules to validate access based on the presence of the client ID in the document itself, eliminating the need to traverse up the hierarchy and improves the performance and reliability of the app. This design supports QAPs by enabling secure list operations based on client or team member roles, and by segregating different types of data (e.g., client-specific vs. team-specific data) into separate collections with distinct security requirements."
   }
 }
+
+    

@@ -1,3 +1,4 @@
+
 'use client';
 
 import Footer from '@/components/footer';
@@ -6,21 +7,58 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Mail, Phone, MessageSquare } from 'lucide-react';
-import { type FormEvent } from 'react';
+import { Mail, Phone, MessageSquare, Loader2 } from 'lucide-react';
+import React, { type FormEvent, useState } from 'react';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function ContactPage() {
   const { toast } = useToast();
+  const firestore = useFirestore();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    toast({
-      title: "संदेश भेजा गया!",
-      description: "आपकी पूछताछ प्राप्त हो गई है। हम जल्द ही आपसे संपर्क करेंगे।",
-    });
-    // Here you would typically handle form submission, e.g., send data to a server.
-    // For this example, we'll just reset the form.
-    (e.target as HTMLFormElement).reset();
+    if (!firestore) {
+        toast({
+            variant: "destructive",
+            title: "त्रुटि",
+            description: "डेटाबेस कनेक्शन उपलब्ध नहीं है।",
+        });
+        return;
+    }
+    
+    setIsLoading(true);
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const idea = formData.get('message') as string;
+
+    try {
+        const inquiriesCollection = collection(firestore, 'inquiries');
+        await addDoc(inquiriesCollection, {
+            name: name,
+            email: email,
+            idea: idea,
+            createdAt: serverTimestamp(),
+        });
+
+        toast({
+            title: "संदेश भेजा गया!",
+            description: "आपकी पूछताछ प्राप्त हो गई है। हम जल्द ही आपसे संपर्क करेंगे।",
+        });
+        form.reset();
+    } catch (error) {
+        console.error("Error submitting inquiry:", error);
+        toast({
+            variant: "destructive",
+            title: "त्रुटि",
+            description: "आपका संदेश भेजने में विफल। कृपया बाद में पुनः प्रयास करें।",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -58,12 +96,16 @@ export default function ContactPage() {
               </div>
               <div className="flex flex-col justify-center">
                 <form onSubmit={handleSubmit} className="space-y-4">
-                  <Input type="text" placeholder="आपका नाम" className="w-full" required />
-                  <Input type="email" placeholder="आपका ईमेल" className="w-full" required />
-                  <Textarea placeholder="आपका संदेश..." className="w-full" rows={5} required />
-                  <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90">
-                    <MessageSquare className="mr-2 h-4 w-4" />
-                    संदेश भेजें
+                  <Input name="name" type="text" placeholder="आपका नाम" className="w-full" required />
+                  <Input name="email" type="email" placeholder="आपका ईमेल" className="w-full" required />
+                  <Textarea name="message" placeholder="आपका संदेश..." className="w-full" rows={5} required />
+                  <Button type="submit" className="w-full bg-accent text-accent-foreground hover:bg-accent/90" disabled={isLoading}>
+                    {isLoading ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <MessageSquare className="mr-2 h-4 w-4" />
+                    )}
+                    {isLoading ? 'भेज रहा है...' : 'संदेश भेजें'}
                   </Button>
                 </form>
               </div>
@@ -75,3 +117,5 @@ export default function ContactPage() {
     </div>
   );
 }
+
+    
