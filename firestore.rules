@@ -56,10 +56,16 @@ service cloud.firestore {
       let projectData = get(/databases/$(database)/documents/projects/$(projectId)).data;
       return isOwner(projectData.clientId);
     }
+    
+    // Checks if the user is a team member of the given project.
+    function isTeamMemberOfProject(projectId) {
+      let projectData = get(/databases/$(database)/documents/projects/$(projectId)).data;
+      return isSignedIn() && request.auth.uid in projectData.get('teamMembers', []);
+    }
 
     // Grants access if user is an admin or the designated client for the project.
     function canAccessProjectData(projectId) {
-      return isAdmin() || isClientOfProject(projectId);
+      return isAdmin() || isClientOfProject(projectId) || isTeamMemberOfProject(projectId);
     }
     
     /**
@@ -141,7 +147,7 @@ service cloud.firestore {
       allow get: if canAccessProjectData(projectId);
       allow list: if isAdmin();
       allow create: if isAdmin() && request.resource.data.id == projectId;
-      allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id && request.resource.data.clientId == resource.data.clientId;
+      allow update: if isAdmin() && request.resource.data.id == projectId;
       allow delete: if isAdmin() && resource != null;
     }
 
