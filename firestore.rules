@@ -122,7 +122,7 @@ service cloud.firestore {
       allow get: if isAdmin() || isOwner(clientId);
       allow list: if isAdmin();
       allow create: if isAdmin() && request.resource.data.id == clientId;
-      allow update: if isAdmin() && resource != null && request.resource.data.id == resource.data.id;
+      allow update: if isAdmin() || isOwner(clientId);
       allow delete: if isAdmin() && resource != null;
     }
 
@@ -192,5 +192,3 @@ service cloud.firestore {
     }
   }
 }
-
-    
