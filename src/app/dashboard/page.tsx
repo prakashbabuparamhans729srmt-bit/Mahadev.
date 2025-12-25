@@ -1,7 +1,7 @@
 
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import {
   Card,
@@ -29,7 +29,9 @@ import {
   MessageSquare,
   ArrowRight,
   User,
-  Star
+  Star,
+  Loader2,
+  AlertTriangle
 } from 'lucide-react';
 import { type ChartConfig } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
@@ -40,9 +42,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { useUser } from '@/firebase';
+import { useUser, useFirestore, useCollection } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
 
 
 const ChartContainer = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartContainer), {
@@ -74,12 +77,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-
-const activeProjects = [
-    { id: '#1042', name: 'स्मार्ट ERP सिस्टम', progress: 75, link: '/dashboard/project-oversight' },
-    { id: '#1043', name: 'ई-कॉमर्स पोर्टल', progress: 90, link: '/dashboard/project-oversight' }
-]
-
 const healthData = {
     overall: 68,
     time: 80,
@@ -88,11 +85,12 @@ const healthData = {
     satisfaction: 70,
 };
 
-const teamActivity = [
-    { name: 'राहुल', avatar: 'R', action: 'नया कोड पुश किया', icon: <GitCommit className="h-4 w-4 text-green-500" /> },
-    { name: 'प्रिया', avatar: 'P', action: 'UI अपडेट किया', icon: <Brush className="h-4 w-4 text-blue-500" /> },
-    { name: 'सीमा', avatar: 'S', action: 'बग रिपोर्ट किया', icon: <Bug className="h-4 w-4 text-red-500" /> },
-]
+const teamActivityIcons: { [key: string]: React.ReactNode } = {
+  'update': <Brush className="h-4 w-4 text-blue-500" />,
+  'create': <GitCommit className="h-4 w-4 text-green-500" />,
+  'delete': <Bug className="h-4 w-4 text-red-500" />,
+  'default': <GitCommit className="h-4 w-4 text-gray-500" />,
+};
 
 const recentFiles = [
     { name: 'SRS.docx', size: '2.4 MB', icon: <FileText className="h-6 w-6 text-blue-500" /> },
@@ -100,17 +98,46 @@ const recentFiles = [
     { name: 'कोड.ज़िप', size: '45.2 MB', icon: <Code className="h-6 w-6 text-green-500" /> },
 ]
 
-const recentMessages = [
-    { project: 'स्मार्ट ERP सिस्टम', sender: 'क्लाइंट', message: 'क्या हम कल एक डेमो देख सकते हैं?', link: "/dashboard/messages" },
-    { project: 'ई-कॉमर्स पोर्टल', sender: 'राहुल (TL)', message: 'पेमेंट गेटवे इंटीग्रेट हो गया है।', link: "/dashboard/messages" },
-]
-
 export default function AdminDashboard() {
   const router = useRouter();
   const { user } = useUser();
+  const firestore = useFirestore();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const displayName = user?.displayName?.split(' ')[0] || 'उपयोगकर्ता';
   const { toast } = useToast();
+
+  const projectsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'projects');
+  }, [firestore]);
+  const { data: projects, isLoading: projectsLoading, error: projectsError } = useCollection(projectsQuery);
+
+  const { totalBudget, totalSpent } = useMemo(() => {
+    if (!projects) return { totalBudget: 0, totalSpent: 0 };
+    return projects.reduce((acc, project) => {
+      const budget = project.budget || 0;
+      const progress = project.progress || 0;
+      acc.totalBudget += budget;
+      acc.totalSpent += budget * (progress / 100);
+      return acc;
+    }, { totalBudget: 0, totalSpent: 0 });
+  }, [projects]);
+  
+  const recentMessagesQuery = useMemo(() => {
+      if (!firestore || !projects?.[0]?.id) return null;
+      // This is a simplified query. A real app would query across multiple project message subcollections.
+      return query(collection(firestore, `projects/${projects[0].id}/messages`), orderBy('timestamp', 'desc'), limit(2));
+  }, [firestore, projects]);
+  const { data: recentMessages, isLoading: messagesLoading } = useCollection(recentMessagesQuery);
+  
+  const teamActivityQuery = useMemo(() => {
+      if (!firestore) return null;
+      // This query is for demonstration. A real app would have a dedicated 'activity' collection.
+      // We'll use project updates as a proxy for team activity.
+      return query(collection(firestore, 'projects'), orderBy('endDate', 'desc'), limit(3));
+  }, [firestore]);
+  const { data: teamActivity, isLoading: activityLoading } = useCollection(teamActivityQuery);
+
 
   const handleAction = (message: string) => {
     toast({
@@ -127,7 +154,7 @@ export default function AdminDashboard() {
           <h1 className="text-3xl font-bold font-headline flex items-baseline gap-3">
             नमस्ते {displayName} <span className="text-2xl">👋</span>
           </h1>
-          <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू - राजेश इंडस्ट्रीज</p>
+          <p className="text-muted-foreground">डैशबोर्ड ओवरव्यू</p>
         </div>
         <Button
           onClick={() => setIsProjectModalOpen(true)}
@@ -165,21 +192,28 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="bg-card" onClick={() => router.push('/dashboard/project-oversight')}>
+        <Card className="bg-card">
           <CardHeader>
             <CardTitle className="font-headline text-lg">सक्रिय प्रोजेक्ट्स</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-            {activeProjects.map(project => (
-                <div key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
+             {projectsLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
+             {projectsError && <p className="text-xs text-destructive">प्रोजेक्ट लोड करने में विफल।</p>}
+            {projects?.slice(0, 2).map((project: any) => (
+                <Link href={`/dashboard/project/${project.id}`} key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
                     <div className="flex justify-between items-baseline mb-2">
                         <h3 className="font-semibold">{project.name}</h3>
-                        <p className="text-xs font-mono text-muted-foreground">{project.id}</p>
+                        <p className="text-xs font-mono text-muted-foreground">#{project.id.slice(0,4)}</p>
                     </div>
-                    <Progress value={project.progress} className="h-2" />
-                </div>
+                    <Progress value={project.progress || 0} className="h-2" />
+                </Link>
             ))}
           </CardContent>
+           <CardFooter>
+                 <Button variant="outline" className="w-full" asChild>
+                    <Link href="/dashboard/project-oversight">सभी प्रोजेक्ट्स देखें</Link>
+                </Button>
+            </CardFooter>
         </Card>
 
         {/* Second Row */}
@@ -215,18 +249,22 @@ export default function AdminDashboard() {
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-                {teamActivity.map((activity, index) => (
+                {activityLoading && <Loader2 className="mx-auto h-5 w-5 animate-spin" />}
+                {teamActivity?.map((activity: any, index) => (
                     <div key={index} className="flex items-center gap-3 text-sm">
                         <Avatar className="h-8 w-8">
-                            <AvatarFallback>{activity.avatar}</AvatarFallback>
+                            <AvatarFallback>{activity.name?.[0] || '?'}</AvatarFallback>
                         </Avatar>
                         <div className="flex-1">
                            <span className="font-semibold">{activity.name}</span>
-                           <span className="text-muted-foreground"> ने {activity.action}</span>
+                           <span className="text-muted-foreground"> ने `{activity.serviceTier}` को अपडेट किया</span>
                         </div>
-                        {activity.icon}
+                        {teamActivityIcons[activity.status] || teamActivityIcons.default}
                     </div>
                 ))}
+                {(!teamActivity || teamActivity.length === 0) && !activityLoading && (
+                    <p className="text-xs text-muted-foreground text-center py-4">कोई हाल की गतिविधि नहीं।</p>
+                )}
             </CardContent>
         </Card>
 
@@ -261,19 +299,21 @@ export default function AdminDashboard() {
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                 {recentMessages.map((msg, index) => (
+                 {messagesLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
+                 {recentMessages?.map((msg: any, index) => (
                     <React.Fragment key={index}>
-                        <Link href={msg.link}>
+                        <Link href={`/dashboard/messages`}>
                             <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-secondary/50 cursor-pointer">
                                 <Avatar className="h-9 w-9 border-2 border-primary/50">
-                                    <AvatarFallback>{msg.sender[0]}</AvatarFallback>
+                                    <AvatarImage src={msg.senderAvatar} />
+                                    <AvatarFallback>{msg.senderName?.[0]}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
                                     <div className="flex justify-between items-center">
-                                        <p className="font-semibold text-sm">{msg.sender}</p>
-                                        <Badge variant="secondary" className="text-xs">{msg.project}</Badge>
+                                        <p className="font-semibold text-sm">{msg.senderName}</p>
+                                        <Badge variant="secondary" className="text-xs">{projects?.find(p => p.id === msg.projectId)?.name || 'प्रोजेक्ट'}</Badge>
                                     </div>
-                                    <p className="text-sm text-muted-foreground mt-1 truncate">"{msg.message}"</p>
+                                    <p className="text-sm text-muted-foreground mt-1 truncate">"{msg.text}"</p>
                                 </div>
                                 <ArrowRight className="h-5 w-5 text-muted-foreground self-center"/>
                             </div>
@@ -281,6 +321,9 @@ export default function AdminDashboard() {
                          {index < recentMessages.length - 1 && <Separator />}
                     </React.Fragment>
                 ))}
+                {(!recentMessages || recentMessages.length === 0) && !messagesLoading && (
+                    <p className="text-center text-sm text-muted-foreground py-8">कोई नए संदेश नहीं।</p>
+                )}
             </CardContent>
         </Card>
 
@@ -295,15 +338,21 @@ export default function AdminDashboard() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">कुल बजट</p>
-                  <p className="text-2xl font-bold">₹12,50,000</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">कुल खर्च</p>
-                  <p className="text-2xl font-bold text-red-400">₹8,70,000</p>
-                  <Progress value={(870000/1250000)*100} className="mt-2 h-2" />
-                </div>
+                 {projectsLoading ? (
+                    <Loader2 className="mx-auto h-6 w-6 animate-spin"/>
+                 ) : (
+                    <>
+                    <div>
+                      <p className="text-sm text-muted-foreground">कुल बजट</p>
+                      <p className="text-2xl font-bold">₹{totalBudget.toLocaleString('en-IN')}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-muted-foreground">कुल खर्च</p>
+                      <p className="text-2xl font-bold text-red-400">₹{totalSpent.toLocaleString('en-IN')}</p>
+                      <Progress value={totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0} className="mt-2 h-2" />
+                    </div>
+                    </>
+                 )}
             </CardContent>
              <CardFooter>
                  <Button variant="outline" className="w-full" asChild>

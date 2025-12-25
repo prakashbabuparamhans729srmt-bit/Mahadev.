@@ -22,7 +22,6 @@ import {
   RefreshCw,
   Trash2,
   Download,
-  Settings,
   ShieldCheck,
   BarChart,
   Sparkles,
@@ -30,37 +29,35 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { useCookieConsent } from '@/hooks/use-cookie-consent';
 
-const activeCookiesData = {
-  totalActive: 8,
-  totalCookies: 24,
-  categories: [
+const categoryConfig = [
     {
+      id: 'necessary',
       name: 'आवश्यक',
       icon: <ShieldCheck className="h-5 w-5 text-green-500" />,
-      active: 4,
       total: 4,
     },
     {
+      id: 'performance',
       name: 'प्रदर्शन',
       icon: <BarChart className="h-5 w-5 text-blue-500" />,
-      active: 2,
-      total: 6,
+      total: 2,
     },
     {
+      id: 'functional',
       name: 'कार्यात्मक',
       icon: <Sparkles className="h-5 w-5 text-purple-500" />,
-      active: 1,
-      total: 8,
+      total: 3,
     },
     {
+      id: 'advertising',
       name: 'विज्ञापन',
       icon: <Megaphone className="h-5 w-5 text-orange-500" />,
-      active: 1,
-      total: 6,
+      total: 2,
     },
-  ],
-};
+];
+
 
 const cookieLifetimeData = [
   {
@@ -87,7 +84,24 @@ const cookieLifetimeData = [
 
 export default function CookieStatusPage() {
   const { toast } = useToast();
-  const overallProgress = (activeCookiesData.totalActive / activeCookiesData.totalCookies) * 100;
+  const { preferences } = useCookieConsent();
+
+  const activeCookiesData = {
+      categories: categoryConfig.map(cat => {
+          const key = cat.id as keyof typeof preferences;
+          // For necessary cookies, we can assume all are active. For others, 1 if enabled.
+          const activeCount = key === 'necessary' ? cat.total : preferences[key] ? 1 : 0;
+          return {
+              ...cat,
+              active: activeCount,
+          };
+      })
+  };
+  
+  const totalActive = activeCookiesData.categories.reduce((acc, cat) => acc + cat.active, 0);
+  const totalCookies = activeCookiesData.categories.reduce((acc, cat) => acc + cat.total, 0);
+  const overallProgress = totalCookies > 0 ? (totalActive / totalCookies) * 100 : 0;
+
 
   const handleAction = (message: string) => {
     toast({
@@ -108,9 +122,9 @@ export default function CookieStatusPage() {
               आपकी साइट पर सक्रिय कुकीज़ का रियल-टाइम ओवरव्यू।
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={() => handleAction('डेटा रीफ्रेश किया जा रहा है...')}>
+          <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
             <RefreshCw className="mr-2 h-4 w-4" />
-            रियल-टाइम
+            रीफ्रेश
           </Button>
         </CardHeader>
         <CardContent className="grid gap-6 md:grid-cols-2">
@@ -118,7 +132,7 @@ export default function CookieStatusPage() {
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center">
                 <BarChart className="mr-2" />
-                सक्रिय कुकीज़: {activeCookiesData.totalActive}/{activeCookiesData.totalCookies}
+                सक्रिय कुकीज़: {totalActive}/{totalCookies}
               </CardTitle>
             </CardHeader>
             <CardContent>
