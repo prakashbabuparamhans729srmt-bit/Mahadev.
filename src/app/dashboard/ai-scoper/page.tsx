@@ -41,7 +41,11 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore, useUser } from '@/firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc, setDoc } from 'firebase/firestore';
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet('1234567890', 5);
+
 
 function ScopeResultDialog({
   result,
@@ -75,9 +79,10 @@ function ScopeResultDialog({
     setIsCreatingProject(true);
 
     try {
+        const projectId = `Project-AI-Scoper-${nanoid()}`;
         const newProject = {
             clientId: user.uid,
-            name: `AI आधारित प्रोजेक्ट: ${description.substring(0, 20)}...`,
+            name: `AI आधारित प्रोजेक्ट`,
             description: description,
             budget: parseFloat(result.estimatedBudget.replace(/[^0-9-]/g, '').split('-')[0] || '0'),
             serviceTier: 'Standard', // Default for AI scoper
@@ -85,17 +90,20 @@ function ScopeResultDialog({
             startDate: new Date().toISOString(),
             // Estimate end date based on timeline
             endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
+            progress: 5,
+            id: projectId,
         };
 
-        const projectsCollection = collection(firestore, 'projects');
-        const docRef = await addDoc(projectsCollection, newProject);
+        const projectRef = doc(firestore, 'projects', projectId);
+        await setDoc(projectRef, newProject);
+        
 
         toast({
             title: 'प्रोजेक्ट बनाया गया!',
             description: 'आपको प्रोजेक्ट विवरण पेज पर रीडायरेक्ट किया जा रहा है।',
         });
         
-        router.push(`/dashboard/project/${docRef.id}`);
+        router.push(`/dashboard/project/${projectId}`);
 
     } catch (error) {
         console.error("Error creating project:", error);
@@ -323,5 +331,3 @@ export default function AIScoperPage() {
     </div>
   );
 }
-
-    

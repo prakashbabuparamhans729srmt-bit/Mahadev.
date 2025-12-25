@@ -16,8 +16,11 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection, useFirestore } from '@/firebase';
-import { collection, deleteDoc, doc } from 'firebase/firestore';
+import { useCollection, useFirestore, useUser } from '@/firebase';
+import { collection, deleteDoc, doc, addDoc, query, orderBy, serverTimestamp, setDoc } from 'firebase/firestore';
+import { customAlphabet } from 'nanoid';
+
+const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 10);
 
 
 const versions = [
@@ -95,21 +98,29 @@ const VersionHistoryCard = dynamic(() => Promise.resolve(({ handleAction }: { ha
     ssr: false,
 });
 
-const DUMMY_PROJECT_ID = '1042'; // This should be dynamic based on user's project
 
 export default function FileManagerPage() {
     const { toast } = useToast();
     const firestore = useFirestore();
+    const { user } = useUser();
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const filesQuery = useMemo(() => {
-        if (!firestore) return null;
-        return collection(firestore, `projects/${DUMMY_PROJECT_ID}/files`);
-    }, [firestore]);
+    const projectsQuery = useMemo(() => {
+        if (!firestore || !user) return null;
+        return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
+    }, [firestore, user]);
+    const { data: projects, isLoading: projectsLoading } = useCollection(projectsQuery);
+    
+    const activeProjectId = projects?.[0]?.id;
 
-    const { data: files, setData: setFiles, isLoading, error } = useCollection(filesQuery);
+    const filesQuery = useMemo(() => {
+        if (!firestore || !activeProjectId) return null;
+        return query(collection(firestore, `projects/${activeProjectId}/files`), orderBy('modified', 'desc'));
+    }, [firestore, activeProjectId]);
+
+    const { data: files, setData: setFiles, isLoading: filesLoading, error } = useCollection(filesQuery);
 
     const filteredFiles = useMemo(() => {
         if (!files) return [];
@@ -123,14 +134,38 @@ export default function FileManagerPage() {
         fileInputRef.current?.click();
     };
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (file) {
+        if (file && firestore && activeProjectId) {
             toast({
-                title: 'फ़ाइल चयनित',
-                description: `${file.name} अपलोड के लिए तैयार है। (अपलोड सुविधा जल्द ही आ रही है)`,
+                title: 'फ़ाइल अपलोड हो रही है...',
+                description: `(डेमो) ${file.name} को फायरस्टोर में जोड़ा जा रहा है।`,
             });
-            // Here you would typically handle the file upload
+            
+            const fileId = nanoid();
+            const fileRef = doc(firestore, `projects/${activeProjectId}/files`, fileId);
+            
+            const newFile = {
+                id: fileId,
+                name: file.name,
+                size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+                type: file.type.split('/')[0] || 'file',
+                modified: serverTimestamp(),
+            };
+
+            try {
+                await setDoc(fileRef, newFile);
+                toast({
+                    title: 'फ़ाइल सफलतापूर्वक अपलोड हुई',
+                    description: `${file.name} अब आपकी फ़ाइल सूची में है।`,
+                });
+            } catch (e) {
+                 toast({
+                    title: 'त्रुटि',
+                    description: 'फ़ाइल अपलोड करने में विफल।',
+                    variant: 'destructive',
+                });
+            }
         }
     };
 
@@ -142,9 +177,9 @@ export default function FileManagerPage() {
     };
     
     const handleDelete = async (fileId: string, fileName: string) => {
-        if (!firestore) return;
+        if (!firestore || !activeProjectId) return;
         try {
-            await deleteDoc(doc(firestore, `projects/${DUMMY_PROJECT_ID}/files`, fileId));
+            await deleteDoc(doc(firestore, `projects/${activeProjectId}/files`, fileId));
             toast({
                 title: 'फ़ाइल हटाई गई',
                 description: `${fileName} को सफलतापूर्वक हटा दिया गया है।`,
@@ -160,14 +195,17 @@ export default function FileManagerPage() {
     };
 
   const renderContent = () => {
-    if (isLoading) {
+    if (filesLoading || projectsLoading) {
         return <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
     if (error) {
         return <div className="text-center py-10"><ShieldAlert className="mx-auto h-8 w-8 text-destructive" /><p className="mt-2 text-destructive">फाइलें लोड करने में विफल।</p></div>;
     }
+    if (!activeProjectId) {
+         return <div className="text-center py-10"><p className="text-muted-foreground">फाइलें देखने के लिए कृपया पहले एक प्रोजेक्ट बनाएं।</p></div>;
+    }
     if (filteredFiles.length === 0) {
-        return <div className="text-center py-10"><p className="text-muted-foreground">कोई फाइल नहीं मिली।</p></div>;
+        return <div className="text-center py-10"><p className="text-muted-foreground">कोई फाइल नहीं मिली। अपनी पहली फ़ाइल अपलोड करें!</p></div>;
     }
 
     if (viewMode === 'grid') {
@@ -197,7 +235,7 @@ export default function FileManagerPage() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {filteredFiles.map((file) => (
+          {filteredFiles.map((file: any) => (
             <TableRow key={file.id}>
               <TableCell className="font-medium">
                 <div className="flex items-center gap-3">
@@ -206,7 +244,7 @@ export default function FileManagerPage() {
                 </div>
               </TableCell>
               <TableCell>{file.size}</TableCell>
-              <TableCell>{file.modified}</TableCell>
+              <TableCell>{file.modified ? new Date(file.modified.toDate()).toLocaleDateString() : '...'}</TableCell>
               <TableCell className="text-right">
                  <div className="flex items-center justify-end gap-1">
                       <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' का प्रीव्यू दिखाना अभी संभव नहीं है।`)}><Eye className="h-4 w-4" /></Button>
@@ -252,7 +290,7 @@ export default function FileManagerPage() {
                  <Link href="/dashboard/project-oversight" className="cursor-pointer">
                     <h1 className="text-xl font-bold font-headline flex items-center gap-2">
                         <Folder className="h-5 w-5 text-primary" />
-                        फ़ाइल मैनेजर - प्रोजेक्ट #{DUMMY_PROJECT_ID}
+                        फ़ाइल मैनेजर {activeProjectId ? `- प्रोजेक्ट #${activeProjectId.slice(0, 8)}...` : ''}
                     </h1>
                 </Link>
             </div>
@@ -265,7 +303,7 @@ export default function FileManagerPage() {
             <CardHeader className="border-b pb-4">
                 <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
-                        पथ: प्रोजेक्ट्स &gt; {DUMMY_PROJECT_ID} &gt; सभी फाइलें
+                        पथ: प्रोजेक्ट्स &gt; {activeProjectId ? `${activeProjectId.slice(0, 8)}...` : 'N/A'} &gt; सभी फाइलें
                     </div>
                      <div className="flex items-center gap-2">
                         <div className="relative flex items-center">
