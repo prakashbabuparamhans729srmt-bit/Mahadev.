@@ -7,6 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -497,7 +498,7 @@ export default function OnboardingPage() {
                      {step <= 5 && (
                         <div className="mt-4">
                             <div className="flex justify-between text-xs text-muted-foreground mb-1">
-                                <span>{steps[step-1].name}</span>
+                                <span>{steps[step-1]?.name || ''}</span>
                                 <span>{progressValue}% पूर्ण</span>
                             </div>
                             <Progress value={progressValue} />
