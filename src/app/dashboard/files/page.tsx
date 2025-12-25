@@ -101,6 +101,7 @@ export default function FileManagerPage() {
     const { toast } = useToast();
     const firestore = useFirestore();
     const [searchQuery, setSearchQuery] = useState('');
+    const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const filesQuery = useMemo(() => {
@@ -158,53 +159,84 @@ export default function FileManagerPage() {
         }
     };
 
-  const renderTableContent = () => {
+  const renderContent = () => {
     if (isLoading) {
-        return <TableRow><TableCell colSpan={4} className="h-24 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto" /></TableCell></TableRow>;
+        return <div className="flex justify-center items-center h-64"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
     if (error) {
-        return <TableRow><TableCell colSpan={4} className="h-24 text-center text-destructive"><ShieldAlert className="mx-auto h-6 w-6 mb-2" />फाइलें लोड करने में विफल।</TableCell></TableRow>;
+        return <div className="text-center py-10"><ShieldAlert className="mx-auto h-8 w-8 text-destructive" /><p className="mt-2 text-destructive">फाइलें लोड करने में विफल।</p></div>;
     }
     if (filteredFiles.length === 0) {
-        return <TableRow><TableCell colSpan={4} className="h-24 text-center text-muted-foreground">कोई फाइल नहीं मिली।</TableCell></TableRow>;
+        return <div className="text-center py-10"><p className="text-muted-foreground">कोई फाइल नहीं मिली।</p></div>;
     }
-    return filteredFiles.map((file) => (
-      <TableRow key={file.id}>
-        <TableCell className="font-medium">
-          <div className="flex items-center gap-3">
-            {getFileIcon(file.type)}
-            <span>{file.name}</span>
-          </div>
-        </TableCell>
-        <TableCell>{file.size}</TableCell>
-        <TableCell>{file.modified}</TableCell>
-        <TableCell className="text-right">
-           <div className="flex items-center justify-end gap-1">
-                <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' का प्रीव्यू दिखाना अभी संभव नहीं है।`)}><Eye className="h-4 w-4" /></Button>
-                <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' को डाउनलोड करने की सुविधा जल्द ही आएगी।`)}><Download className="h-4 w-4" /></Button>
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                        <AlertDialogTitle>क्या आप निश्चित हैं?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            यह क्रिया पूर्ववत नहीं की जा सकती। यह स्थायी रूप से '{file.name}' फ़ाइल को हटा देगा।
-                        </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                        <AlertDialogCancel>रद्द करें</AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(file.id, file.name)}>हटाएं</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-           </div>
-        </TableCell>
-      </TableRow>
-    ));
+
+    if (viewMode === 'grid') {
+        return (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
+                {filteredFiles.map((file) => (
+                    <Card key={file.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
+                        <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2">
+                           <div className="text-4xl group-hover:scale-110 transition-transform">{getFileIcon(file.type)}</div>
+                           <p className="text-xs font-semibold truncate w-full">{file.name}</p>
+                           <p className="text-xs text-muted-foreground">{file.size}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+        );
+    }
+
+    return (
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[40%]">नाम</TableHead>
+            <TableHead>आकार</TableHead>
+            <TableHead>संशोधित</TableHead>
+            <TableHead className="text-right">क्रिया</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredFiles.map((file) => (
+            <TableRow key={file.id}>
+              <TableCell className="font-medium">
+                <div className="flex items-center gap-3">
+                  {getFileIcon(file.type)}
+                  <span>{file.name}</span>
+                </div>
+              </TableCell>
+              <TableCell>{file.size}</TableCell>
+              <TableCell>{file.modified}</TableCell>
+              <TableCell className="text-right">
+                 <div className="flex items-center justify-end gap-1">
+                      <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' का प्रीव्यू दिखाना अभी संभव नहीं है।`)}><Eye className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' को डाउनलोड करने की सुविधा जल्द ही आएगी।`)}><Download className="h-4 w-4" /></Button>
+                      <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                                  <Trash2 className="h-4 w-4" />
+                              </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                              <AlertDialogHeader>
+                              <AlertDialogTitle>क्या आप निश्चित हैं?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                  यह क्रिया पूर्ववत नहीं की जा सकती। यह स्थायी रूप से '{file.name}' फ़ाइल को हटा देगा।
+                              </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                              <AlertDialogCancel>रद्द करें</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleDelete(file.id, file.name)}>हटाएं</AlertDialogAction>
+                              </AlertDialogFooter>
+                          </AlertDialogContent>
+                      </AlertDialog>
+                 </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    );
   }
 
   return (
@@ -245,29 +277,17 @@ export default function FileManagerPage() {
                                 onChange={(e) => setSearchQuery(e.target.value)}
                             />
                         </div>
-                        <Button variant="outline" size="icon" onClick={() => toast({description: 'आप पहले से ही सूची दृश्य में हैं।'})}>
+                        <Button variant={viewMode === 'list' ? 'secondary' : 'ghost'} size="icon" onClick={() => setViewMode('list')}>
                             <List className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleAction('ग्रिड दृश्य जल्द ही आ रहा है।')}>
+                        <Button variant={viewMode === 'grid' ? 'secondary' : 'ghost'} size="icon" onClick={() => setViewMode('grid')}>
                             <LayoutGrid className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
             </CardHeader>
           <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[40%]">नाम</TableHead>
-                  <TableHead>आकार</TableHead>
-                  <TableHead>संशोधित</TableHead>
-                  <TableHead className="text-right">क्रिया</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {renderTableContent()}
-              </TableBody>
-            </Table>
+            {renderContent()}
           </CardContent>
         </Card>
 

@@ -103,8 +103,9 @@ export default function CookieStatusPage() {
   const overallProgress = totalCookies > 0 ? (totalActive / totalCookies) * 100 : 0;
 
 
-  const handleAction = (message: string) => {
+  const handleAction = (message: string, title: string = "सुविधा उपलब्ध नहीं है") => {
     toast({
+      title: title,
       description: message,
     });
   };
@@ -207,7 +208,7 @@ export default function CookieStatusPage() {
           </Button>
           <Button
             variant="outline"
-            onClick={() => handleAction('स्वचालित नवीनीकरण सक्षम/अक्षम किया गया।')}
+            onClick={() => handleAction('स्वचालित नवीनीकरण एक सर्वर-साइड सुविधा है और वर्तमान में अक्षम है।', 'स्वचालित नवीनीकरण')}
           >
             <RefreshCw className="mr-2 h-4 w-4" />
             स्वचालित नवीनीकरण
@@ -217,3 +218,5 @@ export default function CookieStatusPage() {
     </div>
   );
 }
+
+    

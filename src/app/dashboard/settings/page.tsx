@@ -123,7 +123,7 @@ export default function SettingsPage() {
                             <AvatarImage src={photoURL ?? "https://picsum.photos/seed/1/200/200"} alt={displayName} />
                             <AvatarFallback>{displayName?.[0]}</AvatarFallback>
                         </Avatar>
-                        <button onClick={handleAvatarClick} className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onClick={handleAvatarClick} className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                             <Camera className="text-white h-8 w-8" />
                         </button>
                         <input type="file" ref={fileInputRef} onChange={handleFileChange} className="hidden" accept="image/*" />
@@ -175,3 +175,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    

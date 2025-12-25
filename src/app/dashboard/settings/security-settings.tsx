@@ -121,9 +121,9 @@ export function SecuritySettings() {
     }
   };
 
-  const handleAction = (message: string) => {
+  const handleAction = (message: string, title: string = "सुविधा उपलब्ध नहीं है") => {
     toast({
-      title: "सुविधा उपलब्ध नहीं है",
+      title: title,
       description: message,
     });
   };
@@ -173,7 +173,11 @@ export function SecuritySettings() {
               <h3 className="font-semibold">प्रमाणीकरण ऐप</h3>
               <p className="text-sm text-muted-foreground">Google Authenticator या Authy जैसे ऐप का उपयोग करें।</p>
             </div>
-            <Switch onCheckedChange={() => handleAction('2FA सेटअप को सर्वर-साइड समर्थन की आवश्यकता है और यह अभी लागू नहीं किया गया है।')} />
+            <Switch onCheckedChange={(checked) => handleAction(
+                checked 
+                ? '2FA सेटअप को एक सुरक्षित सर्वर-साइड कार्यान्वयन की आवश्यकता है। यह सुविधा अभी उपलब्ध नहीं है।'
+                : '2FA अक्षम कर दिया गया है (डेमो)।'
+            )} />
           </div>
         </CardContent>
       </Card>
@@ -197,14 +201,14 @@ export function SecuritySettings() {
               <p className="font-semibold">Safari on iPhone 15</p>
               <p className="text-sm text-muted-foreground">गुरुग्राम, भारत</p>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => handleAction('यह एक व्यवस्थापक-स्तरीय कार्य है और वर्तमान में क्लाइंट-साइड से उपलब्ध नहीं है।')}>
+            <Button variant="ghost" size="sm" onClick={() => handleAction('यह एक व्यवस्थापक-स्तरीय कार्य है और वर्तमान में क्लाइंट-साइड से उपलब्ध नहीं है।', 'लॉगआउट विफल')}>
               <LogOut className="mr-2 h-4 w-4" />
               लॉग आउट
             </Button>
           </div>
         </CardContent>
         <CardFooter className="border-t px-6 py-4">
-          <Button variant="outline" onClick={() => handleAction('सभी अन्य सत्रों से लॉग आउट करना एक व्यवस्थापक-स्तरीय कार्य है।')}>
+          <Button variant="outline" onClick={() => handleAction('सभी अन्य सत्रों से लॉग आउट करना एक व्यवस्थापक-स्तरीय कार्य है।', 'लॉगआउट विफल')}>
             अन्य सभी सत्रों से लॉग आउट करें
           </Button>
         </CardFooter>
@@ -271,3 +275,5 @@ export function SecuritySettings() {
     </div>
   );
 }
+
+    

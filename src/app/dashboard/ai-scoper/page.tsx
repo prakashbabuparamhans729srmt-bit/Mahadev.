@@ -109,9 +109,9 @@ function ScopeResultDialog({
     }
   };
   
-  const handleAction = (message: string) => {
+  const handleAction = (message: string, title: string = 'सुविधा उपलब्ध नहीं है') => {
     toast({
-        title: 'सुविधा उपलब्ध नहीं है',
+        title: title,
         description: message,
     });
   };
@@ -323,3 +323,5 @@ export default function AIScoperPage() {
     </div>
   );
 }
+
+    

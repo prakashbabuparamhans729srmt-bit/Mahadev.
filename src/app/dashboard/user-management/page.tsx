@@ -49,6 +49,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 
@@ -218,7 +219,7 @@ export default function UserManagementPage() {
                          <DropdownMenuItem onClick={() => handleOpenSessionManager(client)}>
                             सत्र प्रबंधित करें
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => toast({description: 'यह सुविधा जल्द ही आ रही है।'})}>
+                        <DropdownMenuItem onClick={() => toast({description: 'यह एक व्यवस्थापक-स्तरीय कार्य है। भूमिका बदलने के लिए कृपया एडमिन पैनल पर जाएँ।', title: "भूमिका संपादन"})}>
                             भूमिका संपादित करें
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
@@ -280,3 +281,5 @@ export default function UserManagementPage() {
     </>
   );
 }
+
+    
