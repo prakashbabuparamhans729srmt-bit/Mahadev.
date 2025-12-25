@@ -11,6 +11,9 @@ import { Loader2, User, Shield, Bell, CreditCard, Camera, ArrowLeft } from 'luci
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from 'next/link';
+import { SecuritySettings } from './security-settings';
+import { BillingSettings } from './billing-settings';
+import { NotificationSettings } from './notification-settings';
 
 export default function SettingsPage() {
   const { user, isUserLoading } = useUser();
@@ -69,15 +72,6 @@ export default function SettingsPage() {
     );
   }
 
-  const handleTabChange = (value: string) => {
-    if (value !== 'profile') {
-        toast({
-            title: "सुविधा जल्द ही आ रही है",
-            description: `"${value}" टैब अभी उपलब्ध नहीं है।`,
-        });
-    }
-  }
-
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <div className="flex items-center gap-4 mb-8">
@@ -88,18 +82,18 @@ export default function SettingsPage() {
         </Button>
         <h1 className="text-3xl font-bold font-headline">सेटिंग्स</h1>
       </div>
-      <Tabs defaultValue="profile" onValueChange={handleTabChange} orientation="vertical" className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-10">
+      <Tabs defaultValue="profile" orientation="vertical" className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-10">
         <TabsList className="flex-col h-auto justify-start items-stretch gap-2 bg-transparent p-0 border-none">
           <TabsTrigger value="profile" className="justify-start p-4 text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">
             <User className="mr-3"/> प्रोफ़ाइल
           </TabsTrigger>
-          <TabsTrigger value="security" className="justify-start p-4 text-base">
+          <TabsTrigger value="security" className="justify-start p-4 text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">
              <Shield className="mr-3"/> सुरक्षा
           </TabsTrigger>
-           <TabsTrigger value="billing" className="justify-start p-4 text-base">
+           <TabsTrigger value="billing" className="justify-start p-4 text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">
             <CreditCard className="mr-3"/> बिलिंग
           </TabsTrigger>
-          <TabsTrigger value="notifications" className="justify-start p-4 text-base">
+          <TabsTrigger value="notifications" className="justify-start p-4 text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">
             <Bell className="mr-3"/> नोटिफिकेशन्स
           </TabsTrigger>
         </TabsList>
@@ -150,6 +144,15 @@ export default function SettingsPage() {
                     </Button>
                 </div>
             </div>
+        </TabsContent>
+        <TabsContent value="security" className="mt-0">
+            <SecuritySettings />
+        </TabsContent>
+        <TabsContent value="billing" className="mt-0">
+            <BillingSettings />
+        </TabsContent>
+        <TabsContent value="notifications" className="mt-0">
+            <NotificationSettings />
         </TabsContent>
       </Tabs>
     </div>
