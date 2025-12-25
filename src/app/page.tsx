@@ -1,14 +1,20 @@
-
-import HeroSection from '@/components/sections/hero';
-import ServicesSection from '@/components/sections/services';
-import PricingSection from '@/components/sections/pricing';
-import PortfolioSection from '@/components/sections/portfolio';
-import ProcessSection from '@/components/sections/process';
-import TestimonialsSection from '@/components/sections/testimonials';
-import CtaSection from '@/components/sections/cta';
-import Footer from '@/components/footer';
+'use client';
+import dynamic from 'next/dynamic';
 import Header from '@/components/header';
-import ImageCarouselSection from '@/components/sections/image-carousel';
+import HeroSection from '@/components/sections/hero';
+import Footer from '@/components/footer';
+import { Skeleton } from '@/components/ui/skeleton';
+
+const ImageCarouselSection = dynamic(() => import('@/components/sections/image-carousel'), {
+  loading: () => <Skeleton className="h-[50vh] w-full" />,
+});
+const ServicesSection = dynamic(() => import('@/components/sections/services'));
+const PortfolioSection = dynamic(() => import('@/components/sections/portfolio'));
+const ProcessSection = dynamic(() => import('@/components/sections/process'));
+const TestimonialsSection = dynamic(() => import('@/components/sections/testimonials'));
+const CtaSection = dynamic(() => import('@/components/sections/cta'));
+const PricingSection = dynamic(() => import('@/components/sections/pricing'));
+
 
 export default function Home() {
   return (
