@@ -8,7 +8,8 @@ import { useState, useEffect, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
-import { useUser, useAuth } from '@/firebase';
+import { useUser, useAuth, useFirestore } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
@@ -42,6 +43,7 @@ export default function SignupPage() {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
   const { toast } = useToast();
   
   const [email, setEmail] = useState('');
@@ -68,23 +70,35 @@ export default function SignupPage() {
     setIsPending(true);
     setError(null);
 
-    if (!auth) {
-      setError('प्रमाणीकरण सेवा उपलब्ध नहीं है।');
+    if (!auth || !firestore) {
+      setError('प्रमाणीकरण सेवा या डेटाबेस उपलब्ध नहीं है।');
       setIsPending(false);
       return;
     }
 
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await updateProfile(userCredential.user, {
+      const newUser = userCredential.user;
+
+      await updateProfile(newUser, {
         displayName: `${firstName} ${lastName}`.trim(),
       });
-      await sendEmailVerification(userCredential.user);
-      toast({
-        title: 'वेरिफिकेशन ईमेल भेजा गया',
-        description: 'कृपया अपना इनबॉक्स जांचें और अपना खाता वेरिफ़ाई करें।',
+      
+      const clientRef = doc(firestore, 'clients', newUser.uid);
+      await setDoc(clientRef, {
+        id: newUser.uid,
+        firstName,
+        lastName,
+        email: newUser.email,
+        phone,
       });
-      router.push('/login');
+      
+      await sendEmailVerification(newUser);
+      toast({
+        title: 'सत्यापन ईमेल भेजा गया',
+        description: 'कृपया अपना इनबॉक्स जांचें और अपना खाता सत्यापित करें। आपको ऑनबोर्डिंग के लिए रीडायरेक्ट किया जा रहा है।',
+      });
+      router.push('/onboarding');
     } catch (error: any) {
       let message = 'साइनअप विफल। कृपया पुनः प्रयास करें।';
       if (error.code === 'auth/email-already-in-use') {

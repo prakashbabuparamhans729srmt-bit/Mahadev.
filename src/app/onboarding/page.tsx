@@ -30,6 +30,7 @@ import {
   Users,
   Wallet,
   Wand2,
+  Loader2,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -38,6 +39,8 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
+import { useFirestore, useUser } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
 
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -74,6 +77,7 @@ const SocialButton = ({ icon, label }: { icon: React.ReactNode, label: string })
 )
 
 const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
+    const router = useRouter();
     return (
         <div className="space-y-6">
             <div className="text-center">
@@ -82,26 +86,15 @@ const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
             </div>
             <Card>
                 <CardHeader>
-                    <CardTitle className="flex items-center gap-2"><Rocket className="text-accent"/> चरण 1: त्वरित साइन अप</CardTitle>
+                    <CardTitle className="flex items-center gap-2"><Rocket className="text-accent"/> चरण 1: आपका स्वागत है!</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                     <Label htmlFor="email">📧 ईमेल से तुरंत शुरू करें</Label>
-                    <Input id="email" type="email" placeholder="rajes@example.com" />
-                    <p className="text-sm text-muted-foreground">या सोशल मीडिया से जुड़ें:</p>
-                    <div className="flex flex-wrap gap-2">
-                       <SocialButton icon={<GoogleIcon />} label="Google" />
-                       <SocialButton icon={<FacebookIcon />} label="Facebook" />
-                       <SocialButton icon={<LinkedinIcon />} label="LinkedIn" />
-                       <SocialButton icon={<TwitterIcon />} label="Twitter" />
-                    </div>
-                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
-                        <Button className="w-full">⚡ 1-क्लिक साइन अप</Button>
-                        <Button variant="secondary" className="w-full">🔑 पासवर्ड से साइन अप</Button>
-                    </div>
+                <CardContent className="space-y-4 text-center">
+                    <p>साइन अप करने के लिए धन्यवाद! हम आपके साथ काम करने के लिए उत्साहित हैं।</p>
+                    <p>अगले कुछ चरणों में, हम आपके व्यवसाय और आपकी प्रोजेक्ट आवश्यकताओं के बारे में कुछ जानकारी एकत्र करेंगे।</p>
                 </CardContent>
             </Card>
             <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-                 <Button variant="ghost">❌ बाद में</Button>
+                 <Button variant="ghost" onClick={() => router.push('/dashboard')}>❌ बाद में</Button>
                  <Button onClick={() => setStep(2)}>🚀 मैं जारी रखना चाहता हूँ <ChevronRight className="ml-2 h-4 w-4"/></Button>
             </div>
         </div>
@@ -112,6 +105,15 @@ const Step2 = ({ setStep }: { setStep: (step: number) => void }) => {
     const industries = ["उत्पादन/विनिर्माण", "खुदरा/व्यापार", "सेवा प्रदाता (शिक्षा, स्वास्थ्य, परामर्श)", "प्रौद्योगिकी/सॉफ्टवेयर", "रियल एस्टेट/निर्माण", "कृषि/खाद्य प्रसंस्करण", "परिवहन/लॉजिस्टिक्स", "मनोरंजन/मीडिया"];
     const businessSizes = ["एकल स्वामित्व/फ्रीलांसर", "छोटा व्यवसाय (1-10 कर्मचारी)", "मध्यम व्यवसाय (11-50 कर्मचारी)", "बड़ा उद्यम (50+ कर्मचारी)"];
     const customerBases = ["स्थानीय/शहर स्तर", "राज्य/क्षेत्रीय स्तर", "राष्ट्रीय स्तर", "अंतर्राष्ट्रीय स्तर", "B2B (व्यवसाय से व्यवसाय)", "B2C (व्यवसाय से उपभोक्ता)"];
+    const { toast } = useToast();
+
+    const handleNext = () => {
+        toast({
+            title: "जानकारी सहेजी गई (डेमो)",
+            description: "यह जानकारी अभी सहेजी नहीं गई है। हम इसे जल्द ही लागू करेंगे।",
+        });
+        setStep(3);
+    }
 
     return (
         <div className="space-y-6">
@@ -162,13 +164,55 @@ const Step2 = ({ setStep }: { setStep: (step: number) => void }) => {
             </Card>
              <div className="flex justify-between items-center">
                  <Button variant="ghost" onClick={() => setStep(1)}><ArrowLeft className="mr-2 h-4 w-4"/> पीछे जाएं</Button>
-                 <Button onClick={() => setStep(3)}>💾 सेव करें और आगे बढ़ें <ChevronRight className="ml-2 h-4 w-4"/></Button>
+                 <Button onClick={handleNext}>💾 सेव करें और आगे बढ़ें <ChevronRight className="ml-2 h-4 w-4"/></Button>
             </div>
         </div>
     )
 }
 
 const Step3 = ({ setStep }: { setStep: (step: number) => void }) => {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [fullName, setFullName] = useState(user?.displayName || '');
+    const [phone, setPhone] = useState('');
+    const [companyName, setCompanyName] = useState('');
+
+    const handleSaveProfile = async () => {
+        if (!user || !firestore) {
+            toast({ variant: 'destructive', title: 'त्रुटि', description: 'उपयोगकर्ता प्रमाणीकृत नहीं है या डेटाबेस उपलब्ध नहीं है।' });
+            return;
+        }
+
+        setIsLoading(true);
+        try {
+            const clientRef = doc(firestore, 'clients', user.uid);
+            const [firstName, ...lastNameParts] = fullName.split(' ');
+            const lastName = lastNameParts.join(' ');
+            
+            await setDoc(clientRef, {
+                firstName: firstName || '',
+                lastName: lastName || '',
+                phone: phone,
+                companyName: companyName,
+            }, { merge: true });
+
+            toast({
+                title: 'प्रोफ़ाइल सहेजी गई!',
+                description: 'आपकी जानकारी सफलतापूर्वक अपडेट हो गई है।',
+            });
+            setStep(4);
+        } catch (error) {
+            console.error("Error saving profile:", error);
+            toast({ variant: 'destructive', title: 'त्रुटि', description: 'प्रोफ़ाइल सहेजने में विफल। कृपया पुनः प्रयास करें।' });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+
     return (
          <div className="space-y-6">
             <div className="text-center">
@@ -183,20 +227,16 @@ const Step3 = ({ setStep }: { setStep: (step: number) => void }) => {
                     <div className="grid md:grid-cols-2 gap-4">
                         <div className="space-y-2">
                             <Label htmlFor="full-name">पूरा नाम</Label>
-                            <Input id="full-name" placeholder="राजेश कुमार" />
+                            <Input id="full-name" placeholder="राजेश कुमार" value={fullName} onChange={(e) => setFullName(e.target.value)} />
                         </div>
                          <div className="space-y-2">
                             <Label htmlFor="phone">फ़ोन नंबर</Label>
-                            <Input id="phone" placeholder="+91 98XXXXXX21" />
+                            <Input id="phone" placeholder="+91 98XXXXXX21" value={phone} onChange={(e) => setPhone(e.target.value)}/>
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <Label htmlFor="company-name">कंपनी नाम</Label>
-                        <Input id="company-name" placeholder="राजेश इंडस्ट्रीज" />
-                    </div>
-                     <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                        <Button variant="outline">📸 प्रोफाइल फोटो जोड़ें</Button>
-                        <Button variant="outline">🎨 थीम रंग चुनें</Button>
+                        <Label htmlFor="company-name">कंपनी नाम (वैकल्पिक)</Label>
+                        <Input id="company-name" placeholder="राजेश इंडस्ट्रीज" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
                     </div>
                 </CardContent>
             </Card>
@@ -205,25 +245,29 @@ const Step3 = ({ setStep }: { setStep: (step: number) => void }) => {
                      <CardTitle className="flex items-center gap-2"><Phone className="text-accent"/> पसंदीदा संचार विधि</CardTitle>
                 </CardHeader>
                  <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                    <p className="text-muted-foreground text-sm mb-4">यह सुविधा जल्द ही आ रही है।</p>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 opacity-50">
                         {["व्हाट्सएप", "ईमेल", "फोन कॉल", "टेलीग्राम"].map(method => (
                              <div key={method} className="flex items-center space-x-2">
-                                <Checkbox id={method} />
+                                <Checkbox id={method} disabled />
                                 <Label htmlFor={method} className="font-normal">{method}</Label>
                             </div>
                         ))}
                     </div>
                     <Label>पसंदीदा समय:</Label>
-                    <RadioGroup defaultValue="morning" className="flex flex-wrap gap-4 mt-2">
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="morning" id="morning" /><Label htmlFor="morning">सुबह (9-12)</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="afternoon" id="afternoon" /><Label htmlFor="afternoon">दोपहर (12-4)</Label></div>
-                        <div className="flex items-center space-x-2"><RadioGroupItem value="evening" id="evening" /><Label htmlFor="evening">शाम (4-7)</Label></div>
+                    <RadioGroup defaultValue="morning" className="flex flex-wrap gap-4 mt-2 opacity-50">
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="morning" id="morning" disabled /><Label htmlFor="morning">सुबह (9-12)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="afternoon" id="afternoon" disabled /><Label htmlFor="afternoon">दोपहर (12-4)</Label></div>
+                        <div className="flex items-center space-x-2"><RadioGroupItem value="evening" id="evening" disabled /><Label htmlFor="evening">शाम (4-7)</Label></div>
                     </RadioGroup>
                  </CardContent>
             </Card>
              <div className="flex justify-between items-center">
                  <Button variant="ghost" onClick={() => setStep(2)}><ArrowLeft className="mr-2 h-4 w-4"/> पीछे जाएं</Button>
-                 <Button onClick={() => setStep(4)}>🚀 छोड़ें और आगे बढ़ें <ChevronRight className="ml-2 h-4 w-4"/></Button>
+                 <Button onClick={handleSaveProfile} disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    💾 सेव करें और आगे बढ़ें <ChevronRight className="ml-2 h-4 w-4"/>
+                </Button>
             </div>
         </div>
     )
