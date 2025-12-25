@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -366,5 +365,3 @@ export default function FileManagerPage() {
     </div>
   );
 }
-
-    
