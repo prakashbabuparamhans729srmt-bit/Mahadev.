@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/componen
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Input } from '@/components/ui/input';
 import {
-  ArrowLeft, Upload, Folder, FileText, MoreVertical, Search, Eye, Download, Edit2, Trash2, Play, ArrowRight, List, LayoutGrid
+  ArrowLeft, Upload, Folder, FileText, MoreVertical, Search, Eye, Download, Edit2, Trash2, Play, ArrowRight, List, LayoutGrid, Loader2, ShieldAlert
 } from 'lucide-react';
 import { getFileIcon } from '@/lib/file-icons';
 import { useToast } from '@/hooks/use-toast';
@@ -16,17 +16,9 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useCollection, useFirestore } from '@/firebase';
+import { collection, deleteDoc, doc } from 'firebase/firestore';
 
-
-const initialFiles = [
-  { name: 'डिज़ाइन_स्केच', type: 'folder', size: '--', modified: '15/04/24' },
-  { name: 'homepage.fig', type: 'figma', size: '2.4 MB', modified: '16/04/24' },
-  { name: 'dashboard.fig', type: 'figma', size: '3.1 MB', modified: '17/04/24' },
-  { name: 'color_palette.png', type: 'image', size: '1.2 MB', modified: '18/04/24' },
-  { name: 'क्लाइंट_फीडबैक', type: 'folder', size: '--', modified: '19/04/24' },
-  { name: 'फीडबैक_v1.pdf', type: 'pdf', size: '850 KB', modified: '19/04/24' },
-  { name: 'डेमो_video.mp4', type: 'video', size: '45.2 MB', modified: '20/04/24' },
-];
 
 const versions = [
     { version: 'v1.2', date: '20/04/24', author: 'अमित', comment: '"कलर करेक्शन"' },
@@ -103,20 +95,27 @@ const VersionHistoryCard = dynamic(() => Promise.resolve(({ handleAction }: { ha
     ssr: false,
 });
 
+const DUMMY_PROJECT_ID = '1042'; // This should be dynamic based on user's project
 
 export default function FileManagerPage() {
     const { toast } = useToast();
-    const [files, setFiles] = useState(initialFiles);
+    const firestore = useFirestore();
     const [searchQuery, setSearchQuery] = useState('');
-    const [filteredFiles, setFilteredFiles] = useState(initialFiles);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    useEffect(() => {
+    const filesQuery = useMemo(() => {
+        if (!firestore) return null;
+        return collection(firestore, `projects/${DUMMY_PROJECT_ID}/files`);
+    }, [firestore]);
+
+    const { data: files, setData: setFiles, isLoading, error } = useCollection(filesQuery);
+
+    const filteredFiles = useMemo(() => {
+        if (!files) return [];
         const lowercasedQuery = searchQuery.toLowerCase();
-        const filtered = files.filter(file => 
+        return files.filter(file => 
             file.name.toLowerCase().includes(lowercasedQuery)
         );
-        setFilteredFiles(filtered);
     }, [searchQuery, files]);
 
     const handleUploadClick = () => {
@@ -128,7 +127,7 @@ export default function FileManagerPage() {
         if (file) {
             toast({
                 title: 'फ़ाइल चयनित',
-                description: `${file.name} अपलोड के लिए तैयार है।`,
+                description: `${file.name} अपलोड के लिए तैयार है। (अपलोड सुविधा जल्द ही आ रही है)`,
             });
             // Here you would typically handle the file upload
         }
@@ -141,14 +140,72 @@ export default function FileManagerPage() {
         });
     };
     
-    const handleDelete = (fileName: string) => {
-        setFiles(files.filter(f => f.name !== fileName));
-        toast({
-            title: 'फ़ाइल हटाई गई',
-            description: `${fileName} को सफलतापूर्वक हटा दिया गया है।`,
-            variant: 'destructive',
-        });
+    const handleDelete = async (fileId: string, fileName: string) => {
+        if (!firestore) return;
+        try {
+            await deleteDoc(doc(firestore, `projects/${DUMMY_PROJECT_ID}/files`, fileId));
+            toast({
+                title: 'फ़ाइल हटाई गई',
+                description: `${fileName} को सफलतापूर्वक हटा दिया गया है।`,
+                variant: 'destructive',
+            });
+        } catch (e) {
+            toast({
+                title: 'त्रुटि',
+                description: 'फ़ाइल हटाने में विफल।',
+                variant: 'destructive',
+            });
+        }
     };
+
+  const renderTableContent = () => {
+    if (isLoading) {
+        return <TableRow><TableCell colSpan={4} className="h-24 text-center"><Loader2 className="h-6 w-6 animate-spin mx-auto" /></TableCell></TableRow>;
+    }
+    if (error) {
+        return <TableRow><TableCell colSpan={4} className="h-24 text-center text-destructive"><ShieldAlert className="mx-auto h-6 w-6 mb-2" />फाइलें लोड करने में विफल।</TableCell></TableRow>;
+    }
+    if (filteredFiles.length === 0) {
+        return <TableRow><TableCell colSpan={4} className="h-24 text-center text-muted-foreground">कोई फाइल नहीं मिली।</TableCell></TableRow>;
+    }
+    return filteredFiles.map((file) => (
+      <TableRow key={file.id}>
+        <TableCell className="font-medium">
+          <div className="flex items-center gap-3">
+            {getFileIcon(file.type)}
+            <span>{file.name}</span>
+          </div>
+        </TableCell>
+        <TableCell>{file.size}</TableCell>
+        <TableCell>{file.modified}</TableCell>
+        <TableCell className="text-right">
+           <div className="flex items-center justify-end gap-1">
+                <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' का प्रीव्यू दिखाना अभी संभव नहीं है।`)}><Eye className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' को डाउनलोड करने की सुविधा जल्द ही आएगी।`)}><Download className="h-4 w-4" /></Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
+                            <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                        <AlertDialogTitle>क्या आप निश्चित हैं?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            यह क्रिया पूर्ववत नहीं की जा सकती। यह स्थायी रूप से '{file.name}' फ़ाइल को हटा देगा।
+                        </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                        <AlertDialogCancel>रद्द करें</AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(file.id, file.name)}>हटाएं</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+           </div>
+        </TableCell>
+      </TableRow>
+    ));
+  }
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
@@ -163,7 +220,7 @@ export default function FileManagerPage() {
                  <Link href="/dashboard/project-oversight" className="cursor-pointer">
                     <h1 className="text-xl font-bold font-headline flex items-center gap-2">
                         <Folder className="h-5 w-5 text-primary" />
-                        फ़ाइल मैनेजर - प्रोजेक्ट #1042
+                        फ़ाइल मैनेजर - प्रोजेक्ट #{DUMMY_PROJECT_ID}
                     </h1>
                 </Link>
             </div>
@@ -176,7 +233,7 @@ export default function FileManagerPage() {
             <CardHeader className="border-b pb-4">
                 <div className="flex items-center justify-between">
                     <div className="text-sm text-muted-foreground">
-                        पथ: प्रोजेक्ट्स &gt; 1042 &gt; डिज़ाइन &gt; फाइनल
+                        पथ: प्रोजेक्ट्स &gt; {DUMMY_PROJECT_ID} &gt; सभी फाइलें
                     </div>
                      <div className="flex items-center gap-2">
                         <div className="relative flex items-center">
@@ -208,43 +265,7 @@ export default function FileManagerPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredFiles.map((file) => (
-                  <TableRow key={file.name}>
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-3">
-                        {getFileIcon(file.type)}
-                        <span>{file.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{file.size}</TableCell>
-                    <TableCell>{file.modified}</TableCell>
-                    <TableCell className="text-right">
-                       <div className="flex items-center justify-end gap-1">
-                            <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' का प्रीव्यू दिखाना अभी संभव नहीं है।`)}><Eye className="h-4 w-4" /></Button>
-                            <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' को डाउनलोड करने की सुविधा जल्द ही आएगी।`)}><Download className="h-4 w-4" /></Button>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                    <AlertDialogTitle>क्या आप निश्चित हैं?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        यह क्रिया पूर्ववत नहीं की जा सकती। यह स्थायी रूप से '{file.name}' फ़ाइल को हटा देगा।
-                                    </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                    <AlertDialogCancel>रद्द करें</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDelete(file.name)}>हटाएं</AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                       </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {renderTableContent()}
               </TableBody>
             </Table>
           </CardContent>
@@ -262,3 +283,5 @@ export default function FileManagerPage() {
     </div>
   );
 }
+
+    

@@ -25,7 +25,7 @@ import {
   BarChart,
   Smile,
   Disc,
-  File,
+  File as FileIcon,
   Users,
   Upload,
   ChevronRight,
@@ -40,44 +40,18 @@ import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
 import React, { useMemo } from 'react';
 import { useParams } from 'next/navigation';
-import { useDoc, useFirestore } from '@/firebase';
-import { doc } from 'firebase/firestore';
+import { useDoc, useFirestore, useCollection } from '@/firebase';
+import { doc, collection } from 'firebase/firestore';
 import { format } from 'date-fns';
+import { getFileIcon } from '@/lib/file-icons';
 
-const phases = [
-  { name: '1. डिस्कवरी', progress: 100, status: 'completed' },
-  { name: '2. डिज़ाइन', progress: 80, status: 'inprogress' },
-  { name: '3. डेवलपमेंट', progress: 40, status: 'inprogress' },
-  { name: '4. टेस्टिंग', progress: 0, status: 'pending' },
-];
-
-const team = [
-  { name: 'राहुल (TL)', role: 'फ्रंटएंड', avatar: 'R' },
-  { name: 'प्रिया', role: 'UI/UX', avatar: 'P' },
-  { name: 'अमित', role: 'बैकएंड', avatar: 'A' },
-  { name: 'सीमा', role: 'QA', avatar: 'S' },
-];
-
-const files = [
-  {
-    name: 'SRS.docx',
-    size: '2.4 MB',
-    date: '01/04/24',
-    icon: <FileText className="text-blue-500" />,
-  },
-  {
-    name: 'डिज़ाइन.fig',
-    size: '5.7 MB',
-    date: '15/04/24',
-    icon: <Palette className="text-pink-500" />,
-  },
-  {
-    name: 'कोड.ज़िप',
-    size: '45.2 MB',
-    date: '20/04/24',
-    icon: <Code className="text-green-500" />,
-  },
-];
+interface IFile {
+    id: string;
+    name: string;
+    size: string;
+    date: string;
+    type: string;
+}
 
 export default function ProjectDetailsPage() {
     const params = useParams();
@@ -98,6 +72,25 @@ export default function ProjectDetailsPage() {
     }, [firestore, project?.clientId]);
 
     const { data: client, isLoading: isClientLoading } = useDoc(clientRef);
+    
+    const teamQuery = useMemo(() => {
+        if (!firestore || !projectId) return null;
+        return collection(firestore, `projects/${projectId}/team`);
+    }, [firestore, projectId]);
+    const { data: team, isLoading: isTeamLoading } = useCollection(teamQuery);
+
+    const filesQuery = useMemo(() => {
+        if (!firestore || !projectId) return null;
+        return collection(firestore, `projects/${projectId}/files`);
+    }, [firestore, projectId]);
+    const { data: files, isLoading: isFilesLoading } = useCollection<IFile>(filesQuery);
+
+    const timelineQuery = useMemo(() => {
+        if (!firestore || !projectId) return null;
+        return collection(firestore, `projects/${projectId}/timeline`);
+    }, [firestore, projectId]);
+    const { data: timeline, isLoading: isTimelineLoading } = useCollection(timelineQuery);
+
 
     const handleAction = (message: string) => {
         toast({
@@ -106,7 +99,7 @@ export default function ProjectDetailsPage() {
         });
     };
 
-    if (isProjectLoading || isClientLoading) {
+    if (isProjectLoading || isClientLoading || isTeamLoading || isFilesLoading || isTimelineLoading) {
         return (
             <div className="flex h-full items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
@@ -267,8 +260,8 @@ export default function ProjectDetailsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              {phases.map((p) => (
-                <div key={p.name}>
+              {timeline?.map((p: any) => (
+                <div key={p.id}>
                   <label className="text-sm">{p.name}</label>
                   <Progress value={p.progress} className="h-2 mt-1" />
                 </div>
@@ -288,10 +281,10 @@ export default function ProjectDetailsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              {team.map((t) => (
-                <div key={t.name} className="flex items-center gap-3">
+              {team?.map((t: any) => (
+                <div key={t.id} className="flex items-center gap-3">
                   <Avatar>
-                    <AvatarFallback>{t.avatar}</AvatarFallback>
+                    <AvatarFallback>{t.name?.[0] || 'U'}</AvatarFallback>
                   </Avatar>
                   <div>
                     <p className="font-semibold text-sm">{t.name}</p>
@@ -309,21 +302,21 @@ export default function ProjectDetailsPage() {
           <Card className="flex flex-col">
             <CardHeader>
               <CardTitle className="font-headline text-lg flex items-center">
-                <File className="mr-2 h-5 w-5 text-primary" />
+                <FileIcon className="mr-2 h-5 w-5 text-primary" />
                 📎 फाइल्स
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              {files.map((f) => (
-                 <Link href="/dashboard/files" key={f.name}>
+              {files?.map((f) => (
+                 <Link href="/dashboard/files" key={f.id}>
                     <div
                     className="flex items-center gap-3 hover:bg-secondary/50 p-2 rounded-md cursor-pointer"
                     >
-                    <div className="text-2xl">{f.icon}</div>
+                    <div className="text-2xl">{getFileIcon(f.type)}</div>
                     <div>
                         <p className="font-semibold text-sm">{f.name}</p>
                         <p className="text-xs text-muted-foreground">
-                        {f.size} - {f.date}
+                        {f.size} - {f.date ? format(new Date(f.date), 'dd/MM/yy') : ''}
                         </p>
                     </div>
                     </div>
@@ -349,3 +342,5 @@ export default function ProjectDetailsPage() {
     </div>
   );
 }
+
+    

@@ -24,7 +24,9 @@ import {
   CheckCircle,
   Wallet,
   Smile,
-  BarChart2
+  BarChart2,
+  Loader2,
+  ShieldAlert,
 } from 'lucide-react';
 import {
   ChartContainer,
@@ -34,6 +36,9 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
+import { useCollection, useFirestore } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import React, { useMemo } from 'react';
 
 const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), {
     loading: () => <Skeleton className="w-full h-full" />,
@@ -69,34 +74,29 @@ const timeData = [
     { task: 'अन्य', hours: 50, fill: 'hsl(var(--chart-5))' },
 ]
 
-const healthData = [
-  {
-    id: '#1042',
-    name: 'स्मार्ट ERP सिस्टम',
-    time: 80,
-    budget: 95,
-    quality: 85,
-    satisfaction: 90,
-  },
-  {
-    id: '#1043',
-    name: 'ई-कॉमर्स पोर्टल',
-    time: 95,
-    budget: 80,
-    quality: 92,
-    satisfaction: 95,
-  },
-  {
-    id: '#1044',
-    name: 'मोबाइल ऐप',
-    time: 70,
-    budget: 60,
-    quality: 75,
-    satisfaction: 80,
-  },
-];
 
 export default function ReportsPage() {
+  const firestore = useFirestore();
+
+  const projectsQuery = useMemo(() => {
+    if (!firestore) return null;
+    return collection(firestore, 'projects');
+  }, [firestore]);
+
+  const { data: projects, isLoading, error } = useCollection(projectsQuery);
+
+  const healthData = useMemo(() => {
+      if (!projects) return [];
+      // Dummy health data generation
+      return projects.map(p => ({
+          ...p,
+          time: 80 + Math.floor(Math.random() * 20) - 10,
+          budget: 90 + Math.floor(Math.random() * 20) - 10,
+          quality: 85 + Math.floor(Math.random() * 20) - 10,
+          satisfaction: 95 + Math.floor(Math.random() * 10) - 5,
+      }));
+  }, [projects]);
+
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-6">
       <div className="flex items-center justify-between">
@@ -181,33 +181,39 @@ export default function ReportsPage() {
             </CardDescription>
         </CardHeader>
         <CardContent>
-            <Table>
-                <TableHeader>
-                    <TableRow>
-                        <TableHead className="w-2/5">प्रोजेक्ट</TableHead>
-                        <TableHead><Clock className="inline-block h-4 w-4 mr-1" />समय</TableHead>
-                        <TableHead><Wallet className="inline-block h-4 w-4 mr-1" />बजट</TableHead>
-                        <TableHead><CheckCircle className="inline-block h-4 w-4 mr-1" />गुणवत्ता</TableHead>
-                        <TableHead><Smile className="inline-block h-4 w-4 mr-1" />संतुष्टि</TableHead>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    {healthData.map(project => (
-                        <TableRow key={project.id}>
-                            <TableCell className="font-medium">
-                                <p>{project.name}</p>
-                                <p className="text-xs text-muted-foreground">{project.id}</p>
-                            </TableCell>
-                            <TableCell><Progress value={project.time} /> <span className="text-xs">{project.time}%</span></TableCell>
-                            <TableCell><Progress value={project.budget} /> <span className="text-xs">{project.budget}%</span></TableCell>
-                            <TableCell><Progress value={project.quality} /> <span className="text-xs">{project.quality}%</span></TableCell>
-                            <TableCell><Progress value={project.satisfaction} /> <span className="text-xs">{project.satisfaction}%</span></TableCell>
+            {isLoading && <div className="flex justify-center items-center h-40"><Loader2 className="h-8 w-8 animate-spin" /></div>}
+            {error && <div className="text-destructive text-center p-4"><ShieldAlert className="mx-auto h-8 w-8 mb-2" />त्रुटि: डेटा लोड नहीं हो सका।</div>}
+            {healthData && (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead className="w-2/5">प्रोजेक्ट</TableHead>
+                            <TableHead><Clock className="inline-block h-4 w-4 mr-1" />समय</TableHead>
+                            <TableHead><Wallet className="inline-block h-4 w-4 mr-1" />बजट</TableHead>
+                            <TableHead><CheckCircle className="inline-block h-4 w-4 mr-1" />गुणवत्ता</TableHead>
+                            <TableHead><Smile className="inline-block h-4 w-4 mr-1" />संतुष्टि</TableHead>
                         </TableRow>
-                    ))}
-                </TableBody>
-            </Table>
+                    </TableHeader>
+                    <TableBody>
+                        {healthData.map((project: any) => (
+                            <TableRow key={project.id}>
+                                <TableCell className="font-medium">
+                                    <p>{project.name}</p>
+                                    <p className="text-xs text-muted-foreground">{project.id}</p>
+                                </TableCell>
+                                <TableCell><Progress value={project.time} /> <span className="text-xs">{project.time}%</span></TableCell>
+                                <TableCell><Progress value={project.budget} /> <span className="text-xs">{project.budget}%</span></TableCell>
+                                <TableCell><Progress value={project.quality} /> <span className="text-xs">{project.quality}%</span></TableCell>
+                                <TableCell><Progress value={project.satisfaction} /> <span className="text-xs">{project.satisfaction}%</span></TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            )}
         </CardContent>
       </Card>
     </div>
   );
 }
+
+    
