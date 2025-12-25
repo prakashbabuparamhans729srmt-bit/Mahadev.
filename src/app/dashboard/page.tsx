@@ -11,7 +11,7 @@ import {
   CardFooter,
   CardDescription
 } from '@/components/ui/card';
-import { AreaChart, Area, XAxis } from 'recharts';
+import { Area, XAxis } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 import {
   Plus,
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
         {/* Top Row */}
         <Card className="lg:col-span-2 bg-card">
           <CardHeader>
-            <CardTitle className="font-headline text-lg">रियल-टाइम कोड ट्रैकर</CardTitle>
+            <CardTitle className="font-headline">रियल-टाइम कोड ट्रैकर</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px] w-full">
              <ChartContainer config={chartConfig} className="w-full h-full">
@@ -318,5 +318,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-
-    
