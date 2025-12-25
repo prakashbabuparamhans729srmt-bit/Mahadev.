@@ -1,8 +1,6 @@
-'use client';
-
 import {
   Briefcase, Pencil, GraduationCap, Building, LandPlot, Clapperboard,
-  HeartPulse, Utensils, Car, Ticket, Palette, Camera, Music, Film, Bot,
+  HeartPulse, Utensils, Car, Ticket, Palette, Camera, Music, Film,
   Cloud, Smartphone, Link, Shirt, Carrot, Pill, BookOpen, Banknote,
   Home, Handshake, Users, Globe, Factory, Truck, Building2, BrainCircuit, Gamepad, Podcast, Drama, UserCheck, Heart, ShieldQuestion, ShoppingBasket
 } from 'lucide-react';
@@ -96,7 +94,7 @@ export const projectCategories = [
     group: 'विशिष्ट ई-कॉमर्स',
     types: [
         { name: 'फैशन', features: ['साइज गाइड', 'वर्चुअल ट्रायल', 'फैशन ब्लॉग', 'AR ट्रायल'], budget: '₹60K - ₹6L', timeline: '5-14 सप्ताह', projects: 90 },
-        { name: 'ग्रोसरी', features: ['स्लॉट बुकिंग', 'लाइव ट्रैकिंग', 'सब्सक्रिप्शन बॉक्स', 'रेसिपी सेक्शन'], budget: '₹70K - ₹5L', timeline: '6-12 सप्ताह', projects: 30 },
+        { name: 'ग्रोसरी', features: ['स्लॉट बुकिंग', 'लाइव ट्रैकिंग', 'सब्सक्रिप्शन Box', 'रेसिपी सेक्शन'], budget: '₹70K - ₹5L', timeline: '6-12 सप्ताह', projects: 30 },
         { name: 'फार्मा', features: ['प्रिस्क्रिप्शन अपलोड', 'मेडिकल सलाह', 'डॉक्टर कनेक्ट', 'रिमाइंडर'], budget: '₹85K - ₹7L', timeline: '6-15 सप्ताह', projects: 20 },
         { name: 'बुक्स', features: ['ई-बुक डाउनलोड', 'ऑडियोबुक स्ट्रीमिंग', 'बुक प्रिव्यू', 'ऑथर पोर्टल'], budget: '₹40K - ₹3L', timeline: '4-10 सप्ताह', projects: 55 },
     ]
