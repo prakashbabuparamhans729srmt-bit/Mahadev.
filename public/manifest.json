@@ -4,8 +4,8 @@
   "description": "पूर्ण विकास समाधान - वेबसाइट, मोबाइल ऐप और कस्टम सॉफ्टवेयर।",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a192f",
-  "theme_color": "#00f5a0",
+  "background_color": "#0d1117",
+  "theme_color": "#22c55e",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
