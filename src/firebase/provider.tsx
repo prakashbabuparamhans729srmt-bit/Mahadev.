@@ -25,12 +25,11 @@ export interface FirebaseContextState extends UserAuthState {
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
 // Moved initialization logic inside a function to be called on the client
-function initializeFirebase() {
-  if (!getApps().length) {
-    return initializeApp(firebaseConfig);
-  } else {
-    return getApp();
-  }
+function getFirebaseServices() {
+  const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+  const authInstance = getAuth(app);
+  const firestoreInstance = getFirestore(app);
+  return { firebaseApp: app, firestore: firestoreInstance, auth: authInstance };
 }
 
 /**
@@ -39,27 +38,18 @@ function initializeFirebase() {
 export const FirebaseProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const [services, setServices] = useState<{
-    firebaseApp: FirebaseApp;
-    firestore: Firestore;
-    auth: Auth;
-  } | null>(null);
+  // Initialize services directly. This is safe inside a 'use client' component.
+  const services = useMemo(() => getFirebaseServices(), []);
 
   const [userAuthState, setUserAuthState] = useState<UserAuthState>({
-    user: null,
-    isUserLoading: true, // Start loading until first auth event
+    user: services.auth.currentUser, // Initialize with current user if available
+    isUserLoading: true, // Start loading until first auth state is confirmed
     userError: null,
   });
-  
-  useEffect(() => {
-    // Initialize Firebase on the client side
-    const app = initializeFirebase();
-    const authInstance = getAuth(app);
-    const firestoreInstance = getFirestore(app);
-    setServices({ firebaseApp: app, firestore: firestoreInstance, auth: authInstance });
 
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(
-      authInstance,
+      services.auth,
       (firebaseUser) => {
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
@@ -68,15 +58,14 @@ export const FirebaseProvider: React.FC<{
         setUserAuthState({ user: null, isUserLoading: false, userError: error });
       }
     );
+    // Cleanup subscription on unmount
     return () => unsubscribe();
-  }, []);
+  }, [services.auth]);
 
   // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => ({
-    firebaseApp: services?.firebaseApp || null,
-    firestore: services?.firestore || null,
-    auth: services?.auth || null,
-    ...userAuthState
+    ...services,
+    ...userAuthState,
   }), [services, userAuthState]);
 
   return (
