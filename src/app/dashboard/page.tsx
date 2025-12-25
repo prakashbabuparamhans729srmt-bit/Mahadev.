@@ -11,9 +11,7 @@ import {
   CardFooter,
   CardDescription
 } from '@/components/ui/card';
-import {
-  AreaChart,
-} from 'recharts';
+import { AreaChart, Area, XAxis } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 import {
   Plus,
@@ -53,8 +51,7 @@ const ChartContainer = dynamic(() => import('@/components/ui/chart').then(mod =>
 });
 const ChartTooltip = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartTooltip), { ssr: false });
 const ChartTooltipContent = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartTooltipContent), { ssr: false });
-const Area = dynamic(() => import('recharts').then(mod => mod.Area), { ssr: false });
-const XAxis = dynamic(() => import('recharts').then(mod => mod.XAxis), { ssr: false });
+
 const RechartsAreaChart = dynamic(() => import('recharts').then(mod => mod.AreaChart), {
     loading: () => <Skeleton className="h-[300px] w-full" />,
     ssr: false
@@ -321,3 +318,5 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+    
