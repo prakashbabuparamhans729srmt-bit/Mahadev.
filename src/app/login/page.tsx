@@ -104,6 +104,13 @@ export default function LoginPage() {
     }
   };
 
+  const handleForgotPassword = () => {
+    toast({
+        title: "सुविधा जल्द ही आ रही है",
+        description: "पासवर्ड रीसेट कार्यक्षमता जल्द ही लागू की जाएगी।",
+    });
+  }
+
   if (isUserLoading || user) {
      return (
       <div className="flex min-h-screen items-center justify-center bg-background">
@@ -166,7 +173,16 @@ export default function LoginPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">पासवर्ड</Label>
+                 <div className="flex items-center justify-between">
+                    <Label htmlFor="password">पासवर्ड</Label>
+                    <Link
+                        href="#"
+                        onClick={handleForgotPassword}
+                        className="text-sm font-medium text-primary hover:underline"
+                    >
+                        पासवर्ड भूल गए?
+                    </Link>
+                </div>
                 <Input 
                   id="password" 
                   type="password" 
