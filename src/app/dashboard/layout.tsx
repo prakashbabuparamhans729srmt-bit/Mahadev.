@@ -7,7 +7,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarProvider,
   SidebarTrigger,
   SidebarFooter,
 } from '@/components/ui/sidebar';
@@ -27,6 +26,7 @@ import {
   CreditCard,
   Cookie,
   Shield,
+  AreaChart,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -243,6 +243,20 @@ export default function DashboardLayout({
                   <Link href="/dashboard/project-oversight">
                     <Briefcase />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">प्रोजेक्ट्स</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/reports')}
+                  tooltip="रिपोर्ट्स"
+                   size="lg"
+                   className="!justify-start"
+                >
+                  <Link href="/dashboard/reports">
+                    <AreaChart />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">रिपोर्ट्स</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -295,7 +295,9 @@ export default function AdminDashboard() {
                 </div>
             </CardContent>
              <CardFooter>
-                 <Button variant="outline" className="w-full" onClick={() => handleAction('विस्तृत बजट रिपोर्ट जल्द ही उपलब्ध होगी।')}>विस्तृत रिपोर्ट देखें</Button>
+                 <Button variant="outline" className="w-full" asChild>
+                    <Link href="/dashboard/reports">विस्तृत रिपोर्ट देखें</Link>
+                </Button>
             </CardFooter>
         </Card>
 
@@ -305,5 +307,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-
-    
