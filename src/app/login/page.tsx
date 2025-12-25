@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -80,6 +80,8 @@ export default function LoginPage() {
     let provider;
     if (providerName === 'Google') {
       provider = new GoogleAuthProvider();
+    } else if (providerName === 'GitHub') {
+      provider = new GithubAuthProvider();
     } else {
       toast({
           title: "सुविधा उपलब्ध नहीं है",
@@ -196,5 +198,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
-    
