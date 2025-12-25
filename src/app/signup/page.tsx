@@ -124,7 +124,8 @@ export default function SignupPage() {
         message = 'इस ईमेल से पहले से ही एक खाता मौजूद है, लेकिन एक अलग प्रदाता के साथ।';
       }
       setError(message);
-      setIsPending(false);
+    } finally {
+        setIsPending(false);
     }
   };
 
