@@ -254,7 +254,8 @@
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "anonymous",
+      "google.com"
     ]
   },
   "firestore": {
@@ -387,4 +388,6 @@
     "reasoning": "This Firestore structure is designed to support the HG Hub application, focusing on secure and scalable data management for clients, projects, team members, and related entities. The structure emphasizes Authorization Independence through denormalization, enabling robust security rules without relying on hierarchical `get()` calls.  It also incorporates Structural Segregation, ensuring that collections contain documents with similar security postures, which greatly simplifies security rules. Furthermore, standardized Access Modeling using path-based ownership for private user data and membership maps for collaborative data is used. \n\nSpecifically, Authorization Independence is achieved by denormalizing relevant authorization information into subcollections where necessary, such as client IDs within project-related collections. This allows security rules to validate access based on the presence of the client ID in the document itself, eliminating the need to traverse up the hierarchy and improves the performance and reliability of the app. This design supports QAPs by enabling secure list operations based on client or team member roles, and by segregating different types of data (e.g., client-specific vs. team-specific data) into separate collections with distinct security requirements."
   }
 }
+    
+
     

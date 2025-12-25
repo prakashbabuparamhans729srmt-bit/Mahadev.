@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { useUser, useAuth } from '@/firebase';
-import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
@@ -96,12 +96,37 @@ export default function SignupPage() {
     }
   };
 
-  const handleSocialLogin = (provider: string) => {
-    toast({
-        title: "सुविधा उपलब्ध नहीं है",
-        description: `${provider} से साइन अप करने की सुविधा जल्द ही आ रही है।`,
-    });
-  }
+  const handleSocialLogin = async (providerName: string) => {
+    if (!auth) {
+      setError('प्रमाणीकरण सेवा उपलब्ध नहीं है।');
+      return;
+    }
+
+    let provider;
+    if (providerName === 'Google') {
+      provider = new GoogleAuthProvider();
+    } else {
+      toast({
+          title: "सुविधा उपलब्ध नहीं है",
+          description: `${providerName} से साइन अप करने की सुविधा जल्द ही आ रही है।`,
+      });
+      return;
+    }
+
+    setIsPending(true);
+    try {
+      await signInWithPopup(auth, provider);
+      window.location.href = '/dashboard';
+    } catch (error: any) {
+      console.error("Social login error:", error);
+      let message = 'सोशल साइन-अप विफल।';
+      if (error.code === 'auth/account-exists-with-different-credential') {
+        message = 'इस ईमेल से पहले से ही एक खाता मौजूद है, लेकिन एक अलग प्रदाता के साथ।';
+      }
+      setError(message);
+      setIsPending(false);
+    }
+  };
 
 
   if (isUserLoading || user) {
@@ -229,3 +254,5 @@ export default function SignupPage() {
     </div>
   );
 }
+
+    
