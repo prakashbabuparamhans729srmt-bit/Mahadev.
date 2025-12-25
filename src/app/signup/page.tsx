@@ -12,6 +12,7 @@ import { useUser, useAuth, useFirestore } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile, GoogleAuthProvider, GithubAuthProvider, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
+import { Checkbox } from "@/components/ui/checkbox";
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -53,6 +54,7 @@ export default function SignupPage() {
   const [phone, setPhone] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
 
   useEffect(() => {
@@ -65,6 +67,10 @@ export default function SignupPage() {
     e.preventDefault();
     if (password.length < 8) {
         setError("पासवर्ड कम से कम 8 अक्षर का होना चाहिए।");
+        return;
+    }
+    if (!termsAccepted) {
+        setError("जारी रखने के लिए कृपया सेवा की शर्तों और गोपनीयता नीति से सहमत हों।");
         return;
     }
     setIsPending(true);
@@ -249,31 +255,36 @@ export default function SignupPage() {
                 />
                 <p className="text-xs text-muted-foreground">कम से कम 8 अक्षर का होना चाहिए।</p>
               </div>
+
+               <div className="flex items-center space-x-2 mt-4">
+                <Checkbox id="terms" checked={termsAccepted} onCheckedChange={(checked) => setTermsAccepted(checked as boolean)} />
+                <Label htmlFor="terms" className="text-sm font-normal text-muted-foreground">
+                  मैं {' '}
+                  <Link
+                    href="/terms"
+                    className="underline underline-offset-4 hover:text-primary"
+                  >
+                    सेवा की शर्तों
+                  </Link>
+                  {' '}और{' '}
+                  <Link
+                    href="/terms"
+                    className="underline underline-offset-4 hover:text-primary"
+                  >
+                    गोपनीयता नीति
+                  </Link>
+                  {' '}को पढ़ और सहमत हूँ।
+                </Label>
+              </div>
+
              {error && (
-              <p className="text-sm font-medium text-destructive">{error}</p>
+              <p className="text-sm font-medium text-destructive mt-2">{error}</p>
             )}
-            <Button className="w-full mt-4" type="submit" disabled={isPending}>
+
+            <Button className="w-full mt-4" type="submit" disabled={isPending || !termsAccepted}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               खाता बनाएं
             </Button>
-            
-            <p className="px-8 text-center text-sm text-muted-foreground mt-4">
-                साइन अप करके, आप हमारी{' '}
-                <Link
-                    href="/terms"
-                    className="underline underline-offset-4 hover:text-primary"
-                >
-                    सेवा की शर्तों
-                </Link>{' '}
-                और{' '}
-                <Link
-                    href="/terms"
-                    className="underline underline-offset-4 hover:text-primary"
-                >
-                    गोपनीयता नीति
-                </Link>
-                {' '}से सहमत होते हैं।
-            </p>
 
           </form>
           <div className="mt-6 text-center text-sm">
