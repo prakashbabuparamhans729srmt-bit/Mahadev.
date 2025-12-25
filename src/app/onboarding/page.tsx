@@ -7,8 +7,6 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription,
-  CardFooter,
 } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -39,6 +37,8 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
     return (
@@ -88,19 +88,19 @@ const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
                      <Label htmlFor="email">📧 ईमेल से तुरंत शुरू करें</Label>
                     <Input id="email" type="email" placeholder="rajes@example.com" />
                     <p className="text-sm text-muted-foreground">या सोशल मीडिया से जुड़ें:</p>
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                        <SocialButton icon={<GoogleIcon />} label="Google" />
                        <SocialButton icon={<FacebookIcon />} label="Facebook" />
                        <SocialButton icon={<LinkedinIcon />} label="LinkedIn" />
                        <SocialButton icon={<TwitterIcon />} label="Twitter" />
                     </div>
-                     <div className="flex gap-4 pt-4">
+                     <div className="flex flex-col sm:flex-row gap-4 pt-4">
                         <Button className="w-full">⚡ 1-क्लिक साइन अप</Button>
                         <Button variant="secondary" className="w-full">🔑 पासवर्ड से साइन अप</Button>
                     </div>
                 </CardContent>
             </Card>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                  <Button variant="ghost">❌ बाद में</Button>
                  <Button onClick={() => setStep(2)}>🚀 मैं जारी रखना चाहता हूँ <ChevronRight className="ml-2 h-4 w-4"/></Button>
             </div>
@@ -194,7 +194,7 @@ const Step3 = ({ setStep }: { setStep: (step: number) => void }) => {
                         <Label htmlFor="company-name">कंपनी नाम</Label>
                         <Input id="company-name" placeholder="राजेश इंडस्ट्रीज" />
                     </div>
-                     <div className="flex gap-4 pt-2">
+                     <div className="flex flex-col sm:flex-row gap-4 pt-2">
                         <Button variant="outline">📸 प्रोफाइल फोटो जोड़ें</Button>
                         <Button variant="outline">🎨 थीम रंग चुनें</Button>
                     </div>
@@ -214,7 +214,7 @@ const Step3 = ({ setStep }: { setStep: (step: number) => void }) => {
                         ))}
                     </div>
                     <Label>पसंदीदा समय:</Label>
-                    <RadioGroup defaultValue="morning" className="flex gap-4 mt-2">
+                    <RadioGroup defaultValue="morning" className="flex flex-wrap gap-4 mt-2">
                         <div className="flex items-center space-x-2"><RadioGroupItem value="morning" id="morning" /><Label htmlFor="morning">सुबह (9-12)</Label></div>
                         <div className="flex items-center space-x-2"><RadioGroupItem value="afternoon" id="afternoon" /><Label htmlFor="afternoon">दोपहर (12-4)</Label></div>
                         <div className="flex items-center space-x-2"><RadioGroupItem value="evening" id="evening" /><Label htmlFor="evening">शाम (4-7)</Label></div>
@@ -272,7 +272,7 @@ const Step4 = ({ setStep }: { setStep: (step: number) => void }) => {
                 </CardHeader>
                 <CardContent className="space-y-4">
                     {specificProjects.map(p => (
-                        <Card key={p.name} className="p-4 flex items-center justify-between">
+                        <Card key={p.name} className="p-4 flex flex-col sm:flex-row items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="text-primary">{p.icon}</div>
                                 <div>
@@ -280,7 +280,7 @@ const Step4 = ({ setStep }: { setStep: (step: number) => void }) => {
                                     <p className="text-sm text-muted-foreground">{p.budget} • {p.timeline}</p>
                                 </div>
                             </div>
-                            <Checkbox />
+                            <Checkbox className="mt-4 sm:mt-0"/>
                         </Card>
                     ))}
                     <Button variant="link" onClick={() => toast({description: 'जल्द ही और विकल्प जोड़े जाएंगे!'})}>⬇️ और 15+ विकल्प देखें</Button>
@@ -357,7 +357,7 @@ const Step5 = ({ setStep }: { setStep: (step: number) => void }) => {
                                     <Label htmlFor={opt} className="font-normal text-sm">{opt}</Label>
                                 </div>
                             ))}
-                             <div className="flex gap-2 pt-2">
+                             <div className="flex flex-col sm:flex-row gap-2 pt-2">
                                 <Button variant="link" size="sm">🏦 बैंक विवरण देखें</Button>
                                 <Button variant="link" size="sm">📄 इनवॉइस डाउनलोड</Button>
                             </div>
@@ -365,9 +365,9 @@ const Step5 = ({ setStep }: { setStep: (step: number) => void }) => {
                     </Card>
                 </div>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                  <Button variant="ghost" onClick={() => setStep(4)}><ArrowLeft className="mr-2 h-4 w-4"/> पीछे जाएं</Button>
-                 <div className="flex gap-4">
+                 <div className="flex flex-col sm:flex-row gap-4">
                     <Button variant="outline">📞 सहायता चाहिए</Button>
                     <Button onClick={() => setStep(6)}>🔒 सुरक्षित भुगतान करें</Button>
                  </div>
@@ -376,7 +376,8 @@ const Step5 = ({ setStep }: { setStep: (step: number) => void }) => {
     )
 }
 
-const CompletionScreen = ({ setStep }: { setStep: (step: number) => void }) => {
+const CompletionScreen = () => {
+    const router = useRouter();
     return (
         <div className="text-center space-y-6 py-10">
             <h1 className="text-4xl font-bold font-headline text-primary">🎉 बधाई हो! आप हजारो ग्राहको के सदस्य बन गए हैं!</h1>
@@ -406,17 +407,17 @@ const CompletionScreen = ({ setStep }: { setStep: (step: number) => void }) => {
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">🔧 त्वरित शुरुआत के लिए</CardTitle>
                     </CardHeader>
-                     <CardContent className="grid grid-cols-2 gap-3">
-                         <Button variant="outline" className="w-full justify-start">🏠 अपना डैशबोर्ड देखें</Button>
-                         <Button variant="outline" className="w-full justify-start">📁 प्रोजेक्ट दस्तावेज़ अपलोड करें</Button>
-                         <Button variant="outline" className="w-full justify-start">💬 अपनी टीम से चैट करें</Button>
+                     <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                         <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/dashboard')}>🏠 अपना डैशबोर्ड देखें</Button>
+                         <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/dashboard/files')}>📁 प्रोजेक्ट दस्तावेज़ अपलोड करें</Button>
+                         <Button variant="outline" className="w-full justify-start" onClick={() => router.push('/dashboard/messages')}>💬 अपनी टीम से चैट करें</Button>
                          <Button variant="outline" className="w-full justify-start">📋 प्रोजेक्ट आवश्यकताएँ भरें</Button>
-                         <Button variant="outline" className="w-full justify-start col-span-2">🎬 डेमो वीडियो देखें</Button>
+                         <Button variant="outline" className="w-full justify-start col-span-1 sm:col-span-2">🎬 डेमो वीडियो देखें</Button>
                     </CardContent>
                 </Card>
             </div>
             <div className="pt-8">
-                <Button size="lg" onClick={() => window.location.href='/dashboard'}>🚀 अपने डैशबोर्ड पर जाएं</Button>
+                <Button size="lg" onClick={() => router.push('/dashboard')}>🚀 अपने डैशबोर्ड पर जाएं</Button>
             </div>
         </div>
     )
@@ -434,7 +435,7 @@ export default function OnboardingPage() {
             case 3: return <Step3 setStep={setStep} />;
             case 4: return <Step4 setStep={setStep} />;
             case 5: return <Step5 setStep={setStep} />;
-            case 6: return <CompletionScreen setStep={setStep} />;
+            case 6: return <CompletionScreen />;
             default: return <Step1 setStep={setStep} />;
         }
     }
@@ -443,7 +444,7 @@ export default function OnboardingPage() {
         <div className="min-h-screen bg-background text-foreground p-4 md:p-8">
             <div className="max-w-6xl mx-auto">
                 <header className="mb-8">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                         <h1 className="text-xl md:text-2xl font-bold font-headline flex items-center gap-3">
                            <Rocket className="text-primary"/> 🏢 Hajaro Grahako - 5 आसान चरणों में शुरुआत
                         </h1>
