@@ -1,84 +1,8 @@
-
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-  
-    // Helper Functions
-    function isUserAuthenticated() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return request.auth.uid == userId;
-    }
-    
-    function isAdmin() {
-      return exists(/databases/$(database)/documents/roles_admin/$(request.auth.uid));
-    }
-    
-    function isClientOfProject(projectId) {
-      let projectResource = get(/databases/$(database)/documents/projects/$(projectId));
-      return projectResource.data.clientId == request.auth.uid;
-    }
-    
-    // Function to check access for subcollections of 'projects'
-    function canAccessProjectData(projectId) {
-        return isAdmin() || isClientOfProject(projectId);
-    }
-    
-    // Publicly writable collection for initial contact
-    match /inquiries/{inquiryId} {
-      allow read, write: if true; // Anyone can submit an inquiry
-    }
-
-    // Client data is private to the client and admins
-    match /clients/{clientId} {
-      allow read, update, delete: if isUserAuthenticated() && (isOwner(clientId) || isAdmin());
-      allow create: if isUserAuthenticated();
-    }
-    
-    // Admin roles can only be read/written by other admins
-    match /roles_admin/{userId} {
-        allow read, write: if isUserAuthenticated() && isAdmin();
-    }
-
-    // Team members can be read by any authenticated user, but only modified by admins
-    match /team_members/{memberId} {
-        allow read: if isUserAuthenticated();
-        allow write: if isUserAuthenticated() && isAdmin();
-    }
-
-    // Projects collection
-    match /projects/{projectId} {
-      allow get: if isUserAuthenticated() && canAccessProjectData(projectId);
-      allow list: if isUserAuthenticated() && isAdmin(); // Only admins can list ALL projects
-      allow create: if isUserAuthenticated();
-      allow update, delete: if isUserAuthenticated() && canAccessProjectData(projectId);
-
-      // Subcollections of Projects
-      match /timeline/{timelineId} {
-        allow read, write: if isUserAuthenticated() && canAccessProjectData(projectId);
-      }
-      
-      match /invoices/{invoiceId} {
-         allow read, write: if isUserAuthenticated() && canAccessProjectData(projectId);
-      }
-      
-      match /messages/{messageId} {
-         allow read, write: if isUserAuthenticated() && canAccessProjectData(projectId);
-      }
-
-      match /files/{fileId} {
-         allow read, write: if isUserAuthenticated() && canAccessProjectData(projectId);
-      }
-    }
-    
-    // Default deny all other access
     match /{document=**} {
-      allow read, write: if false;
+      allow read, write: if request.auth != null;
     }
   }
 }
-
-    
