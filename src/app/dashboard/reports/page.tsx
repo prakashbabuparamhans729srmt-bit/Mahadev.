@@ -82,6 +82,7 @@ export default function ReportsPage() {
 
   const projectsQuery = useMemo(() => {
     if (!firestore || !user) return null;
+    // Secure query: Only fetch projects belonging to the current user
     return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
   }, [firestore, user]);
 
