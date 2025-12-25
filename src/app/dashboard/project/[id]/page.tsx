@@ -49,8 +49,9 @@ interface IFile {
     id: string;
     name: string;
     size: string;
-    date: string;
+    modified: any;
     type: string;
+    url: string;
 }
 
 export default function ProjectDetailsPage() {
@@ -75,6 +76,8 @@ export default function ProjectDetailsPage() {
     
     const teamQuery = useMemo(() => {
         if (!firestore || !projectId) return null;
+        // In a real app, this would probably involve querying a 'team_members' collection
+        // based on IDs stored in the project document. For now, we assume a subcollection.
         return collection(firestore, `projects/${projectId}/team`);
     }, [firestore, projectId]);
     const { data: team, isLoading: isTeamLoading } = useCollection(teamQuery);
@@ -266,6 +269,7 @@ export default function ProjectDetailsPage() {
                   <Progress value={p.progress} className="h-2 mt-1" />
                 </div>
               ))}
+              {(!timeline || timeline.length === 0) && <p className="text-sm text-muted-foreground">कोई चरण परिभाषित नहीं है।</p>}
             </CardContent>
             <CardFooter>
               <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('अगले चरण पर जाने की सुविधा जल्द ही उपलब्ध होगी।')}>
@@ -292,6 +296,7 @@ export default function ProjectDetailsPage() {
                   </div>
                 </div>
               ))}
+              {(!team || team.length === 0) && <p className="text-sm text-muted-foreground">कोई टीम सदस्य असाइन नहीं किया गया है।</p>}
             </CardContent>
             <CardFooter>
               <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('नए सदस्यों को जोड़ने की सुविधा जल्द ही आ रही है।')}>
@@ -307,7 +312,7 @@ export default function ProjectDetailsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              {files?.map((f) => (
+              {files?.slice(0, 3).map((f) => (
                  <Link href="/dashboard/files" key={f.id}>
                     <div
                     className="flex items-center gap-3 hover:bg-secondary/50 p-2 rounded-md cursor-pointer"
@@ -316,12 +321,13 @@ export default function ProjectDetailsPage() {
                     <div>
                         <p className="font-semibold text-sm">{f.name}</p>
                         <p className="text-xs text-muted-foreground">
-                        {f.size} - {f.date ? format(new Date(f.date), 'dd/MM/yy') : ''}
+                        {f.size} - {f.modified ? format(new Date(f.modified.toDate()), 'dd/MM/yy') : ''}
                         </p>
                     </div>
                     </div>
                 </Link>
               ))}
+               {(!files || files.length === 0) && <p className="text-sm text-muted-foreground">कोई फाइल अपलोड नहीं हुई है।</p>}
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-2">
               <Button variant="link" size="sm" asChild>
@@ -342,5 +348,3 @@ export default function ProjectDetailsPage() {
     </div>
   );
 }
-
-    

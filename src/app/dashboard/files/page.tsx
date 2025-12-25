@@ -18,7 +18,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { collection, deleteDoc, doc, addDoc, query, orderBy, serverTimestamp, setDoc, where } from 'firebase/firestore';
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 10);
@@ -161,6 +161,7 @@ export default function FileManagerPage() {
                     type: file.type.split('/')[0] || 'file',
                     modified: serverTimestamp(),
                     url: downloadURL,
+                    storagePath: filePath, // Store the path for deletion
                 };
 
                 await setDoc(fileDocRef, newFile);
@@ -187,16 +188,24 @@ export default function FileManagerPage() {
         });
     };
     
-    const handleDelete = async (fileId: string, fileName: string) => {
+    const handleDelete = async (file: any) => {
         if (!firestore || !activeProjectId) return;
         try {
-            await deleteDoc(doc(firestore, `projects/${activeProjectId}/files`, fileId));
+            // Delete from Firestore
+            await deleteDoc(doc(firestore, `projects/${activeProjectId}/files`, file.id));
+            
+            // Delete from Storage
+            const storage = getStorage();
+            const fileStorageRef = storageRef(storage, file.storagePath);
+            await deleteObject(fileStorageRef);
+
             toast({
                 title: 'फ़ाइल हटाई गई',
-                description: `${fileName} को सफलतापूर्वक हटा दिया गया है।`,
+                description: `${file.name} को सफलतापूर्वक हटा दिया गया है।`,
                 variant: 'destructive',
             });
         } catch (e) {
+            console.error("Error deleting file:", e);
             toast({
                 title: 'त्रुटि',
                 description: 'फ़ाइल हटाने में विफल।',
@@ -258,8 +267,12 @@ export default function FileManagerPage() {
               <TableCell>{file.modified ? new Date(file.modified.toDate()).toLocaleDateString() : '...'}</TableCell>
               <TableCell className="text-right">
                  <div className="flex items-center justify-end gap-1">
-                      <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' का प्रीव्यू दिखाना अभी संभव नहीं है।`)}><Eye className="h-4 w-4" /></Button>
-                      <Button variant="ghost" size="icon" onClick={() => handleAction(`'${file.name}' को डाउनलोड करने की सुविधा जल्द ही आएगी।`)}><Download className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" onClick={() => window.open(file.url, '_blank')}><Eye className="h-4 w-4" /></Button>
+                      <Button variant="ghost" size="icon" asChild>
+                        <a href={file.url} download={file.name} target="_blank" rel="noopener noreferrer">
+                            <Download className="h-4 w-4" />
+                        </a>
+                      </Button>
                       <AlertDialog>
                           <AlertDialogTrigger asChild>
                               <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
@@ -275,7 +288,7 @@ export default function FileManagerPage() {
                               </AlertDialogHeader>
                               <AlertDialogFooter>
                               <AlertDialogCancel>रद्द करें</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(file.id, file.name)}>हटाएं</AlertDialogAction>
+                              <AlertDialogAction onClick={() => handleDelete(file)}>हटाएं</AlertDialogAction>
                               </AlertDialogFooter>
                           </AlertDialogContent>
                       </AlertDialog>

@@ -194,8 +194,10 @@ const Step3 = ({ setStep }: { setStep: (step: number) => void }) => {
             const lastName = lastNameParts.join(' ');
             
             await setDoc(clientRef, {
+                id: user.uid,
                 firstName: firstName || '',
                 lastName: lastName || '',
+                email: user.email,
                 phone: phone,
                 companyName: companyName,
             }, { merge: true });

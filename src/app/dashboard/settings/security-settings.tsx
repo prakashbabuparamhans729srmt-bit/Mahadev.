@@ -93,13 +93,14 @@ export function SecuritySettings() {
             const credential = EmailAuthProvider.credential(user.email, deletePassword);
             await reauthenticateWithCredential(user, credential);
 
-            // This is where you would ideally trigger a Cloud Function to delete user data from Firestore/Storage
+            // In a real production app, you would trigger a Cloud Function here
+            // to delete all user data from Firestore, Storage, etc.
             
             await deleteUser(user);
             
             toast({
                 title: 'खाता सफलतापूर्वक हटा दिया गया',
-                description: 'आपको जल्द ही लॉग आउट कर दिया जाएगा। संबंधित Firestore डेटा को मैन्युअल रूप से हटाना होगा।',
+                description: 'आपको जल्द ही लॉग आउट कर दिया जाएगा।',
             });
             setIsDeleteConfirmationOpen(false);
             router.push('/');
