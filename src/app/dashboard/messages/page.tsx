@@ -56,7 +56,7 @@ export default function MessagesPage() {
     const { data: projects, isLoading: projectsLoading } = useCollection(projectsQuery);
     
     // Default to the first project, or a dummy one.
-    const activeProjectId = projects?.[0]?.id || DUMMY_PROJECT_ID;
+    const activeProjectId = projects?.[0]?.id;
 
     const messagesQuery = useMemo(() => {
         if (!firestore || !activeProjectId) return null;
@@ -152,6 +152,11 @@ export default function MessagesPage() {
                             </div>
                         </div>
                     ))}
+                     {(!projects || projects.length === 0) && !projectsLoading && (
+                        <div className="p-4 text-center text-xs text-muted-foreground">
+                            कोई प्रोजेक्ट नहीं मिला।
+                        </div>
+                    )}
                 </div>
             </ScrollArea>
         </div>
@@ -212,6 +217,11 @@ export default function MessagesPage() {
                                 )}
                             </div>
                         ))}
+                         {(!messages || messages.length === 0) && !messagesLoading && (
+                            <div className="text-center text-xs text-muted-foreground pt-10">
+                                इस प्रोजेक्ट के लिए अभी कोई संदेश नहीं हैं।
+                            </div>
+                        )}
                     </div>
                 </ScrollArea>
                 <div className="p-4 mt-auto">
