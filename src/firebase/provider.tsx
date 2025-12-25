@@ -1,13 +1,14 @@
 'use client';
 
-import React, { createContext, ReactNode, useMemo, useState, useEffect } from 'react';
+import React, { createContext, ReactNode, useMemo, useState, useEffect, useContext } from 'react';
 import { FirebaseApp, initializeApp, getApps, getApp } from 'firebase/app';
 import { Firestore, getFirestore } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { firebaseConfig } from './config';
 
-// Combined state for the Firebase context
+// --- STATE AND CONTEXT DEFINITION ---
+
 export interface FirebaseContextState {
   firebaseApp: FirebaseApp | null;
   firestore: Firestore | null;
@@ -17,10 +18,11 @@ export interface FirebaseContextState {
   userError: Error | null;
 }
 
-// React Context
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
-// Moved initialization logic inside a function to be called on the client
+
+// --- INITIALIZATION LOGIC ---
+
 function getFirebaseServices() {
   if (typeof window === 'undefined') {
     return { firebaseApp: null, firestore: null, auth: null };
@@ -31,13 +33,12 @@ function getFirebaseServices() {
   return { firebaseApp: app, firestore: firestoreInstance, auth: authInstance };
 }
 
-/**
- * FirebaseProvider manages and provides Firebase services and user authentication state.
- */
+
+// --- PROVIDER COMPONENT ---
+
 export const FirebaseProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  // Initialize services directly. This is safe inside a 'use client' component.
   const services = useMemo(() => getFirebaseServices(), []);
 
   const [userAuthState, setUserAuthState] = useState<{
@@ -65,11 +66,9 @@ export const FirebaseProvider: React.FC<{
         setUserAuthState({ user: null, isUserLoading: false, userError: error });
       }
     );
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [services.auth]);
 
-  // Memoize the context value
   const contextValue = useMemo((): FirebaseContextState => ({
     ...services,
     ...userAuthState,
@@ -81,4 +80,32 @@ export const FirebaseProvider: React.FC<{
       {children}
     </FirebaseContext.Provider>
   );
+};
+
+
+// --- HOOKS ---
+
+export const useFirebase = (): FirebaseContextState => {
+  const context = useContext(FirebaseContext);
+  if (context === undefined) {
+    throw new Error('useFirebase must be used within a FirebaseProvider.');
+  }
+  return context;
+};
+
+export const useAuth = (): Auth | null => {
+  return useFirebase().auth;
+};
+
+export const useFirestore = (): Firestore | null => {
+  return useFirebase().firestore;
+};
+
+export const useFirebaseApp = (): FirebaseApp | null => {
+  return useFirebase().firebaseApp;
+};
+
+export const useUser = () => {
+  const { user, isUserLoading, userError } = useFirebase();
+  return { user, isUserLoading, userError };
 };
