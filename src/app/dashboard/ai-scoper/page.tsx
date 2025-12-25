@@ -134,6 +134,7 @@ function ScopeResultDialog({
     try {
         const projectId = `Project-AI-Scoper-${nanoid()}`;
         const newProject = {
+            id: projectId,
             clientId: user.uid,
             name: `AI आधारित प्रोजेक्ट: ${description.substring(0, 20)}...`,
             description: description,
@@ -143,7 +144,6 @@ function ScopeResultDialog({
             startDate: new Date().toISOString(),
             endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
             progress: 5,
-            id: projectId,
         };
 
         const projectRef = doc(firestore, 'projects', projectId);
@@ -172,7 +172,10 @@ function ScopeResultDialog({
     const template = document.getElementById('pdf-template');
     if (template) {
       toast({ title: 'PDF तैयार हो रहा है...', description: 'कृपया कुछ क्षण प्रतीक्षा करें।' });
-      html2canvas(template, { scale: 2 }).then((canvas) => {
+      html2canvas(template, {
+        scale: 2,
+        backgroundColor: `hsl(${getComputedStyle(document.documentElement).getPropertyValue('--background')})`
+      }).then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
