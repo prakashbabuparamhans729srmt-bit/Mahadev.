@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef } from 'react';
@@ -93,7 +92,7 @@ export default function TermsPage() {
       });
       html2canvas(cardElement, { 
           scale: 2, 
-          backgroundColor: window.getComputedStyle(document.body).getPropertyValue('--background-hsl-val') ? `hsl(${window.getComputedStyle(document.body).getPropertyValue('--background-hsl-val')})` : '#0a0a0a'
+          backgroundColor: `hsl(${getComputedStyle(document.documentElement).getPropertyValue('--background')})`
         }).then((canvas) => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF('p', 'mm', 'a4');
