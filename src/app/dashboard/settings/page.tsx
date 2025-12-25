@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { toast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useUser } from '@/firebase';
 import { updateProfile } from 'firebase/auth';
 import { Loader2, User, Shield, Bell, CreditCard, Camera, ArrowLeft } from 'lucide-react';
@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     if (user) {
@@ -39,6 +40,10 @@ export default function SettingsPage() {
         const reader = new FileReader();
         reader.onload = (e) => {
             setPhotoURL(e.target?.result as string);
+            toast({
+              title: "प्रीव्यू अपडेट किया गया",
+              description: "आपकी प्रोफ़ाइल फोटो का प्रीव्यू अपडेट हो गया है। सहेजने के लिए 'बदलाव सेव करें' पर क्लिक करें।",
+            });
         };
         reader.readAsDataURL(file);
     }
