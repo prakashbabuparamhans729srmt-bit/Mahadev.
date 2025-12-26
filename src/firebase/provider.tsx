@@ -23,56 +23,64 @@ export interface FirebaseContextState {
 
 export const FirebaseContext = createContext<FirebaseContextState | undefined>(undefined);
 
-
-// --- INITIALIZATION LOGIC ---
-
-function getFirebaseServices() {
-  if (typeof window === 'undefined') {
-    return { firebaseApp: null, firestore: null, auth: null, storage: null };
-  }
-  const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-  const authInstance = getAuth(app);
-  const firestoreInstance = getFirestore(app);
-  const storageInstance = getStorage(app);
-
-  // Enable offline persistence
-  enableIndexedDbPersistence(firestoreInstance).catch((err) => {
-    if (err.code == 'failed-precondition') {
-      console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
-    } else if (err.code == 'unimplemented') {
-      console.warn("The current browser does not support all of the features required to enable persistence.");
-    }
-  });
-  
-  // Initialize App Check
-  if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
-    initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
-      isTokenAutoRefreshEnabled: true
-    });
-  }
-
-
-  return { firebaseApp: app, firestore: firestoreInstance, auth: authInstance, storage: storageInstance };
-}
-
-
 // --- PROVIDER COMPONENT ---
 
 export const FirebaseProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const services = useMemo(() => getFirebaseServices(), []);
+  const [services, setServices] = useState<{
+    firebaseApp: FirebaseApp | null;
+    firestore: Firestore | null;
+    auth: Auth | null;
+    storage: FirebaseStorage | null;
+  }>({
+    firebaseApp: null,
+    firestore: null,
+    auth: null,
+    storage: null,
+  });
 
   const [userAuthState, setUserAuthState] = useState<{
     user: User | null;
     isUserLoading: boolean;
     userError: Error | null;
   }>({
-    user: services.auth?.currentUser ?? null,
+    user: null,
     isUserLoading: true,
     userError: null,
   });
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+      const authInstance = getAuth(app);
+      const firestoreInstance = getFirestore(app);
+      const storageInstance = getStorage(app);
+
+      enableIndexedDbPersistence(firestoreInstance).catch((err) => {
+        if (err.code === 'failed-precondition') {
+          console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
+        } else if (err.code === 'unimplemented') {
+          console.warn("The current browser does not support all of the features required to enable persistence.");
+        }
+      });
+      
+      if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
+          isTokenAutoRefreshEnabled: true
+        });
+      }
+
+      setServices({
+        firebaseApp: app,
+        firestore: firestoreInstance,
+        auth: authInstance,
+        storage: storageInstance,
+      });
+    }
+  }, []);
+
 
   useEffect(() => {
     if (!services.auth) {
