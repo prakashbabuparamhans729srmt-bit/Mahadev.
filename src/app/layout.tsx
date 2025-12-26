@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { FirebaseClientProvider } from '@/firebase/client-provider';
+import { FirebaseProvider } from '@/firebase/provider';
+import { Toaster } from '@/components/ui/toaster';
+import { HelpAssistant } from '@/components/help-assistant';
+import { CookieConsent } from '@/components/cookie-consent';
+import SentryProvider from './sentry-provider';
 
 export const metadata: Metadata = {
   title: 'Hajaro Grahako - Digital Solutions',
@@ -23,7 +27,12 @@ export default function RootLayout({
         </style>
       </head>
       <body>
-        <FirebaseClientProvider>{children}</FirebaseClientProvider>
+        <FirebaseProvider>
+          <SentryProvider>{children}</SentryProvider>
+          <Toaster />
+          <HelpAssistant />
+          <CookieConsent />
+        </FirebaseProvider>
       </body>
     </html>
   );
