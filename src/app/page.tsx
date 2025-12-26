@@ -7,24 +7,31 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 const ImageCarouselSection = dynamic(() => import('@/components/sections/image-carousel'), {
   loading: () => <Skeleton className="h-[50vh] w-full" />,
+  ssr: false,
 });
 const ServicesSection = dynamic(() => import('@/components/sections/services'), {
     loading: () => <Skeleton className="h-[50vh] w-full" />,
+    ssr: false,
 });
 const PortfolioSection = dynamic(() => import('@/components/sections/portfolio'), {
     loading: () => <Skeleton className="h-[50vh] w-full" />,
+    ssr: false,
 });
 const ProcessSection = dynamic(() => import('@/components/sections/process'), {
     loading: () => <Skeleton className="h-[50vh] w-full" />,
+    ssr: false,
 });
 const TestimonialsSection = dynamic(() => import('@/components/sections/testimonials'), {
     loading: () => <Skeleton className="h-[50vh] w-full" />,
+    ssr: false,
 });
 const CtaSection = dynamic(() => import('@/components/sections/cta'), {
     loading: () => <Skeleton className="h-[50vh] w-full" />,
+    ssr: false,
 });
 const PricingSection = dynamic(() => import('@/components/sections/pricing'), {
     loading: () => <Skeleton className="h-[50vh] w-full" />,
+    ssr: false,
 });
 
 

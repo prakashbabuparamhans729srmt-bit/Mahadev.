@@ -59,7 +59,7 @@ export default function ProjectOversightPage() {
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
                             data-ai-hint={image.imageHint}
                         />
-                        <Badge variant="secondary" className="absolute top-3 right-3">#{project.id}</Badge>
+                        <Badge variant="secondary" className="absolute top-3 right-3">#{project.id.slice(-6)}</Badge>
                     </div>
                     <CardContent className="p-4 flex-1 flex flex-col">
                         <div className="flex-1">

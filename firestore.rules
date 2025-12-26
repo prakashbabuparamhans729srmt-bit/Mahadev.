@@ -1,8 +1,48 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isClientOwner(clientId) {
+      return isAuthenticated() && request.auth.uid == clientId;
+    }
+
+    // inquiries can be written by anyone
+    match /inquiries/{inquiryId} {
+      allow create: if true;
+      allow read, update, delete: if false; // Should only be readable by admins
+    }
+
+    // subscribers can be written by anyone
+    match /subscribers/{email} {
+      allow create: if true;
+      allow read, update, delete: if false; // Should only be readable by admins
+    }
+
+    // client can only access their own document
+    match /clients/{clientId} {
+      allow read, update: if isClientOwner(clientId);
+      allow create, delete: if false;
+    }
+
+    // projects can be read by their owner
+    match /projects/{projectId} {
+      allow read: if isAuthenticated() && resource.data.clientId == request.auth.uid;
+      allow create, update, delete: if isAuthenticated() && request.resource.data.clientId == request.auth.uid;
+    }
+
+    // project subcollections can be read/written by the project owner
+    match /projects/{projectId}/{subcollection}/{docId} {
+       allow read, write: if isAuthenticated() && get(/databases/$(database)/documents/projects/$(projectId)).data.clientId == request.auth.uid;
+    }
+
+    // All other collections are locked down
     match /{document=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

@@ -106,7 +106,7 @@ export default function AdminDashboard() {
 
   const projectsQuery = useMemo(() => {
     if (!firestore || !user) return null;
-    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
+    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid), limit(2));
   }, [firestore, user]);
   const { data: projects, isLoading: projectsLoading, error: projectsError } = useCollection(projectsQuery);
 
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
           <CardContent className="space-y-6">
              {projectsLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
              {projectsError && <p className="text-xs text-destructive">प्रोजेक्ट लोड करने में विफल।</p>}
-            {projects?.slice(0, 2).map((project: any) => (
+            {projects?.map((project: any) => (
                 <Link href={`/dashboard/project/${project.id}`} key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
                     <div className="flex justify-between items-baseline mb-2">
                         <h3 className="font-semibold">{project.name}</h3>
