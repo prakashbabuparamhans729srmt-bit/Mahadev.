@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -46,6 +46,9 @@ import { useFirestore, useUser } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { customAlphabet } from 'nanoid';
 import { Icons } from '@/components/icons';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
+
 
 const nanoid = customAlphabet('1234567890', 5);
 
@@ -131,41 +134,47 @@ function ScopeResultDialog({
     
     setIsCreatingProject(true);
 
-    try {
-        const projectId = `Project-AI-Scoper-${nanoid()}`;
-        const newProject = {
-            id: projectId,
-            clientId: user.uid,
-            name: `AI आधारित प्रोजेक्ट: ${description.substring(0, 20)}...`,
-            description: description,
-            budget: parseFloat(result.estimatedBudget.replace(/[^0-9-]/g, '').split('-')[0] || '0'),
-            serviceTier: 'Standard', // Default for AI scoper
-            status: 'प्रारंभिक',
-            startDate: new Date().toISOString(),
-            endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
-            progress: 5,
-        };
+    const projectId = `Project-AI-Scoper-${nanoid()}`;
+    const newProject = {
+        id: projectId,
+        clientId: user.uid,
+        name: `AI आधारित प्रोजेक्ट: ${description.substring(0, 20)}...`,
+        description: description,
+        budget: parseFloat(result.estimatedBudget.replace(/[^0-9-]/g, '').split('-')[0] || '0'),
+        serviceTier: 'Standard', // Default for AI scoper
+        status: 'प्रारंभिक',
+        startDate: new Date().toISOString(),
+        endDate: new Date(new Date().setMonth(new Date().getMonth() + 3)).toISOString(),
+        progress: 5,
+    };
 
-        const projectRef = doc(firestore, 'projects', projectId);
-        await setDoc(projectRef, newProject);
-        
-        toast({
-            title: 'प्रोजेक्ट बनाया गया!',
-            description: 'आपको प्रोजेक्ट विवरण पेज पर रीडायरेक्ट किया जा रहा है।',
+    const projectRef = doc(firestore, 'projects', projectId);
+    
+    setDoc(projectRef, newProject)
+        .then(() => {
+            toast({
+                title: 'प्रोजेक्ट बनाया गया!',
+                description: 'आपको प्रोजेक्ट विवरण पेज पर रीडायरेक्ट किया जा रहा है।',
+            });
+            router.push(`/dashboard/project/${projectId}`);
+        })
+        .catch(async (serverError) => {
+            console.error("Error creating project:", serverError);
+            const permissionError = new FirestorePermissionError({
+              path: projectRef.path,
+              operation: 'create',
+              requestResourceData: newProject,
+            });
+            errorEmitter.emit('permission-error', permissionError);
+            toast({
+                variant: "destructive",
+                title: "त्रुटि",
+                description: "प्रोजेक्ट बनाने में विफल। कृपया बाद में पुनः प्रयास करें।",
+            });
+        })
+        .finally(() => {
+            setIsCreatingProject(false);
         });
-        
-        router.push(`/dashboard/project/${projectId}`);
-
-    } catch (error) {
-        console.error("Error creating project:", error);
-        toast({
-            variant: "destructive",
-            title: "त्रुटि",
-            description: "प्रोजेक्ट बनाने में विफल। कृपया बाद में पुनः प्रयास करें।",
-        });
-    } finally {
-        setIsCreatingProject(false);
-    }
   };
   
   const handleDownloadPdf = () => {

@@ -29,9 +29,9 @@
           "description": "The message or idea from the person."
         },
         "createdAt": {
-            "type": "string",
-            "format": "date-time",
-            "description": "The timestamp when the inquiry was submitted."
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the inquiry was submitted."
         }
       },
       "required": ["name", "email", "idea", "createdAt"]
@@ -68,12 +68,7 @@
           "description": "The name of the client's company."
         }
       },
-      "required": [
-        "id",
-        "firstName",
-        "lastName",
-        "email"
-      ]
+      "required": ["id", "firstName", "lastName", "email"]
     },
     "Project": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -118,6 +113,10 @@
         "serviceTier": {
           "type": "string",
           "description": "The service tier selected for the project (Basic, Standard, Premium, Enterprise)."
+        },
+        "progress": {
+          "type": "number",
+          "description": "The completion percentage of the project (0-100)."
         }
       },
       "required": [
@@ -164,13 +163,7 @@
           "description": "A short biography of the team member."
         }
       },
-      "required": [
-        "id",
-        "firstName",
-        "lastName",
-        "email",
-        "role"
-      ]
+      "required": ["id", "firstName", "lastName", "email", "role"]
     },
     "ProjectTimeline": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -196,12 +189,7 @@
           "description": "A description of the timeline event."
         }
       },
-      "required": [
-        "id",
-        "projectId",
-        "date",
-        "description"
-      ]
+      "required": ["id", "projectId", "date", "description"]
     },
     "Invoice": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -249,7 +237,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "Message",
       "type": "object",
-      "description": "Represents a message exchanged between a client and the Hajaro Grahako team.",
+      "description": "Represents a message exchanged within a project.",
       "properties": {
         "id": {
           "type": "string",
@@ -261,18 +249,22 @@
         },
         "senderId": {
           "type": "string",
-          "description": "Reference to either Client or TeamMember, indicating the sender of the message."
+          "description": "The UID of the user who sent the message (client or team member)."
         },
-        "senderType": {
+        "senderName": {
           "type": "string",
-          "description": "Indicates whether the sender is a 'Client' or a 'TeamMember'."
+          "description": "The display name of the sender."
         },
-        "messageDate": {
+        "senderAvatar": {
+          "type": "string",
+          "description": "URL to the sender's avatar image."
+        },
+        "timestamp": {
           "type": "string",
           "description": "The date and time the message was sent.",
           "format": "date-time"
         },
-        "content": {
+        "text": {
           "type": "string",
           "description": "The content of the message."
         }
@@ -281,59 +273,54 @@
         "id",
         "projectId",
         "senderId",
-        "senderType",
-        "messageDate",
-        "content"
+        "senderName",
+        "timestamp",
+        "text"
       ]
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous",
-      "google.com",
-      "github.com"
-    ]
+    "providers": ["password", "anonymous", "google.com", "github.com"]
   },
   "firestore": {
     "structure": [
       {
         "path": "/inquiries/{inquiryId}",
         "definition": {
-            "entityName": "Inquiry",
-            "schema": {
-                "$ref": "#/backend/entities/Inquiry"
-            },
-            "description": "Stores inquiries from the contact and CTA forms. Publicly writable.",
-            "params": [
-                {
-                    "name": "inquiryId",
-                    "description": "The unique identifier for the inquiry."
-                }
-            ]
+          "entityName": "Inquiry",
+          "schema": {
+            "$ref": "#/backend/entities/Inquiry"
+          },
+          "description": "Stores inquiries from the contact and CTA forms. Publicly writable.",
+          "params": [
+            {
+              "name": "inquiryId",
+              "description": "The unique identifier for the inquiry."
+            }
+          ]
         }
       },
       {
         "path": "/subscribers/{email}",
         "definition": {
-            "entityName": "Subscriber",
-            "schema": {
-                "title": "Subscriber",
-                "type": "object",
-                "properties": {
-                    "subscribed_at": {
-                        "type": "string",
-                        "format": "date-time"
-                    }
-                }
-            },
-            "description": "Stores email addresses for manual newsletter export.",
-            "params": [
-                {
-                    "name": "email",
-                    "description": "The subscriber's email address."
-                }
-            ]
+          "entityName": "Subscriber",
+          "schema": {
+            "title": "Subscriber",
+            "type": "object",
+            "properties": {
+              "subscribed_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          },
+          "description": "Stores email addresses for manual newsletter export.",
+          "params": [
+            {
+              "name": "email",
+              "description": "The subscriber's email address."
+            }
+          ]
         }
       },
       {

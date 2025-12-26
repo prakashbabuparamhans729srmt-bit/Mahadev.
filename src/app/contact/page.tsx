@@ -11,6 +11,8 @@ import React, { type FormEvent, useState } from 'react';
 import { useFirestore } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { Label } from '@/components/ui/label';
+import { errorEmitter } from '@/firebase/error-emitter';
+import { FirestorePermissionError } from '@/firebase/errors';
 
 export default function ContactPage() {
   const { toast } = useToast();
@@ -20,45 +22,52 @@ export default function ContactPage() {
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!firestore) {
-        toast({
-            variant: "destructive",
-            title: "त्रुटि",
-            description: "डेटाबेस कनेक्शन उपलब्ध नहीं है।",
-        });
-        return;
+      toast({
+        variant: 'destructive',
+        title: 'त्रुटि',
+        description: 'डेटाबेस कनेक्शन उपलब्ध नहीं है।',
+      });
+      return;
     }
-    
+
     setIsLoading(true);
     const form = e.currentTarget;
     const formData = new FormData(form);
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const idea = formData.get('message') as string;
+    const inquiryData = {
+      name: formData.get('name') as string,
+      email: formData.get('email') as string,
+      idea: formData.get('message') as string,
+      createdAt: serverTimestamp(),
+    };
 
-    try {
-        const inquiriesCollection = collection(firestore, 'inquiries');
-        await addDoc(inquiriesCollection, {
-            name: name,
-            email: email,
-            idea: idea,
-            createdAt: serverTimestamp(),
-        });
-
+    const inquiriesCollection = collection(firestore, 'inquiries');
+    
+    addDoc(inquiriesCollection, inquiryData)
+      .then(() => {
         toast({
-            title: "संदेश भेजा गया!",
-            description: "आपकी पूछताछ प्राप्त हो गई है। हम जल्द ही आपसे संपर्क करेंगे।",
+          title: 'संदेश भेजा गया!',
+          description:
+            'आपकी पूछताछ प्राप्त हो गई है। हम जल्द ही आपसे संपर्क करेंगे।',
         });
         form.reset();
-    } catch (error: any) {
-        console.error("Error submitting inquiry:", error);
-        toast({
-            variant: "destructive",
-            title: "त्रुटि",
-            description: error.message || "आपका संदेश भेजने में विफल। कृपया बाद में पुनः प्रयास करें।",
+      })
+      .catch(async (serverError) => {
+        console.error('Error submitting inquiry:', serverError);
+        const permissionError = new FirestorePermissionError({
+          path: 'inquiries',
+          operation: 'create',
+          requestResourceData: inquiryData,
         });
-    } finally {
+        errorEmitter.emit('permission-error', permissionError);
+        toast({
+            variant: 'destructive',
+            title: 'त्रुटि',
+            description: 'आपका संदेश भेजने में विफल। कृपया बाद में पुनः प्रयास करें।',
+        });
+      })
+      .finally(() => {
         setIsLoading(false);
-    }
+      });
   };
 
   return (

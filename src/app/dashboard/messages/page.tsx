@@ -1,7 +1,6 @@
-
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import {
   Card,
   CardContent,
@@ -18,25 +17,22 @@ import {
   Send,
   Archive,
   Star,
-  Users,
-  Bot,
   Loader2,
   AlertTriangle,
-  Languages,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import { addDoc, collection, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
+import { FirestorePermissionError, errorEmitter } from '@/firebase';
 
 interface Message {
     id?: string;
     senderId: string;
-    text: string;
-    timestamp: any;
     senderName: string;
     senderAvatar: string;
+    text: string;
+    timestamp: any;
     translations?: Record<string, string>;
 }
 
@@ -55,6 +51,7 @@ export default function MessagesPage() {
         if (!firestore || !user) return null;
         return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
     }, [firestore, user]);
+
     const { data: projects, isLoading: projectsLoading } = useCollection(projectsQuery);
     
     useEffect(() => {
@@ -82,33 +79,41 @@ export default function MessagesPage() {
     }, [messages]);
 
 
-    const handleSend = async () => {
-        if (!input.trim() || !firestore || !user || !activeChatId) return;
-        
-        const messageData: any = {
-            senderId: user.uid,
-            text: input,
-            projectId: activeChatId,
-            timestamp: serverTimestamp(),
-            senderName: user.displayName || 'अनाम',
-            senderAvatar: user.photoURL || user.displayName?.[0] || 'U',
-        };
+    const handleSend = useCallback(async () => {
+      if (!input.trim() || !firestore || !user || !activeChatId) return;
 
-        setInput('');
-        
-        try {
-            await addDoc(collection(firestore, `projects/${activeChatId}/messages`), messageData);
-        } catch (error) {
-            console.error("Error sending message:", error);
+      const messageText = input;
+      setInput('');
+
+      const messageData = {
+        senderId: user.uid,
+        senderName: user.displayName || 'अनाम',
+        senderAvatar: user.photoURL || user.displayName?.[0] || 'U',
+        text: messageText,
+        timestamp: serverTimestamp(),
+        projectId: activeChatId, // Not strictly needed for subcollection, but good for context
+      };
+
+      const messagesCollection = collection(firestore, `projects/${activeChatId}/messages`);
+      
+      addDoc(messagesCollection, messageData)
+        .catch(async (serverError) => {
+            console.error("Error sending message:", serverError);
+            const permissionError = new FirestorePermissionError({
+              path: messagesCollection.path,
+              operation: 'create',
+              requestResourceData: messageData,
+            });
+            errorEmitter.emit('permission-error', permissionError);
             toast({
                 variant: 'destructive',
                 title: 'त्रुटि',
                 description: 'संदेश भेजने में विफल।',
             });
-            // Re-set input if sending failed
-            setInput(input);
-        }
-    };
+            setInput(messageText); // Re-set input if sending failed
+        });
+
+    }, [input, firestore, user, activeChatId, toast]);
 
     const handleAction = (message: string) => {
         toast({
