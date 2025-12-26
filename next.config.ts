@@ -52,10 +52,6 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-   experimental: {
-    serverActions: true,
-    allowedDevOrigins: ['*.cloudworkstations.dev'],
-  },
   async headers() {
     return [
       {
