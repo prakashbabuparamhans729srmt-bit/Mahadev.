@@ -14,6 +14,7 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useCollection, useFirestore, useUser } from '@/firebase';
 import React, { useMemo } from 'react';
 import { collection, query, where } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
 
 export default function ProjectOversightPage() {
@@ -22,7 +23,6 @@ export default function ProjectOversightPage() {
 
   const projectsQuery = useMemo(() => {
     if (!firestore || !user) return null;
-    // SECURE QUERY: Only fetch projects belonging to the current user
     return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
   }, [firestore, user]);
 
@@ -40,9 +40,31 @@ export default function ProjectOversightPage() {
         </div>
       </div>
       
-      {isLoading && <div className="flex justify-center items-center h-64"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>}
+      {isLoading && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 4 }).map((_, i) => (
+                <Card key={i} className="overflow-hidden bg-card border border-border/50 h-full flex flex-col">
+                    <Skeleton className="relative aspect-video w-full" />
+                    <CardContent className="p-4 flex-1 flex flex-col">
+                        <Skeleton className="h-6 w-3/4 mb-2" />
+                        <Skeleton className="h-4 w-1/2" />
+                        <div className="mt-auto pt-4">
+                            <Skeleton className="h-2 w-full" />
+                        </div>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+      )}
+
       {error && <div className="text-destructive bg-destructive/10 p-4 rounded-lg text-center"><ShieldAlert className="mx-auto h-8 w-8 mb-2"/>त्रुटि: प्रोजेक्ट लोड नहीं हो सके।</div>}
       
+      {!isLoading && !error && projects?.length === 0 && (
+        <div className="text-center py-20 bg-card rounded-lg border">
+            <p className="text-muted-foreground">आपके पास अभी कोई सक्रिय प्रोजेक्ट नहीं है।</p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {projects?.map((project: any) => {
             const image = PlaceHolderImages.find(p => p.id === 'portfolio-1');
@@ -78,4 +100,3 @@ export default function ProjectOversightPage() {
     </div>
   );
 }
-

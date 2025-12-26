@@ -1,8 +1,9 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions
+    // Helper functions to check for authentication and ownership.
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -11,37 +12,45 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == clientId;
     }
 
-    // inquiries can be written by anyone
+    // Inquiries can be created by anyone (e.g., public contact form).
+    // They cannot be read, updated, or deleted by clients.
     match /inquiries/{inquiryId} {
       allow create: if true;
-      allow read, update, delete: if false; // Should only be readable by admins
+      allow read, update, delete: if false; // Should only be readable by an admin role.
     }
 
-    // subscribers can be written by anyone
+    // Subscribers can be created by anyone.
     match /subscribers/{email} {
       allow create: if true;
-      allow read, update, delete: if false; // Should only be readable by admins
+      allow read, update, delete: if false; // Should only be readable by an admin role.
     }
 
-    // client can only access their own document
+    // A client can only read or update their own document.
+    // They cannot create a client document for another user or delete their own.
     match /clients/{clientId} {
       allow read, update: if isClientOwner(clientId);
       allow create, delete: if false;
     }
 
-    // projects can be read by their owner
+    // A user can only read projects where their UID matches the clientId field.
+    // A user can create, update, or delete a project only if they are the owner.
     match /projects/{projectId} {
       allow read: if isAuthenticated() && resource.data.clientId == request.auth.uid;
-      allow create, update, delete: if isAuthenticated() && request.resource.data.clientId == request.auth.uid;
+      // For create, check the incoming document's data.
+      allow create: if isAuthenticated() && request.resource.data.clientId == request.auth.uid;
+      // For update/delete, check the existing document's data.
+      allow update, delete: if isAuthenticated() && resource.data.clientId == request.auth.uid;
     }
 
-    // project subcollections can be read/written by the project owner
+    // Project subcollections can be read or written to only by the owner of the parent project.
+    // This is a secure way to manage related data like messages, files, invoices, etc.
     match /projects/{projectId}/{subcollection}/{docId} {
        allow read, write: if isAuthenticated() && get(/databases/$(database)/documents/projects/$(projectId)).data.clientId == request.auth.uid;
     }
-
-    // All other collections are locked down
-    match /{document=**} {
+    
+    // Default rule: All other collections are locked down for client access.
+    // This prevents accidental exposure of other data.
+    match /{path=**}/documents/{wildcard} {
       allow read, write: if false;
     }
   }
