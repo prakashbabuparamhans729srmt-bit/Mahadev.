@@ -36,8 +36,8 @@ export function SecuritySettings() {
       toast({ variant: 'destructive', title: 'त्रुटि', description: 'नए पासवर्ड मेल नहीं खाते।' });
       return;
     }
-    if (newPassword.length < 6) {
-      toast({ variant: 'destructive', title: 'त्रुटि', description: 'पासवर्ड कम से कम 6 अक्षर का होना चाहिए।' });
+    if (newPassword.length < 8) {
+      toast({ variant: 'destructive', title: 'त्रुटि', description: 'नया पासवर्ड कम से कम 8 अक्षर का होना चाहिए।' });
       return;
     }
 
@@ -93,17 +93,17 @@ export function SecuritySettings() {
             const credential = EmailAuthProvider.credential(user.email, deletePassword);
             await reauthenticateWithCredential(user, credential);
 
-            // In a real production app, you would trigger a Cloud Function here
-            // to delete all user data from Firestore, Storage, etc.
-            
+            // This call will trigger the "Delete User Data" extension on the backend
+            // which will then delete all associated data from Firestore, Storage, etc.
             await deleteUser(user);
             
             toast({
                 title: 'खाता सफलतापूर्वक हटा दिया गया',
-                description: 'आपको जल्द ही लॉग आउट कर दिया जाएगा।',
+                description: 'आपको जल्द ही लॉग आउट कर दिया जाएगा। आपका सारा डेटा हटाने के लिए कतार में है।',
             });
             setIsDeleteConfirmationOpen(false);
-            router.push('/');
+            // Wait a bit before redirecting to ensure toast is seen
+            setTimeout(() => router.push('/'), 2000);
         }
     } catch (error: any) {
          let message = 'खाता हटाने में विफल।';
@@ -219,7 +219,7 @@ export function SecuritySettings() {
         <CardHeader>
             <CardTitle className="text-destructive">खाता हटाएं</CardTitle>
             <CardDescription>
-                एक बार जब आप अपना खाता हटा देते हैं, तो इसे वापस नहीं लाया जा सकता। कृपया निश्चित रहें।
+                यह क्रिया स्थायी है और इसे पूर्ववत नहीं किया जा सकता। आपका प्रमाणीकरण खाता और संबंधित सभी डेटा (प्रोजेक्ट, फ़ाइलें, संदेश, आदि) स्थायी रूप से हटा दिए जाएंगे।
             </CardDescription>
         </CardHeader>
         <CardFooter className="border-t border-destructive/20 px-6 py-4">

@@ -3,6 +3,83 @@
 import Link from "next/link";
 import { Icons } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+import { Loader2, Send } from "lucide-react";
+import React, { useState } from "react";
+import { useFirestore } from "@/firebase";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+
+function NewsletterForm() {
+    const { toast } = useToast();
+    const firestore = useFirestore();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleSubscribe = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (!firestore) {
+            toast({
+                variant: "destructive",
+                title: "त्रुटि",
+                description: "डेटाबेस कनेक्शन उपलब्ध नहीं है।",
+            });
+            return;
+        }
+
+        setIsLoading(true);
+        const form = e.currentTarget;
+        const formData = new FormData(form);
+        const email = formData.get('email') as string;
+
+        if (!email) {
+            toast({
+                variant: "destructive",
+                title: "त्रुटि",
+                description: "कृपया एक ईमेल पता दर्ज करें।",
+            });
+            setIsLoading(false);
+            return;
+        }
+
+        try {
+            // The Mailchimp extension will be configured to listen to this collection
+            const subscriberRef = doc(firestore, 'mailchimp_subscribers', email);
+            await setDoc(subscriberRef, {
+                subscribed_at: serverTimestamp(),
+            });
+
+            toast({
+                title: "सब्सक्राइब करने के लिए धन्यवाद!",
+                description: "आपको हमारे न्यूज़लेटर में जोड़ दिया गया है।",
+            });
+            form.reset();
+        } catch (error) {
+            console.error("Error subscribing to newsletter:", error);
+            toast({
+                variant: "destructive",
+                title: "त्रुटि",
+                description: "सदस्यता लेने में विफल। कृपया बाद में पुनः प्रयास करें।",
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    };
+    
+    return (
+        <div className="flex flex-col gap-4">
+             <h3 className="font-semibold tracking-wider uppercase">न्यूज़लेटर</h3>
+             <p className="text-sm text-muted-foreground">
+                नवीनतम अपडेट और ऑफ़र प्राप्त करने के लिए सब्सक्राइब करें।
+            </p>
+            <form onSubmit={handleSubscribe} className="flex items-center gap-2">
+                <Input name="email" type="email" placeholder="आपका ईमेल" className="bg-background/50 border-border" required />
+                <Button type="submit" size="icon" disabled={isLoading}>
+                    {isLoading ? <Loader2 className="animate-spin" /> : <Send />}
+                </Button>
+            </form>
+        </div>
+    )
+}
 
 export default function Footer() {
   return (
@@ -42,16 +119,12 @@ export default function Footer() {
               </ul>
             </div>
             <div>
-              <h3 className="font-semibold tracking-wider uppercase">कानूनी</h3>
-              <ul className="mt-4 space-y-2">
-                <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">सेवा की शर्तें</Link></li>
-                <li><Link href="/terms" className="text-sm text-muted-foreground hover:text-foreground">गोपनीयता नीति</Link></li>
-              </ul>
+              <NewsletterForm />
             </div>
           </div>
         </div>
         <div className="mt-8 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} Hajaro Grahako. सर्वाधिकार सुरक्षित।</p>
+          <p>&copy; {new Date().getFullYear()} Hajaro Grahako. सर्वाधिकार सुरक्षित। | <Link href="/terms" className="hover:underline">नियम और शर्तें</Link></p>
         </div>
       </div>
     </footer>
