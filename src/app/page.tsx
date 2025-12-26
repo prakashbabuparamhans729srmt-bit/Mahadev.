@@ -1,9 +1,11 @@
 'use client';
 import dynamic from 'next/dynamic';
 import Header from '@/components/header';
-import HeroSection from '@/components/sections/hero';
 import Footer from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
+
+// HeroSection is critical for LCP, so we load it statically.
+import HeroSection from '@/components/sections/hero';
 
 const ImageCarouselSection = dynamic(() => import('@/components/sections/image-carousel'), {
   loading: () => <Skeleton className="h-[50vh] w-full" />,
