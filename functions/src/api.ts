@@ -5,8 +5,8 @@ import searchRouter from "./routes/search";
 
 const app = express();
 
-// Automatically allow cross-origin requests
-app.use(cors({ origin: true }));
+// Automatically allow cross-origin requests from any origin
+app.use(cors());
 
 // --- API Routes ---
 app.use("/projects", projectsRouter);
