@@ -1,32 +1,14 @@
+'use client';
+
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { HelpAssistant } from '@/components/help-assistant';
 import { CookieConsent } from '@/components/cookie-consent';
-import { Playfair_Display, PT_Sans } from 'next/font/google';
-import Script from 'next/script';
-import SentryProvider from './sentry-provider';
+import dynamic from 'next/dynamic';
 
-
-const playfair = Playfair_Display({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-playfair-display',
-});
-
-const ptSans = PT_Sans({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  display: 'swap',
-  variable: '--font-pt-sans',
-});
-
-
-export const metadata: Metadata = {
-  title: 'HG Hub - Hajaro Grahako',
-  description: 'पूर्ण विकास समाधान - वेबसाइट, मोबाइल ऐप और कस्टम सॉफ्टवेयर।',
-};
+const SentryProvider = dynamic(() => import('./sentry-provider'), { ssr: false });
 
 export default function RootLayout({
   children,
@@ -35,8 +17,13 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="hi" className={`dark ${playfair.variable} ${ptSans.variable}`}>
+    <html lang="hi" className="dark">
       <head>
+        <style>
+          {`
+            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+          `}
+        </style>
       </head>
       <body>
         <SentryProvider>
@@ -45,18 +32,6 @@ export default function RootLayout({
         <Toaster />
         <HelpAssistant />
         <CookieConsent />
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"
-          strategy="afterInteractive"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', 'GA_TRACKING_ID');
-          `}
-        </Script>
       </body>
     </html>
   );

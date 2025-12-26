@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import * as Sentry from "@sentry/react";
-import { BrowserTracing } from "@sentry/tracing";
 
 // Check if we are in a browser environment before initializing
 if (typeof window !== "undefined") {
@@ -10,12 +9,21 @@ if (typeof window !== "undefined") {
     // IMPORTANT: Replace this with your actual DSN from Sentry.
     // You should probably use an environment variable for this.
     dsn: "https://YOUR_DSN@sentry.io/123456", 
-    integrations: [new BrowserTracing()],
+    integrations: [
+      Sentry.browserTracingIntegration(),
+      Sentry.replayIntegration(),
+    ],
 
     // Set tracesSampleRate to 1.0 to capture 100%
     // of transactions for performance monitoring.
     // We recommend adjusting this value in production
     tracesSampleRate: 1.0,
+    
+    // Capture Replay for 10% of all sessions,
+    // plus for 100% of sessions with an error
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
+
 
     // You can also add more configuration options here
     // environment: process.env.NODE_ENV,
