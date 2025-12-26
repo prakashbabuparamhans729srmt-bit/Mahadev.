@@ -108,7 +108,7 @@ export default function ProjectDetailsPage() {
             }
         };
         fetchProject();
-    }, [user, auth, projectId, isAuthLoading]);
+    }, [user, isAuthLoading, projectId]);
 
 
     const clientRef = useMemo(() => {

@@ -125,7 +125,7 @@ export default function ReportsPage() {
     };
 
     fetchProjects();
-  }, [user, auth, isUserLoading, toast]);
+  }, [user, isUserLoading, toast]);
 
 
   const healthData = useMemo(() => {

@@ -66,7 +66,7 @@ export default function ProjectOversightPage() {
     };
 
     fetchProjects();
-  }, [user, auth, isUserLoading, toast]);
+  }, [user, isUserLoading, toast]);
 
 
   return (

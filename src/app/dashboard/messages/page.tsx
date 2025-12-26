@@ -140,7 +140,7 @@ export default function MessagesPage() {
         if(projectsLoading) {
             fetchProjects();
         }
-    }, [user, auth, isUserLoading, toast, activeChat, projectsLoading]);
+    }, [user, isUserLoading, toast, activeChat, projectsLoading]);
     
     const activeChatId = activeChat?.id;
 

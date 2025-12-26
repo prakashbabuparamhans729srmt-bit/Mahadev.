@@ -152,7 +152,7 @@ export default function FileManagerPage() {
             }
         };
         fetchProjects();
-    }, [user, auth, isUserLoading, toast]);
+    }, [user, isUserLoading, toast]);
     
     const activeProjectId = projects?.[0]?.id;
 
