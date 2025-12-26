@@ -86,11 +86,6 @@ export function useCollection<T = any>(
         setIsLoading(false);
       },
       (error: FirestoreError) => {
-        console.error('Firestore Error:', error.code, error.message);
-        if (error.code === 'permission-denied') {
-            console.log('Permission denied! Check your Firestore security rules and client-side query.');
-        }
-
         const path: string =
           memoizedTargetRefOrQuery.type === 'collection'
             ? (memoizedTargetRefOrQuery as CollectionReference).path
