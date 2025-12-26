@@ -49,6 +49,7 @@ export default function PortfolioSection() {
                   src={image.imageUrl}
                   width="600"
                   data-ai-hint={image.imageHint}
+                  loading="lazy"
                 />
                 <CardContent className="p-4">
                   <h3 className="font-semibold font-headline text-lg">{image.description}</h3>

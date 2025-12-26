@@ -36,12 +36,10 @@ export default function RootLayout({
       <head>
       </head>
       <body>
-        <FirebaseClientProvider>
-          {children}
-          <Toaster />
-          <HelpAssistant />
-          <CookieConsent />
-        </FirebaseClientProvider>
+        <FirebaseClientProvider>{children}</FirebaseClientProvider>
+        <Toaster />
+        <HelpAssistant />
+        <CookieConsent />
       </body>
     </html>
   );

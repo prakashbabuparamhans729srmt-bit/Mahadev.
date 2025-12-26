@@ -52,6 +52,7 @@ export default function HeroSection() {
                     height="750"
                     className="object-cover w-full h-full"
                     data-ai-hint={heroImage.imageHint}
+                    priority={true}
                 />
             </div>
           )}

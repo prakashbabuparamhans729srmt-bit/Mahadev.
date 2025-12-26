@@ -10,7 +10,7 @@ const securityHeaders = [
       script-src 'self' 'unsafe-eval' https://apis.google.com https://www.gstatic.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       img-src 'self' https://images.unsplash.com https://picsum.photos https://*.googleusercontent.com data:;
-      font-src 'self' https://fonts.gstatic.com;
+      font-src 'self' data: https://fonts.gstatic.com;
       connect-src 'self' wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com *.cloudworkstations.dev;
       form-action 'self';
       frame-ancestors 'none';
