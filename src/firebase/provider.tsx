@@ -1,13 +1,57 @@
 'use client';
 
-import React, { createContext, ReactNode, useState, useEffect, useContext } from 'react';
+import React, { createContext, ReactNode, useState, useEffect, useContext, useMemo } from 'react';
 import { FirebaseApp, initializeApp, getApps, getApp } from 'firebase/app';
-import { Firestore, initializeFirestore, persistentLocalCache } from 'firebase/firestore';
+import { Firestore, initializeFirestore, persistentLocalCache, getFirestore } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { firebaseConfig } from './config';
+
+// --- SINGLE INITIALIZATION ---
+// This logic now runs only once per application lifecycle.
+let firebaseApp: FirebaseApp;
+if (!getApps().length) {
+    firebaseApp = initializeApp(firebaseConfig);
+} else {
+    firebaseApp = getApp();
+}
+
+const auth: Auth = getAuth(firebaseApp);
+const storage: FirebaseStorage = getStorage(firebaseApp);
+
+let firestore: Firestore;
+try {
+    // getFirestore will throw if it's not initialized.
+    firestore = getFirestore(firebaseApp);
+} catch (e) {
+    // If it fails, initialize it. This handles the initial setup.
+    try {
+        firestore = initializeFirestore(firebaseApp, {
+            cache: persistentLocalCache({})
+        });
+    } catch (err: any) {
+        if (err.code === 'failed-precondition') {
+            console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
+        } else if (err.code === 'unimplemented') {
+            console.warn("The current browser does not support all of the features required to enable persistence.");
+        }
+        // Fallback to in-memory persistence if offline fails
+        firestore = initializeFirestore(firebaseApp, {});
+    }
+}
+
+if (typeof window !== 'undefined' && process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
+    try {
+        initializeAppCheck(firebaseApp, {
+            provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
+            isTokenAutoRefreshEnabled: true
+        });
+    } catch (e) {
+        console.warn("App Check already initialized or failed to initialize.");
+    }
+}
 
 // --- STATE AND CONTEXT DEFINITION ---
 
@@ -28,18 +72,6 @@ export const FirebaseContext = createContext<FirebaseContextState | undefined>(u
 export const FirebaseProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const [services, setServices] = useState<{
-    firebaseApp: FirebaseApp | null;
-    firestore: Firestore | null;
-    auth: Auth | null;
-    storage: FirebaseStorage | null;
-  }>({
-    firebaseApp: null,
-    firestore: null,
-    auth: null,
-    storage: null,
-  });
-
   const [userAuthState, setUserAuthState] = useState<{
     user: User | null;
     isUserLoading: boolean;
@@ -49,52 +81,10 @@ export const FirebaseProvider: React.FC<{
     isUserLoading: true,
     userError: null,
   });
-  
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-      const authInstance = getAuth(app);
-      const storageInstance = getStorage(app);
-      
-      let firestoreInstance: Firestore;
-      try {
-        firestoreInstance = initializeFirestore(app, {
-          cache: persistentLocalCache({}),
-        });
-      } catch (err: any) {
-        if (err.code === 'failed-precondition') {
-          console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
-        } else if (err.code === 'unimplemented') {
-          console.warn("The current browser does not support all of the features required to enable persistence.");
-        }
-        // Fallback to in-memory persistence if offline fails
-        firestoreInstance = initializeFirestore(app, {});
-      }
-
-      if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
-        initializeAppCheck(app, {
-          provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
-          isTokenAutoRefreshEnabled: true
-        });
-      }
-
-      setServices({
-        firebaseApp: app,
-        firestore: firestoreInstance,
-        auth: authInstance,
-        storage: storageInstance,
-      });
-    }
-  }, []);
-
 
   useEffect(() => {
-    if (!services.auth) {
-        setUserAuthState({ user: null, isUserLoading: false, userError: new Error("Firebase Auth not initialized.") });
-        return;
-    }
     const unsubscribe = onAuthStateChanged(
-      services.auth,
+      auth, // Use the already initialized auth instance
       (firebaseUser) => {
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
@@ -104,12 +94,15 @@ export const FirebaseProvider: React.FC<{
       }
     );
     return () => unsubscribe();
-  }, [services.auth]);
+  }, []);
 
-  const contextValue = React.useMemo((): FirebaseContextState => ({
-    ...services,
+  const contextValue = useMemo((): FirebaseContextState => ({
+    firebaseApp,
+    firestore,
+    auth,
+    storage,
     ...userAuthState,
-  }), [services, userAuthState]);
+  }), [userAuthState]);
 
   return (
     <FirebaseContext.Provider value={contextValue}>
