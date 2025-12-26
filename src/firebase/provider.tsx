@@ -8,6 +8,11 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { firebaseConfig } from './config';
+import { Toaster } from '@/components/ui/toaster';
+import { HelpAssistant } from '@/components/help-assistant';
+import { CookieConsent } from '@/components/cookie-consent';
+import SentryProvider from '@/app/sentry-provider';
+
 
 // --- SINGLE INITIALIZATION ---
 // This logic now runs only once per application lifecycle.
@@ -106,8 +111,13 @@ export const FirebaseProvider: React.FC<{
 
   return (
     <FirebaseContext.Provider value={contextValue}>
-      <FirebaseErrorListener />
-      {children}
+      <SentryProvider>
+        <FirebaseErrorListener />
+        {children}
+        <Toaster />
+        <HelpAssistant />
+        <CookieConsent />
+      </SentryProvider>
     </FirebaseContext.Provider>
   );
 };
