@@ -25,7 +25,7 @@ body {
 
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-pt-sans), sans-serif;
   margin: 0;
   padding: 0;
 }
@@ -124,6 +124,10 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-pt-sans), sans-serif;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-playfair-display), serif;
   }
   section {
     @apply w-full py-12 md:py-24 lg:py-32;

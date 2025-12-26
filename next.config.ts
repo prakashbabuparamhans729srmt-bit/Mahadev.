@@ -7,11 +7,11 @@ const securityHeaders = [
     value: `
       base-uri 'self';
       default-src 'self';
-      script-src 'self' 'unsafe-eval' https://apis.google.com https://www.gstatic.com;
+      script-src 'self' 'unsafe-eval' https://www.googletagmanager.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       img-src 'self' https://images.unsplash.com https://picsum.photos https://*.googleusercontent.com data:;
       font-src 'self' data: https://fonts.gstatic.com;
-      connect-src 'self' wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com *.cloudworkstations.dev;
+      connect-src 'self' wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com *.cloudworkstations.dev https://www.google-analytics.com;
       form-action 'self';
       frame-ancestors 'none';
     `.replace(/\s{2,}/g, ' ').trim()

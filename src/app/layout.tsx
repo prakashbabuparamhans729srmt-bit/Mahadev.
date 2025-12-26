@@ -5,6 +5,8 @@ import { FirebaseClientProvider } from '@/firebase/client-provider';
 import { HelpAssistant } from '@/components/help-assistant';
 import { CookieConsent } from '@/components/cookie-consent';
 import { Playfair_Display, PT_Sans } from 'next/font/google';
+import Script from 'next/script';
+
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -40,6 +42,18 @@ export default function RootLayout({
         <Toaster />
         <HelpAssistant />
         <CookieConsent />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=GA_TRACKING_ID"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'GA_TRACKING_ID');
+          `}
+        </Script>
       </body>
     </html>
   );

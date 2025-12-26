@@ -7,10 +7,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 // HeroSection is critical for LCP, so we load it statically.
 import HeroSection from '@/components/sections/hero';
 
-const ImageCarouselSection = dynamic(() => import('@/components/sections/image-carousel'), {
-  loading: () => <Skeleton className="h-[50vh] w-full" />,
-  ssr: false,
-});
 const ServicesSection = dynamic(() => import('@/components/sections/services'), {
     loading: () => <Skeleton className="h-[50vh] w-full" />,
     ssr: false,
@@ -43,7 +39,6 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <ImageCarouselSection />
         <ServicesSection />
         <PortfolioSection />
         <ProcessSection />
