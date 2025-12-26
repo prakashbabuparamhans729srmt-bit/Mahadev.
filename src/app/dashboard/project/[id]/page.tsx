@@ -59,8 +59,7 @@ const dummyTeam = [
 ];
 
 async function getProject(token: string, projectId: string) {
-    // In a real app, this URL would come from a config file
-    const API_URL = `http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/projects/${projectId}`;
+    const API_URL = `/api/projects/${projectId}`;
     try {
         const response = await fetch(API_URL, {
             headers: {
@@ -72,7 +71,7 @@ async function getProject(token: string, projectId: string) {
             throw new Error(errorData.error || 'Failed to fetch project');
         }
         const data = await response.json();
-        return data.data; // The API returns { success: true, data: [...] }
+        return data.data;
     } catch (error) {
         console.error("API Error fetching project:", error);
         throw error;

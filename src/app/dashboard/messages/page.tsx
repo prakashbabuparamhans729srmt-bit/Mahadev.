@@ -37,8 +37,7 @@ interface Message {
 }
 
 async function getProjects(token: string) {
-    // In a real app, this URL would come from a config file
-    const API_URL = 'http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/projects';
+    const API_URL = '/api/projects';
     try {
         const response = await fetch(API_URL, {
             headers: {

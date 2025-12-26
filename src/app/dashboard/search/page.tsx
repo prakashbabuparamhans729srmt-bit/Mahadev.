@@ -12,8 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 
 
 async function performSearch(token: string, query: string) {
-    // In a real app, this URL would come from a config file and be more generic
-    const API_URL = `http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/search?q=${encodeURIComponent(query)}`;
+    const API_URL = `/api/search?q=${encodeURIComponent(query)}`;
     try {
         const response = await fetch(API_URL, {
             headers: {
@@ -25,7 +24,7 @@ async function performSearch(token: string, query: string) {
             throw new Error(errorData.error || 'Failed to perform search');
         }
         const data = await response.json();
-        return data.data; // The API returns { success: true, data: [...] }
+        return data.data;
     } catch (error) {
         console.error("API Error performing search:", error);
         throw error;
