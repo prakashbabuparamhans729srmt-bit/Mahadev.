@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardDescription
 } from '@/components/ui/card';
-import { Area, XAxis, Users } from 'recharts';
+import { Area, XAxis } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 import {
   Plus,
@@ -25,7 +25,8 @@ import {
   ArrowRight,
   Star,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  Users
 } from 'lucide-react';
 import { type ChartConfig } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
