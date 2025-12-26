@@ -121,14 +121,6 @@ export default function AdminDashboard() {
     }, { totalBudget: 0, totalSpent: 0 });
   }, [projects]);
   
-  const recentMessagesQuery = useMemo(() => {
-      if (!firestore || !user) return null;
-      // This is a simplified query. A real app would query across multiple project message subcollections.
-      const messagesCollection = collection(firestore, 'messages');
-      return query(messagesCollection, where("clientId", "==", user.uid), orderBy('timestamp', 'desc'), limit(2));
-  }, [firestore, user]);
-  const { data: recentMessages, isLoading: messagesLoading } = useCollection(recentMessagesQuery);
-  
   const teamActivityQuery = useMemo(() => {
       if (!firestore || !user) return null;
       return query(collection(firestore, 'projects'), where("clientId", "==", user.uid), orderBy('endDate', 'desc'), limit(3));
@@ -309,32 +301,15 @@ export default function AdminDashboard() {
                     💬 हाल के संदेश
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-                 {messagesLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
-                 {recentMessages?.map((msg: any, index) => (
-                    <React.Fragment key={msg.id}>
-                        <Link href={`/dashboard/messages`}>
-                            <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-secondary/50 cursor-pointer">
-                                <Avatar className="h-9 w-9 border-2 border-primary/50">
-                                    <AvatarImage src={msg.senderAvatar} />
-                                    <AvatarFallback>{msg.senderName?.[0]}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                    <div className="flex justify-between items-center">
-                                        <p className="font-semibold text-sm">{msg.senderName}</p>
-                                        <Badge variant="secondary" className="text-xs">{projects?.find(p => p.id === msg.projectId)?.name || 'प्रोजेक्ट'}</Badge>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground mt-1 truncate">"{msg.text}"</p>
-                                </div>
-                                <ArrowRight className="h-5 w-5 text-muted-foreground self-center"/>
-                            </div>
+            <CardContent>
+                 <div className="text-center text-sm text-muted-foreground py-8">
+                    <p>अपने सभी संदेश देखने के लिए संदेश केंद्र पर जाएँ।</p>
+                    <Button asChild variant="link" className="mt-2">
+                        <Link href="/dashboard/messages">
+                            संदेश केंद्र पर जाएं <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
-                         {index < recentMessages.length - 1 && <Separator />}
-                    </React.Fragment>
-                ))}
-                {!messagesLoading && (!recentMessages || recentMessages.length === 0) && (
-                    <p className="text-center text-sm text-muted-foreground py-8">कोई नए संदेश नहीं।</p>
-                )}
+                    </Button>
+                </div>
             </CardContent>
         </Card>
 
@@ -381,5 +356,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-
-    
