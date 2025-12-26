@@ -59,6 +59,7 @@ export default function ContactPage() {
           requestResourceData: inquiryData,
         });
         errorEmitter.emit('permission-error', permissionError);
+        // This toast is for user feedback, the detailed error is for the dev overlay
         toast({
             variant: 'destructive',
             title: 'त्रुटि',

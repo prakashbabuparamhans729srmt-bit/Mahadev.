@@ -44,7 +44,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the Client entity."
+          "description": "Unique identifier for the Client entity (matches Firebase Auth UID)."
         },
         "firstName": {
           "type": "string",
@@ -68,7 +68,7 @@
           "description": "The name of the client's company."
         }
       },
-      "required": ["id", "firstName", "lastName", "email"]
+      "required": ["id", "email"]
     },
     "Project": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -76,13 +76,9 @@
       "type": "object",
       "description": "Represents a project undertaken by Hajaro Grahako for a client.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Project entity."
-        },
         "clientId": {
           "type": "string",
-          "description": "Reference to Client. (Relationship: Client 1:N Project)"
+          "description": "Reference to Client's UID. (Relationship: Client 1:N Project)"
         },
         "name": {
           "type": "string",
@@ -120,15 +116,11 @@
         }
       },
       "required": [
-        "id",
         "clientId",
         "name",
         "description",
         "startDate",
-        "endDate",
-        "status",
-        "budget",
-        "serviceTier"
+        "status"
       ]
     },
     "TeamMember": {
@@ -171,10 +163,6 @@
       "type": "object",
       "description": "Represents a timeline entry for a specific project.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the ProjectTimeline entity."
-        },
         "projectId": {
           "type": "string",
           "description": "Reference to Project. (Relationship: Project 1:N ProjectTimeline)"
@@ -189,7 +177,7 @@
           "description": "A description of the timeline event."
         }
       },
-      "required": ["id", "projectId", "date", "description"]
+      "required": ["projectId", "date", "description"]
     },
     "Invoice": {
       "$schema": "http://json-schema.org/draft-07/schema#",
@@ -197,10 +185,6 @@
       "type": "object",
       "description": "Represents an invoice for a project.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Invoice entity."
-        },
         "projectId": {
           "type": "string",
           "description": "Reference to Project. (Relationship: Project 1:N Invoice)"
@@ -225,7 +209,6 @@
         }
       },
       "required": [
-        "id",
         "projectId",
         "invoiceDate",
         "amount",
@@ -239,10 +222,6 @@
       "type": "object",
       "description": "Represents a message exchanged within a project.",
       "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the Message entity."
-        },
         "projectId": {
           "type": "string",
           "description": "Reference to Project. (Relationship: Project 1:N Message)"
@@ -270,7 +249,6 @@
         }
       },
       "required": [
-        "id",
         "projectId",
         "senderId",
         "senderName",
@@ -283,171 +261,61 @@
     "providers": ["password", "anonymous", "google.com", "github.com"]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/inquiries/{inquiryId}",
-        "definition": {
-          "entityName": "Inquiry",
-          "schema": {
-            "$ref": "#/backend/entities/Inquiry"
-          },
-          "description": "Stores inquiries from the contact and CTA forms. Publicly writable.",
-          "params": [
-            {
-              "name": "inquiryId",
-              "description": "The unique identifier for the inquiry."
-            }
-          ]
-        }
+    "/inquiries/{inquiryId}": {
+      "schema": {
+        "$ref": "#/entities/Inquiry"
       },
-      {
-        "path": "/subscribers/{email}",
-        "definition": {
-          "entityName": "Subscriber",
-          "schema": {
-            "title": "Subscriber",
-            "type": "object",
-            "properties": {
-              "subscribed_at": {
-                "type": "string",
-                "format": "date-time"
-              }
-            }
-          },
-          "description": "Stores email addresses for manual newsletter export.",
-          "params": [
-            {
-              "name": "email",
-              "description": "The subscriber's email address."
-            }
-          ]
-        }
+      "description": "Stores inquiries from the contact and CTA forms. Publicly writable."
+    },
+    "/subscribers/{email}": {
+      "schema": {
+        "title": "Subscriber",
+        "type": "object",
+        "properties": {
+          "subscribed_at": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["subscribed_at"]
       },
-      {
-        "path": "/clients/{clientId}",
-        "definition": {
-          "entityName": "Client",
-          "schema": {
-            "$ref": "#/backend/entities/Client"
-          },
-          "description": "Stores client information. Accessible only to authenticated users with appropriate roles.",
-          "params": [
-            {
-              "name": "clientId",
-              "description": "The unique identifier for the client."
-            }
-          ]
-        }
+      "description": "Stores email addresses for manual newsletter export. Publicly writable."
+    },
+    "/clients/{clientId}": {
+      "schema": {
+        "$ref": "#/entities/Client"
       },
-      {
-        "path": "/projects/{projectId}",
-        "definition": {
-          "entityName": "Project",
-          "schema": {
-            "$ref": "#/backend/entities/Project"
-          },
-          "description": "Stores project details. Accessible to team members and associated clients. Includes denormalized 'clientId' for authorization independence.",
-          "params": [
-            {
-              "name": "projectId",
-              "description": "The unique identifier for the project."
-            }
-          ]
-        }
+      "description": "Stores client information. Accessible only to authenticated users with appropriate roles."
+    },
+    "/projects/{projectId}": {
+      "schema": {
+        "$ref": "#/entities/Project"
       },
-      {
-        "path": "/projects/{projectId}/timeline/{timelineId}",
-        "definition": {
-          "entityName": "ProjectTimeline",
-          "schema": {
-            "$ref": "#/backend/entities/ProjectTimeline"
-          },
-          "description": "Stores timeline entries for each project. Includes denormalized 'clientId' from the parent 'Project' document for authorization independence.",
-          "params": [
-            {
-              "name": "projectId",
-              "description": "The unique identifier for the project."
-            },
-            {
-              "name": "timelineId",
-              "description": "The unique identifier for the timeline entry."
-            }
-          ]
-        }
+      "description": "Stores project details. Accessible to team members and associated clients. Includes denormalized 'clientId' for authorization independence."
+    },
+    "/projects/{projectId}/timeline/{timelineId}": {
+      "schema": {
+        "$ref": "#/entities/ProjectTimeline"
       },
-      {
-        "path": "/projects/{projectId}/invoices/{invoiceId}",
-        "definition": {
-          "entityName": "Invoice",
-          "schema": {
-            "$ref": "#/backend/entities/Invoice"
-          },
-          "description": "Stores invoices for each project. Includes denormalized 'clientId' from the parent 'Project' document for authorization independence.",
-          "params": [
-            {
-              "name": "projectId",
-              "description": "The unique identifier for the project."
-            },
-            {
-              "name": "invoiceId",
-              "description": "The unique identifier for the invoice."
-            }
-          ]
-        }
+      "description": "Stores timeline entries for each project. Accessible only by the project's client or assigned team members."
+    },
+    "/projects/{projectId}/invoices/{invoiceId}": {
+      "schema": {
+        "$ref": "#/entities/Invoice"
       },
-      {
-        "path": "/projects/{projectId}/messages/{messageId}",
-        "definition": {
-          "entityName": "Message",
-          "schema": {
-            "$ref": "#/backend/entities/Message"
-          },
-          "description": "Stores messages for each project. Includes denormalized 'clientId' from the parent 'Project' document for authorization independence.",
-          "params": [
-            {
-              "name": "projectId",
-              "description": "The unique identifier for the project."
-            },
-            {
-              "name": "messageId",
-              "description": "The unique identifier for the message."
-            }
-          ]
-        }
+      "description": "Stores invoices for each project. Accessible only by the project's client or assigned team members."
+    },
+    "/projects/{projectId}/messages/{messageId}": {
+      "schema": {
+        "$ref": "#/entities/Message"
       },
-      {
-        "path": "/team_members/{teamMemberId}",
-        "definition": {
-          "entityName": "TeamMember",
-          "schema": {
-            "$ref": "#/backend/entities/TeamMember"
-          },
-          "description": "Stores team member information. Accessible only to authenticated admin users.",
-          "params": [
-            {
-              "name": "teamMemberId",
-              "description": "The unique identifier for the team member."
-            }
-          ]
-        }
+      "description": "Stores messages for each project. Accessible only by the project's client or assigned team members."
+    },
+    "/team_members/{teamMemberId}": {
+      "schema": {
+        "$ref": "#/entities/TeamMember"
       },
-      {
-        "path": "/roles_admin/{userId}",
-        "definition": {
-          "entityName": "role",
-          "schema": {
-            "$ref": "#/backend/entities/Client"
-          },
-          "description": "Documents in this collection grant admin roles. Existence implies admin.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "User ID to grant admin."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "This Firestore structure is designed to support the HG Hub application, focusing on secure and scalable data management for clients, projects, team members, and related entities. The structure emphasizes Authorization Independence through denormalization, enabling robust security rules without relying on hierarchical `get()` calls.  It also incorporates Structural Segregation, ensuring that collections contain documents with similar security postures, which greatly simplifies security rules. Furthermore, standardized Access Modeling using path-based ownership for private user data and membership maps for collaborative data is used. \n\nSpecifically, Authorization Independence is achieved by denormalizing relevant authorization information into subcollections where necessary, such as client IDs within project-related collections. This allows security rules to validate access based on the presence of the client ID in the document itself, eliminating the need to traverse up the hierarchy and improves the performance and reliability of the app. This design supports QAPs by enabling secure list operations based on client or team member roles, and by segregating different types of data (e.g., client-specific vs. team-specific data) into separate collections with distinct security requirements."
+      "description": "Stores team member information. Accessible only to authenticated admin users."
+    }
   }
 }

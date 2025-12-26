@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useMemo } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
@@ -43,7 +43,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFirestore, useUser } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { customAlphabet } from 'nanoid';
 import { Icons } from '@/components/icons';
 import { errorEmitter } from '@/firebase/error-emitter';
@@ -120,7 +120,6 @@ function ScopeResultDialog({
   const firestore = useFirestore();
   const { user } = useUser();
   const [isCreatingProject, setIsCreatingProject] = useState(false);
-  const proposalRef = useRef<HTMLDivElement>(null);
 
   const handleCreateProject = async () => {
     if (!firestore || !user) {
@@ -136,7 +135,6 @@ function ScopeResultDialog({
 
     const projectId = `Project-AI-Scoper-${nanoid()}`;
     const newProject = {
-        id: projectId,
         clientId: user.uid,
         name: `AI आधारित प्रोजेक्ट: ${description.substring(0, 20)}...`,
         description: description,

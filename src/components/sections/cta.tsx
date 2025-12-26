@@ -97,14 +97,14 @@ export default function CtaSection() {
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label
-                      htmlFor="name"
+                      htmlFor="cta-name"
                       className="text-sm font-medium text-muted-foreground"
                     >
                       नाम
                     </label>
                     <Input
                       name="name"
-                      id="name"
+                      id="cta-name"
                       placeholder="उदा. राहुल"
                       type="text"
                       className="bg-background/50 border-border"
@@ -113,14 +113,14 @@ export default function CtaSection() {
                   </div>
                   <div className="space-y-2">
                     <label
-                      htmlFor="email"
+                      htmlFor="cta-email"
                       className="text-sm font-medium text-muted-foreground"
                     >
                       ईमेल
                     </label>
                     <Input
                       name="email"
-                      id="email"
+                      id="cta-email"
                       placeholder="email@example.com"
                       type="email"
                       className="bg-background/50 border-border"
@@ -130,14 +130,14 @@ export default function CtaSection() {
                 </div>
                 <div className="space-y-2">
                   <label
-                    htmlFor="service"
+                    htmlFor="cta-service"
                     className="text-sm font-medium text-muted-foreground"
                   >
                     सेवा
                   </label>
                   <Input
                     name="service"
-                    id="service"
+                    id="cta-service"
                     placeholder="वेबसाइट डेवलपमेंट"
                     type="text"
                     className="bg-background/50 border-border"
@@ -145,14 +145,14 @@ export default function CtaSection() {
                 </div>
                 <div className="space-y-2">
                   <label
-                    htmlFor="idea"
+                    htmlFor="cta-idea"
                     className="text-sm font-medium text-muted-foreground"
                   >
                     आपका आईडिया
                   </label>
                   <Textarea
                     name="idea"
-                    id="idea"
+                    id="cta-idea"
                     placeholder="हमें थोड़ा विस्तार से बताएं..."
                     rows={4}
                     className="bg-background/50 border-border"
