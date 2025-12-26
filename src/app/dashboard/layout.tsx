@@ -193,12 +193,6 @@ export default function DashboardLayout({
   const [globalSearch, setGlobalSearch] = useState('');
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
-    }
-  }, [isUserLoading, user, router]);
-
   const isActive = (path: string) => {
     if (path === '/dashboard' && pathname !== '/dashboard/search') {
       return pathname === path;
