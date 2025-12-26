@@ -16,10 +16,6 @@ import {
   Mail,
   Calendar,
   Plus,
-  FileText,
-  Palette,
-  Code,
-  CheckCircle,
   Wallet,
   Clock,
   BarChart,
@@ -31,6 +27,7 @@ import {
   ChevronRight,
   Loader2,
   AlertTriangle,
+  CheckCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -41,9 +38,10 @@ import Link from 'next/link';
 import React, { useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useDoc, useFirestore, useCollection } from '@/firebase';
-import { doc, collection, query, orderBy } from 'firebase/firestore';
+import { doc, collection, query, orderBy, limit } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { getFileIcon } from '@/lib/file-icons';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface IFile {
     id: string;
@@ -82,13 +80,16 @@ export default function ProjectDetailsPage() {
     
     const filesQuery = useMemo(() => {
         if (!firestore || !projectId) return null;
-        return query(collection(firestore, `projects/${projectId}/files`), orderBy('modified', 'desc'));
+        return query(collection(firestore, `projects/${projectId}/files`), orderBy('modified', 'desc'), limit(3));
     }, [firestore, projectId]);
     const { data: files, isLoading: isFilesLoading } = useCollection<IFile>(filesQuery);
 
     const timelineQuery = useMemo(() => {
+        // Assuming a `timeline` subcollection with an `order` field.
+        // If your data model is different, this needs to be adjusted.
         if (!firestore || !projectId) return null;
-        return query(collection(firestore, `projects/${projectId}/timeline`), orderBy('order', 'asc'));
+        const timelineCollectionRef = collection(firestore, 'projects', projectId, 'timeline');
+        return query(timelineCollectionRef, orderBy('date', 'asc'));
     }, [firestore, projectId]);
     const { data: timeline, isLoading: isTimelineLoading } = useCollection(timelineQuery);
 
@@ -100,7 +101,7 @@ export default function ProjectDetailsPage() {
         });
     };
 
-    if (isProjectLoading || isClientLoading || isFilesLoading || isTimelineLoading) {
+    if (isProjectLoading || isClientLoading) {
         return (
             <div className="flex h-full items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
@@ -132,7 +133,7 @@ export default function ProjectDetailsPage() {
         )
     }
 
-    const budgetSpent = project.budget ? (project.budget / 100) * (project.progress || 0) : 0;
+    const budgetSpent = project.budget ? (project.budget * (project.progress || 0)) / 100 : 0;
     const budgetRemaining = project.budget - budgetSpent;
     const health = {
         overall: 68,
@@ -178,7 +179,7 @@ export default function ProjectDetailsPage() {
                   <User className="mr-2 h-4 w-4" />
                   क्लाइंट
                 </h3>
-                {client ? (
+                {isClientLoading ? <Skeleton className="h-12 w-full" /> : client ? (
                     <>
                         <p className="font-bold">{client.companyName || `${client.firstName} ${client.lastName}`}</p>
                         <p className="text-sm text-muted-foreground flex items-center gap-2">
@@ -190,7 +191,7 @@ export default function ProjectDetailsPage() {
                           {client.email}
                         </p>
                     </>
-                ) : <p className="text-sm text-muted-foreground">लोड हो रहा है...</p>}
+                ) : <p className="text-sm text-muted-foreground">ग्राहक नहीं मिला।</p>}
               </Card>
               <Card className="p-4 bg-secondary/30 border-l-4 border-accent">
                 <h3 className="font-semibold flex items-center text-sm mb-2">
@@ -209,7 +210,7 @@ export default function ProjectDetailsPage() {
                   <Wallet className="mr-2 h-4 w-4" />💰 बजट
                 </h3>
                 <p className="font-bold text-foreground">
-                  ₹{project.budget.toLocaleString('en-IN')}
+                  ₹{project.budget?.toLocaleString('en-IN') ?? 'N/A'}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   खर्च: ₹{budgetSpent.toLocaleString('en-IN')}
@@ -261,13 +262,14 @@ export default function ProjectDetailsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
+              {isTimelineLoading && <Loader2 className="h-5 w-5 animate-spin mx-auto" />}
               {timeline?.map((p: any) => (
                 <div key={p.id}>
-                  <label className="text-sm">{p.name}</label>
-                  <Progress value={p.progress} className="h-2 mt-1" />
+                  <label className="text-sm">{p.description}</label>
+                  <Progress value={p.progress || 20} className="h-2 mt-1" />
                 </div>
               ))}
-              {(!timeline || timeline.length === 0) && <p className="text-sm text-muted-foreground">कोई चरण परिभाषित नहीं है।</p>}
+              {!isTimelineLoading && (!timeline || timeline.length === 0) && <p className="text-sm text-muted-foreground text-center pt-4">कोई चरण परिभाषित नहीं है।</p>}
             </CardContent>
             <CardFooter>
               <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('अगले चरण पर जाने की सुविधा जल्द ही उपलब्ध होगी।')}>
@@ -306,18 +308,19 @@ export default function ProjectDetailsPage() {
             <CardHeader>
               <CardTitle className="font-headline text-lg flex items-center">
                 <FileIcon className="mr-2 h-5 w-5 text-primary" />
-                📎 फाइल्स
+                📎 हाल की फाइल्स
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              {files?.slice(0, 3).map((f) => (
+              {isFilesLoading && <Loader2 className="h-5 w-5 animate-spin mx-auto" />}
+              {files?.map((f) => (
                  <Link href="/dashboard/files" key={f.id}>
                     <div
                     className="flex items-center gap-3 hover:bg-secondary/50 p-2 rounded-md cursor-pointer"
                     >
                     <div className="text-2xl">{getFileIcon(f.type)}</div>
                     <div>
-                        <p className="font-semibold text-sm">{f.name}</p>
+                        <p className="font-semibold text-sm truncate w-40">{f.name}</p>
                         <p className="text-xs text-muted-foreground">
                         {f.size} - {f.modified ? format(new Date(f.modified.toDate()), 'dd/MM/yy') : ''}
                         </p>
@@ -325,7 +328,7 @@ export default function ProjectDetailsPage() {
                     </div>
                 </Link>
               ))}
-               {(!files || files.length === 0) && <p className="text-sm text-muted-foreground">कोई फाइल अपलोड नहीं हुई है।</p>}
+               {!isFilesLoading && (!files || files.length === 0) && <p className="text-sm text-muted-foreground text-center pt-4">कोई फाइल अपलोड नहीं हुई है।</p>}
             </CardContent>
             <CardFooter className="grid grid-cols-2 gap-2">
               <Button variant="link" size="sm" asChild>

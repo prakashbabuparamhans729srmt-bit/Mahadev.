@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import {
   Card,
@@ -106,7 +106,7 @@ export default function AdminDashboard() {
 
   const projectsQuery = useMemo(() => {
     if (!firestore || !user) return null;
-    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid), limit(2));
+    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid), orderBy('endDate', 'desc'), limit(2));
   }, [firestore, user]);
   const { data: projects, isLoading: projectsLoading, error: projectsError } = useCollection(projectsQuery);
 
@@ -124,14 +124,13 @@ export default function AdminDashboard() {
   const recentMessagesQuery = useMemo(() => {
       if (!firestore || !projects?.[0]?.id) return null;
       // This is a simplified query. A real app would query across multiple project message subcollections.
-      return query(collection(firestore, `projects/${projects[0].id}/messages`), orderBy('timestamp', 'desc'), limit(2));
+      const messagesCollection = collection(firestore, `projects/${projects[0].id}/messages`);
+      return query(messagesCollection, orderBy('timestamp', 'desc'), limit(2));
   }, [firestore, projects]);
   const { data: recentMessages, isLoading: messagesLoading } = useCollection(recentMessagesQuery);
   
   const teamActivityQuery = useMemo(() => {
       if (!firestore || !user) return null;
-      // This query is for demonstration. A real app would have a dedicated 'activity' collection.
-      // We'll use project updates as a proxy for team activity.
       return query(collection(firestore, 'projects'), where("clientId", "==", user.uid), orderBy('endDate', 'desc'), limit(3));
   }, [firestore, user]);
   const { data: teamActivity, isLoading: activityLoading } = useCollection(teamActivityQuery);
@@ -175,6 +174,7 @@ export default function AdminDashboard() {
             <CardTitle className="font-headline">रियल-टाइम कोड ट्रैकर</CardTitle>
           </CardHeader>
           <CardContent className="h-[300px] w-full">
+            <Suspense fallback={<Skeleton className="h-full w-full" />}>
              <ChartContainer config={chartConfig} className="w-full h-full">
               <RechartsAreaChart data={chartData} margin={{ top: 5, right: 20, left: -20, bottom: 0 }}>
                 <defs>
@@ -191,6 +191,7 @@ export default function AdminDashboard() {
                 <Area type="monotone" dataKey="commits" stroke="hsl(var(--primary))" strokeWidth={3} fillOpacity={1} fill="url(#colorCommits)" />
               </RechartsAreaChart>
             </ChartContainer>
+            </Suspense>
           </CardContent>
         </Card>
 
@@ -199,18 +200,23 @@ export default function AdminDashboard() {
             <CardTitle className="font-headline text-lg">सक्रिय प्रोजेक्ट्स</CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
-             {projectsLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
-             {projectsError && <p className="text-xs text-destructive">प्रोजेक्ट लोड करने में विफल।</p>}
+             {projectsLoading && 
+                <div className="space-y-4">
+                    <Skeleton className="h-10 w-full" />
+                    <Skeleton className="h-10 w-full" />
+                </div>
+             }
+             {projectsError && <p className="text-xs text-destructive text-center">प्रोजेक्ट लोड करने में विफल।</p>}
             {projects?.map((project: any) => (
                 <Link href={`/dashboard/project/${project.id}`} key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
                     <div className="flex justify-between items-baseline mb-2">
-                        <h3 className="font-semibold">{project.name}</h3>
+                        <h3 className="font-semibold truncate">{project.name}</h3>
                         <p className="text-xs font-mono text-muted-foreground">#{project.id.slice(0,4)}</p>
                     </div>
                     <Progress value={project.progress || 0} className="h-2" />
                 </Link>
             ))}
-             {(!projects || projects.length === 0) && !projectsLoading && (
+             {!projectsLoading && !projectsError && projects?.length === 0 && (
                 <p className="text-xs text-muted-foreground text-center py-4">कोई सक्रिय प्रोजेक्ट नहीं।</p>
             )}
           </CardContent>
@@ -267,7 +273,7 @@ export default function AdminDashboard() {
                         {teamActivityIcons[activity.status] || teamActivityIcons.default}
                     </div>
                 ))}
-                {(!teamActivity || teamActivity.length === 0) && !activityLoading && (
+                {!activityLoading && (!teamActivity || teamActivity.length === 0) && (
                     <p className="text-xs text-muted-foreground text-center py-4">कोई हाल की गतिविधि नहीं।</p>
                 )}
             </CardContent>
@@ -306,7 +312,7 @@ export default function AdminDashboard() {
             <CardContent className="space-y-4">
                  {messagesLoading && <Loader2 className="mx-auto h-6 w-6 animate-spin" />}
                  {recentMessages?.map((msg: any, index) => (
-                    <React.Fragment key={index}>
+                    <React.Fragment key={msg.id}>
                         <Link href={`/dashboard/messages`}>
                             <div className="flex items-start gap-4 p-3 rounded-lg hover:bg-secondary/50 cursor-pointer">
                                 <Avatar className="h-9 w-9 border-2 border-primary/50">
@@ -326,7 +332,7 @@ export default function AdminDashboard() {
                          {index < recentMessages.length - 1 && <Separator />}
                     </React.Fragment>
                 ))}
-                {(!recentMessages || recentMessages.length === 0) && !messagesLoading && (
+                {!messagesLoading && (!recentMessages || recentMessages.length === 0) && (
                     <p className="text-center text-sm text-muted-foreground py-8">कोई नए संदेश नहीं।</p>
                 )}
             </CardContent>
@@ -344,7 +350,10 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
                  {projectsLoading ? (
-                    <Loader2 className="mx-auto h-6 w-6 animate-spin"/>
+                    <div className="space-y-4">
+                        <Skeleton className="h-8 w-3/4" />
+                        <Skeleton className="h-8 w-1/2" />
+                    </div>
                  ) : (
                     <>
                     <div>

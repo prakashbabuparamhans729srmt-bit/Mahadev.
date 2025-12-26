@@ -66,8 +66,9 @@ export default function ProjectOversightPage() {
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {projects?.map((project: any) => {
-            const image = PlaceHolderImages.find(p => p.id === 'portfolio-1');
+        {projects?.map((project: any, index: number) => {
+            // Cycle through portfolio images for variety
+            const image = PlaceHolderImages.find(p => p.id === `portfolio-${(index % 4) + 1}`);
             if (!image) return null; // Safely skip if image not found
 
             return (
@@ -78,6 +79,7 @@ export default function ProjectOversightPage() {
                             src={image.imageUrl}
                             alt={project.name}
                             fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
                             data-ai-hint={image.imageHint}
                         />
@@ -89,7 +91,11 @@ export default function ProjectOversightPage() {
                             <p className="text-xs text-muted-foreground font-mono tracking-widest">{project.serviceTier || 'WEB APP'}</p>
                         </div>
                         <div className="mt-4">
-                            <Progress value={project.progress || 50} className="h-2"/>
+                            <div className="flex justify-between text-xs text-muted-foreground mb-1">
+                                <span>प्रगति</span>
+                                <span>{project.progress || 0}%</span>
+                            </div>
+                            <Progress value={project.progress || 0} className="h-2"/>
                         </div>
                     </CardContent>
                 </Card>
