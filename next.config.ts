@@ -7,7 +7,7 @@ const securityHeaders = [
     value: `
       base-uri 'self';
       default-src 'self';
-      script-src 'self' 'unsafe-eval' https://www.googletagmanager.com;
+      script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com;
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       img-src 'self' https://images.unsplash.com https://picsum.photos https://*.googleusercontent.com data:;
       font-src 'self' data: https://fonts.gstatic.com;
