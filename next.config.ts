@@ -11,7 +11,7 @@ const securityHeaders = [
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       img-src 'self' https://images.unsplash.com https://picsum.photos https://*.googleusercontent.com data:;
       font-src 'self' data: https://fonts.gstatic.com;
-      connect-src 'self' https://*.cloudworkstations.dev wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.google-analytics.com;
+      connect-src 'self' https://*.cloudworkstations.dev wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.google-analytics.com *.google-analytics.com;
       form-action 'self';
       frame-ancestors 'none';
     `.replace(/\s{2,}/g, ' ').trim()
