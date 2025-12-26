@@ -10,7 +10,7 @@ import {
   CardFooter,
   CardDescription
 } from '@/components/ui/card';
-import { Area, XAxis } from 'recharts';
+import { Area, XAxis, Users } from 'recharts';
 import { Progress } from '@/components/ui/progress';
 import {
   Plus,
