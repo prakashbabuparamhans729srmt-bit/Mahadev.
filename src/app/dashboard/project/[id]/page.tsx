@@ -42,6 +42,7 @@ import { doc, collection, query, orderBy, limit } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { getFileIcon } from '@/lib/file-icons';
 import { Skeleton } from '@/components/ui/skeleton';
+import { firebaseWithRetry } from '@/lib/firebase-retry';
 
 interface IFile {
     id: string;
@@ -60,7 +61,7 @@ const dummyTeam = [
 
 async function getProject(token: string, projectId: string) {
     const API_URL = `/api/projects/${projectId}`;
-    try {
+    return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -72,10 +73,7 @@ async function getProject(token: string, projectId: string) {
         }
         const data = await response.json();
         return data.data;
-    } catch (error) {
-        console.error("API Error fetching project:", error);
-        throw error;
-    }
+    });
 }
 
 

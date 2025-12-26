@@ -20,12 +20,13 @@ import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
 import { collection, deleteDoc, doc, addDoc, query, orderBy, serverTimestamp, setDoc, where } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { customAlphabet } from 'nanoid';
+import { firebaseWithRetry } from '@/lib/firebase-retry';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 10);
 
 async function getProjects(token: string) {
     const API_URL = '/api/projects';
-    try {
+    return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -36,11 +37,8 @@ async function getProjects(token: string) {
             throw new Error(errorData.error || 'Failed to fetch projects');
         }
         const data = await response.json();
-        return data.data; // The API returns { success: true, data: [...] }
-    } catch (error) {
-        console.error("API Error fetching projects:", error);
-        throw error;
-    }
+        return data.data;
+    });
 }
 
 

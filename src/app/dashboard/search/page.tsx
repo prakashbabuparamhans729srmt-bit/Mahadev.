@@ -9,11 +9,12 @@ import Link from 'next/link';
 import { getFileIcon } from '@/lib/file-icons';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { firebaseWithRetry } from '@/lib/firebase-retry';
 
 
 async function performSearch(token: string, query: string) {
     const API_URL = `/api/search?q=${encodeURIComponent(query)}`;
-    try {
+    return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -25,10 +26,7 @@ async function performSearch(token: string, query: string) {
         }
         const data = await response.json();
         return data.data;
-    } catch (error) {
-        console.error("API Error performing search:", error);
-        throw error;
-    }
+    });
 }
 
 

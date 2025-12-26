@@ -25,6 +25,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
 import { addDoc, collection, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
 import { FirestorePermissionError, errorEmitter } from '@/firebase';
+import { firebaseWithRetry } from '@/lib/firebase-retry';
 
 interface Message {
     id?: string;
@@ -38,7 +39,7 @@ interface Message {
 
 async function getProjects(token: string) {
     const API_URL = '/api/projects';
-    try {
+    return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -49,11 +50,8 @@ async function getProjects(token: string) {
             throw new Error(errorData.error || 'Failed to fetch projects');
         }
         const data = await response.json();
-        return data.data; // The API returns { success: true, data: [...] }
-    } catch (error) {
-        console.error("API Error fetching projects:", error);
-        throw error;
-    }
+        return data.data;
+    });
 }
 
 

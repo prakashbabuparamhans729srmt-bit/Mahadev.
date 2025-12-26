@@ -6,6 +6,7 @@ import { HelpAssistant } from '@/components/help-assistant';
 import { CookieConsent } from '@/components/cookie-consent';
 import { Playfair_Display, PT_Sans } from 'next/font/google';
 import Script from 'next/script';
+import SentryProvider from './sentry-provider';
 
 
 const playfair = Playfair_Display({
@@ -38,7 +39,9 @@ export default function RootLayout({
       <head>
       </head>
       <body>
-        <FirebaseClientProvider>{children}</FirebaseClientProvider>
+        <SentryProvider>
+            <FirebaseClientProvider>{children}</FirebaseClientProvider>
+        </SentryProvider>
         <Toaster />
         <HelpAssistant />
         <CookieConsent />

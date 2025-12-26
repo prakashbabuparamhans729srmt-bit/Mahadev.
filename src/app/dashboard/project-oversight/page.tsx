@@ -14,10 +14,11 @@ import { useUser, useAuth } from '@/firebase';
 import React, { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { firebaseWithRetry } from '@/lib/firebase-retry';
 
 async function getProjects(token: string) {
     const API_URL = '/api/projects';
-    try {
+    return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -29,10 +30,7 @@ async function getProjects(token: string) {
         }
         const data = await response.json();
         return data.data;
-    } catch (error) {
-        console.error("API Error fetching projects:", error);
-        throw error;
-    }
+    });
 }
 
 
