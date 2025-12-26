@@ -103,7 +103,7 @@ export default function ReportsPage() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      if (user && auth) {
+      if (!isUserLoading && user && auth) {
         setIsLoading(true);
         try {
           const token = await user.getIdToken();

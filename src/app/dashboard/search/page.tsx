@@ -43,7 +43,7 @@ function SearchResults() {
 
     useEffect(() => {
         const fetchSearch = async () => {
-            if (user && auth && q) {
+            if (!isUserLoading && user && auth && q) {
                 setIsLoading(true);
                 setError(null);
                 try {

@@ -92,20 +92,20 @@ export default function ProjectDetailsPage() {
 
     useEffect(() => {
         const fetchProject = async () => {
-        if (user && auth && projectId) {
-            setIsProjectLoading(true);
-            try {
-            const token = await user.getIdToken();
-            const projectData = await getProject(token, projectId);
-            setProject(projectData);
-            } catch (err: any) {
-            setProjectError(err);
-            } finally {
-            setIsProjectLoading(false);
+            if (!isAuthLoading && user && auth && projectId) {
+                setIsProjectLoading(true);
+                try {
+                const token = await user.getIdToken();
+                const projectData = await getProject(token, projectId);
+                setProject(projectData);
+                } catch (err: any) {
+                setProjectError(err);
+                } finally {
+                setIsProjectLoading(false);
+                }
+            } else if (!isAuthLoading) {
+                setIsProjectLoading(false);
             }
-        } else if (!isAuthLoading) {
-            setIsProjectLoading(false);
-        }
         };
         fetchProject();
     }, [user, auth, projectId, isAuthLoading]);

@@ -70,27 +70,27 @@ export default function MessagesPage() {
 
     useEffect(() => {
         const fetchProjects = async () => {
-        if (user && auth) {
-            setProjectsLoading(true);
-            try {
-            const token = await user.getIdToken();
-            const userProjects = await getProjects(token);
-            setProjects(userProjects);
-            if (!activeChat && userProjects.length > 0) {
-                setActiveChat(userProjects[0]);
+            if (!isUserLoading && user && auth) {
+                setProjectsLoading(true);
+                try {
+                const token = await user.getIdToken();
+                const userProjects = await getProjects(token);
+                setProjects(userProjects);
+                if (!activeChat && userProjects.length > 0) {
+                    setActiveChat(userProjects[0]);
+                }
+                } catch (err: any) {
+                toast({
+                    variant: "destructive",
+                    title: "Error fetching projects",
+                    description: err.message,
+                });
+                } finally {
+                setProjectsLoading(false);
+                }
+            } else if (!isUserLoading) {
+                setProjectsLoading(false);
             }
-            } catch (err: any) {
-            toast({
-                variant: "destructive",
-                title: "Error fetching projects",
-                description: err.message,
-            });
-            } finally {
-            setProjectsLoading(false);
-            }
-        } else if (!isUserLoading) {
-            setProjectsLoading(false);
-        }
         };
 
         fetchProjects();

@@ -114,7 +114,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      if (user && auth) {
+      if (!isUserLoading && user && auth) {
         setProjectsLoading(true);
         try {
           const token = await user.getIdToken();

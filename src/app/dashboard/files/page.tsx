@@ -132,24 +132,24 @@ export default function FileManagerPage() {
 
     useEffect(() => {
         const fetchProjects = async () => {
-        if (user && auth) {
-            setProjectsLoading(true);
-            try {
-            const token = await user.getIdToken();
-            const userProjects = await getProjects(token);
-            setProjects(userProjects);
-            } catch (err: any) {
-             toast({
-                variant: "destructive",
-                title: "Error fetching projects",
-                description: err.message,
-             });
-            } finally {
-            setProjectsLoading(false);
+            if (!isUserLoading && user && auth) {
+                setProjectsLoading(true);
+                try {
+                const token = await user.getIdToken();
+                const userProjects = await getProjects(token);
+                setProjects(userProjects);
+                } catch (err: any) {
+                toast({
+                    variant: "destructive",
+                    title: "Error fetching projects",
+                    description: err.message,
+                });
+                } finally {
+                setProjectsLoading(false);
+                }
+            } else if (!isUserLoading) {
+                setProjectsLoading(false);
             }
-        } else if (!isUserLoading) {
-            setProjectsLoading(false);
-        }
         };
         fetchProjects();
     }, [user, auth, isUserLoading, toast]);
