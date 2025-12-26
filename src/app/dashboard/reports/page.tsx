@@ -36,9 +36,9 @@ import {
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
-import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
-import React, { useMemo } from 'react';
+import { useUser, useAuth } from '@/firebase';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), {
     loading: () => <Skeleton className="w-full h-full" />,
@@ -74,18 +74,62 @@ const timeData = [
     { task: 'अन्य', hours: 50, fill: 'hsl(var(--chart-5))' },
 ]
 
+async function getProjects(token: string) {
+    // In a real app, this URL would come from a config file
+    const API_URL = 'http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/projects';
+    try {
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch projects');
+        }
+        const data = await response.json();
+        return data.data; // The API returns { success: true, data: [...] }
+    } catch (error) {
+        console.error("API Error fetching projects:", error);
+        throw error;
+    }
+}
+
 
 export default function ReportsPage() {
-  const firestore = useFirestore();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const { toast } = useToast();
+  const [projects, setProjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const projectsQuery = useMemo(() => {
-    if (!firestore || !user) return null;
-    // Secure query: Only fetch projects belonging to the current user
-    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
-  }, [firestore, user]);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (user && auth) {
+        setIsLoading(true);
+        try {
+          const token = await user.getIdToken();
+          const userProjects = await getProjects(token);
+          setProjects(userProjects);
+        } catch (err: any) {
+          setError(err);
+           toast({
+            variant: "destructive",
+            title: "त्रुटि",
+            description: "रिपोर्ट लोड करने में विफल: " + err.message,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      } else if (!isUserLoading) {
+        setIsLoading(false);
+      }
+    };
 
-  const { data: projects, isLoading, error } = useCollection(projectsQuery);
+    fetchProjects();
+  }, [user, auth, isUserLoading, toast]);
+
 
   const healthData = useMemo(() => {
       if (!projects) return [];
@@ -184,7 +228,7 @@ export default function ReportsPage() {
         </CardHeader>
         <CardContent>
             {isLoading && <div className="flex justify-center items-center h-40"><Loader2 className="h-8 w-8 animate-spin" /></div>}
-            {error && <div className="text-destructive text-center p-4"><ShieldAlert className="mx-auto h-8 w-8 mb-2" />त्रुटि: डेटा लोड नहीं हो सका।</div>}
+            {error && <div className="text-destructive text-center p-4"><ShieldAlert className="mx-auto h-8 w-8 mb-2" />त्रुटि: {error.message}</div>}
             {healthData && (
                 <Table>
                     <TableHeader>
@@ -217,5 +261,3 @@ export default function ReportsPage() {
     </div>
   );
 }
-
-    

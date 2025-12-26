@@ -1,49 +1,77 @@
 'use client';
 
-import { Suspense, useMemo } from 'react';
+import { Suspense, useMemo, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, query, where } from 'firebase/firestore';
+import { useUser, useAuth } from '@/firebase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Loader2, MessageSquare, Briefcase, Search, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { getFileIcon } from '@/lib/file-icons';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+
+
+async function performSearch(token: string, query: string) {
+    // In a real app, this URL would come from a config file and be more generic
+    const API_URL = `http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/search?q=${encodeURIComponent(query)}`;
+    try {
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to perform search');
+        }
+        const data = await response.json();
+        return data.data; // The API returns { success: true, data: [...] }
+    } catch (error) {
+        console.error("API Error performing search:", error);
+        throw error;
+    }
+}
+
 
 function SearchResults() {
     const searchParams = useSearchParams();
-    const firestore = useFirestore();
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
+    const auth = useAuth();
     const q = searchParams.get('q') || '';
+    const { toast } = useToast();
 
-    const projectsQuery = useMemo(() => {
-        if (!firestore || !user || !q) return null;
-        return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
-    }, [firestore, user, q]);
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
 
-    const { data: projects, isLoading: projectsLoading } = useCollection(projectsQuery);
-    
-    // This is a simplified client-side filter. For production, use a search service like Algolia.
-    const { data: files, isLoading: filesLoading } = useCollection(projects?.[0] ? collection(firestore, 'projects', projects[0].id, 'files') : null);
-    const { data: messages, isLoading: messagesLoading } = useCollection(projects?.[0] ? collection(firestore, 'projects', projects[0].id, 'messages') : null);
+    useEffect(() => {
+        const fetchSearch = async () => {
+            if (user && auth && q) {
+                setIsLoading(true);
+                setError(null);
+                try {
+                    const token = await user.getIdToken();
+                    const results = await performSearch(token, q);
+                    setSearchResults(results);
+                } catch (err: any) {
+                    setError(err);
+                    toast({
+                        variant: 'destructive',
+                        title: 'Search Failed',
+                        description: err.message,
+                    });
+                } finally {
+                    setIsLoading(false);
+                }
+            } else if (!isUserLoading) {
+                setIsLoading(false);
+            }
+        };
 
-    const isLoading = projectsLoading || filesLoading || messagesLoading;
+        fetchSearch();
 
-    const searchResults = useMemo(() => {
-        if (!q) return [];
-        const lowerCaseQuery = q.toLowerCase();
-        
-        const foundProjects = projects?.filter(p => p.name.toLowerCase().includes(lowerCaseQuery) || p.description.toLowerCase().includes(lowerCaseQuery))
-            .map(p => ({ type: 'प्रोजेक्ट', ...p })) || [];
+    }, [user, auth, q, isUserLoading, toast]);
 
-        const foundFiles = files?.filter(f => f.name.toLowerCase().includes(lowerCaseQuery))
-            .map(f => ({ type: 'फ़ाइल', ...f, projectId: projects?.[0].id })) || [];
-        
-        const foundMessages = messages?.filter(m => m.text.toLowerCase().includes(lowerCaseQuery))
-            .map(m => ({ type: 'संदेश', ...m, projectId: projects?.[0].id })) || [];
-
-        return [...foundProjects, ...foundFiles, ...foundMessages];
-    }, [q, projects, files, messages]);
 
     if (!q) {
         return (
@@ -62,6 +90,17 @@ function SearchResults() {
             </div>
         )
     }
+    
+    if (error) {
+        return (
+             <div className="text-center py-20 bg-card rounded-lg border">
+                <AlertTriangle className="h-10 w-10 mx-auto text-destructive mb-4" />
+                <p className="text-lg font-semibold">खोज विफल</p>
+                <p className="text-muted-foreground text-sm">{error.message}</p>
+            </div>
+        )
+    }
+
 
     if (searchResults.length === 0) {
         return (
@@ -141,5 +180,3 @@ export default function SearchPage() {
         </div>
     );
 }
-
-    

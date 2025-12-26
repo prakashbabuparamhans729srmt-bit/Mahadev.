@@ -10,22 +10,67 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { useCollection, useFirestore, useUser } from '@/firebase';
-import React, { useMemo } from 'react';
-import { collection, query, where } from 'firebase/firestore';
+import { useUser, useAuth } from '@/firebase';
+import React, { useState, useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+
+async function getProjects(token: string) {
+    // In a real app, this URL would come from a config file
+    const API_URL = 'http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/projects';
+    try {
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch projects');
+        }
+        const data = await response.json();
+        return data.data; // The API returns { success: true, data: [...] }
+    } catch (error) {
+        console.error("API Error fetching projects:", error);
+        throw error;
+    }
+}
 
 
 export default function ProjectOversightPage() {
-  const firestore = useFirestore();
-  const { user } = useUser();
+  const { user, isUserLoading } = useUser();
+  const auth = useAuth();
+  const { toast } = useToast();
+  const [projects, setProjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-  const projectsQuery = useMemo(() => {
-    if (!firestore || !user) return null;
-    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
-  }, [firestore, user]);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (user && auth) {
+        setIsLoading(true);
+        try {
+          const token = await user.getIdToken();
+          const userProjects = await getProjects(token);
+          setProjects(userProjects);
+        } catch (err: any) {
+          setError(err);
+           toast({
+            variant: "destructive",
+            title: "त्रुटि",
+            description: "प्रोजेक्ट लोड करने में विफल: " + err.message,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      } else if (!isUserLoading) {
+        setIsLoading(false);
+      }
+    };
 
-  const { data: projects, isLoading, error } = useCollection(projectsQuery);
+    fetchProjects();
+  }, [user, auth, isUserLoading, toast]);
+
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
@@ -56,7 +101,7 @@ export default function ProjectOversightPage() {
         </div>
       )}
 
-      {error && <div className="text-destructive bg-destructive/10 p-4 rounded-lg text-center"><ShieldAlert className="mx-auto h-8 w-8 mb-2"/>त्रुटि: प्रोजेक्ट लोड नहीं हो सके।</div>}
+      {error && <div className="text-destructive bg-destructive/10 p-4 rounded-lg text-center"><ShieldAlert className="mx-auto h-8 w-8 mb-2"/>त्रुटि: {error.message}</div>}
       
       {!isLoading && !error && projects?.length === 0 && (
         <div className="text-center py-20 bg-card rounded-lg border">
@@ -105,5 +150,3 @@ export default function ProjectOversightPage() {
     </div>
   );
 }
-
-    

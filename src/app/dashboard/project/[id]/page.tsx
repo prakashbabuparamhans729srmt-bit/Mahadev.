@@ -35,9 +35,9 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import React, { useMemo } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { useDoc, useFirestore, useCollection } from '@/firebase';
+import { useDoc, useFirestore, useCollection, useAuth, useUser } from '@/firebase';
 import { doc, collection, query, orderBy, limit } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { getFileIcon } from '@/lib/file-icons';
@@ -58,18 +58,61 @@ const dummyTeam = [
     { id: '3', name: 'सुमित पटेल', role: 'लीड डेवलपर' },
 ];
 
+async function getProject(token: string, projectId: string) {
+    // In a real app, this URL would come from a config file
+    const API_URL = `http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/projects/${projectId}`;
+    try {
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch project');
+        }
+        const data = await response.json();
+        return data.data; // The API returns { success: true, data: [...] }
+    } catch (error) {
+        console.error("API Error fetching project:", error);
+        throw error;
+    }
+}
+
+
 export default function ProjectDetailsPage() {
     const params = useParams();
     const { toast } = useToast();
     const firestore = useFirestore();
+    const { user, isUserLoading: isAuthLoading } = useUser();
+    const auth = useAuth();
+
     const projectId = typeof params.id === 'string' ? params.id : '';
 
-    const projectRef = useMemo(() => {
-        if (!firestore || !projectId) return null;
-        return doc(firestore, 'projects', projectId);
-    }, [firestore, projectId]);
+    const [project, setProject] = useState<any>(null);
+    const [isProjectLoading, setIsProjectLoading] = useState(true);
+    const [projectError, setProjectError] = useState<Error | null>(null);
 
-    const { data: project, isLoading: isProjectLoading, error: projectError } = useDoc(projectRef);
+    useEffect(() => {
+        const fetchProject = async () => {
+        if (user && auth && projectId) {
+            setIsProjectLoading(true);
+            try {
+            const token = await user.getIdToken();
+            const projectData = await getProject(token, projectId);
+            setProject(projectData);
+            } catch (err: any) {
+            setProjectError(err);
+            } finally {
+            setIsProjectLoading(false);
+            }
+        } else if (!isAuthLoading) {
+            setIsProjectLoading(false);
+        }
+        };
+        fetchProject();
+    }, [user, auth, projectId, isAuthLoading]);
+
 
     const clientRef = useMemo(() => {
         if (!firestore || !project?.clientId) return null;
@@ -101,7 +144,7 @@ export default function ProjectDetailsPage() {
         });
     };
 
-    if (isProjectLoading || isClientLoading) {
+    if (isProjectLoading || isClientLoading || isAuthLoading) {
         return (
             <div className="flex h-full items-center justify-center">
                 <Loader2 className="h-8 w-8 animate-spin" />
@@ -115,7 +158,7 @@ export default function ProjectDetailsPage() {
                 <AlertTriangle className="h-12 w-12" />
                 <h2 className="mt-4 text-xl font-semibold">प्रोजेक्ट लोड करने में त्रुटि</h2>
                 <p className="mt-2 text-sm text-muted-foreground">
-                    यह प्रोजेक्ट मौजूद नहीं हो सकता है या आपके पास इसे देखने की अनुमति नहीं है।
+                    {projectError.message}
                 </p>
              </div>
         )

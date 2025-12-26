@@ -1,59 +1,55 @@
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions to check for authentication and ownership.
+    // --- HELPER FUNCTIONS ---
+
+    // Checks if the user is authenticated.
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    function isClientOwner(clientId) {
-      return isAuthenticated() && request.auth.uid == clientId;
+    // Checks if the requesting user is the owner of a document.
+    // Used for user-specific documents like their own profile.
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // Inquiries can be created by anyone (e.g., public contact form).
-    // They cannot be read, updated, or deleted by clients.
-    match /inquiries/{inquiryId} {
-      allow create: if true;
-      allow read, update, delete: if false; // Should only be readable by an admin role.
-    }
 
-    // Subscribers can be created by anyone.
-    match /subscribers/{email} {
-      allow create: if true;
-      allow read, update, delete: if false; // Should only be readable by an admin role.
-    }
+    // --- BACKEND-ONLY ACCESS ---
 
-    // A client can only read or update their own document.
-    // They cannot create a client document for another user or delete their own.
-    match /clients/{clientId} {
-      allow read, update: if isClientOwner(clientId);
-      allow create, delete: if false;
-    }
-
-    // A user can only read/list projects where their UID matches the clientId field.
-    // A user can create, update, or delete a project only if they are the owner.
-    match /projects/{projectId} {
-      allow read, list: if isAuthenticated() && (resource == null || resource.data.clientId == request.auth.uid) && (request.query.limit == null || request.query.limit <= 10);
-      // For create, check the incoming document's data.
-      allow create: if isAuthenticated() && request.resource.data.clientId == request.auth.uid;
-      // For update/delete, check the existing document's data.
-      allow update, delete: if isAuthenticated() && resource.data.clientId == request.auth.uid;
-    }
-
-    // Project subcollections can be read or written to only by the owner of the parent project.
-    // This is a secure way to manage related data like messages, files, invoices, etc.
-    match /projects/{projectId}/{subcollection}/{docId} {
-       allow read, write: if isAuthenticated() && get(/databases/$(database)/documents/projects/$(projectId)).data.clientId == request.auth.uid;
-    }
-    
-    // Default rule: All other collections are locked down for client access.
-    // This prevents accidental exposure of other data.
+    // By default, block all direct reads and writes from the client.
+    // All data access should go through the backend (Firebase Functions).
+    // This is the most secure approach.
     match /{path=**}/documents/{wildcard} {
       allow read, write: if false;
     }
+
+    // --- CLIENT-ACCESSIBLE COLLECTIONS (Exceptions) ---
+
+    // Publicly readable data (e.g., public templates, general info)
+    // No public data in this app yet, but this is the pattern.
+    // match /public_data/{docId} {
+    //   allow read: if true;
+    //   allow write: if false; // Should be written by backend/admin only
+    // }
+
+    // Allow users to read and write to their OWN client document only.
+    // This is necessary for profile updates from the client-side.
+    match /clients/{clientId} {
+      allow read, write: if isOwner(clientId);
+    }
+    
+    // Allow users to submit inquiries. This is a write-only entry point for anyone.
+    match /inquiries/{inquiryId} {
+      allow create: if true;
+      allow read, update, delete: if false; // Readable only by backend/admin
+    }
+
+    // Allow anyone to subscribe to the newsletter.
+    match /subscribers/{email} {
+      allow create: if true;
+      allow read, update, delete: if false; // Readable only by backend/admin
+    }
   }
 }
-
-    

@@ -16,12 +16,33 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useCollection, useFirestore, useUser } from '@/firebase';
+import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
 import { collection, deleteDoc, doc, addDoc, query, orderBy, serverTimestamp, setDoc, where } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 10);
+
+async function getProjects(token: string) {
+    // In a real app, this URL would come from a config file
+    const API_URL = 'http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/projects';
+    try {
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch projects');
+        }
+        const data = await response.json();
+        return data.data; // The API returns { success: true, data: [...] }
+    } catch (error) {
+        console.error("API Error fetching projects:", error);
+        throw error;
+    }
+}
 
 
 const versions = [
@@ -103,16 +124,38 @@ const VersionHistoryCard = dynamic(() => Promise.resolve(({ handleAction }: { ha
 export default function FileManagerPage() {
     const { toast } = useToast();
     const firestore = useFirestore();
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
+    const auth = useAuth();
     const [searchQuery, setSearchQuery] = useState('');
     const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const projectsQuery = useMemo(() => {
-        if (!firestore || !user) return null;
-        return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
-    }, [firestore, user]);
-    const { data: projects, isLoading: projectsLoading } = useCollection(projectsQuery);
+    const [projects, setProjects] = useState<any[]>([]);
+    const [projectsLoading, setProjectsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProjects = async () => {
+        if (user && auth) {
+            setProjectsLoading(true);
+            try {
+            const token = await user.getIdToken();
+            const userProjects = await getProjects(token);
+            setProjects(userProjects);
+            } catch (err: any) {
+             toast({
+                variant: "destructive",
+                title: "Error fetching projects",
+                description: err.message,
+             });
+            } finally {
+            setProjectsLoading(false);
+            }
+        } else if (!isUserLoading) {
+            setProjectsLoading(false);
+        }
+        };
+        fetchProjects();
+    }, [user, auth, isUserLoading, toast]);
     
     const activeProjectId = projects?.[0]?.id;
 

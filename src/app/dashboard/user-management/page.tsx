@@ -45,7 +45,7 @@ export default function UserManagementPage() {
                 <ShieldAlert className="h-10 w-10 mb-4 text-destructive" />
                 <h3 className="text-xl font-semibold text-foreground">अपर्याप्त अनुमतियाँ</h3>
                 <p className="text-sm max-w-sm mt-2 text-muted-foreground">
-                    उपयोगकर्ता प्रबंधन केवल व्यवस्थापकों (Admins) के लिए उपलब्ध है। यह एक उच्च-सुरक्षा सुविधा है।
+                    उपयोगकर्ता प्रबंधन केवल व्यवस्थापकों (Admins) के लिए उपलब्ध है। यह एक उच्च-सुरक्षा सुविधा है और सीधे क्लाइंट-साइड से एक्सेस नहीं की जा सकती।
                 </p>
             </div>
           </CardContent>
@@ -54,9 +54,9 @@ export default function UserManagementPage() {
                 <CardHeader className="flex-row items-center gap-4">
                     <Construction className="h-8 w-8 text-primary" />
                     <div>
-                        <h4 className="font-semibold">भविष्य की सुविधा</h4>
+                        <h4 className="font-semibold">आर्किटेक्चर नोट</h4>
                         <p className="text-xs text-muted-foreground">
-                            भूमिका-आधारित एक्सेस नियंत्रण (RBAC) और कस्टम क्लेम जल्द ही लागू किए जाएंगे ताकि आप व्यवस्थापकीय कार्य कर सकें।
+                          एक सुरक्षित और स्केलेबल सिस्टम के लिए, उपयोगकर्ता प्रबंधन जैसे व्यवस्थापकीय कार्य एक सुरक्षित बैकएंड API के माध्यम से नियंत्रित किए जाने चाहिए, न कि सीधे फ्रंटएंड से।
                         </p>
                     </div>
                 </CardHeader>

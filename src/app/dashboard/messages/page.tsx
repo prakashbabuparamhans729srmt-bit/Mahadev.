@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { useCollection, useFirestore, useUser } from '@/firebase';
+import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
 import { addDoc, collection, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
 import { FirestorePermissionError, errorEmitter } from '@/firebase';
 
@@ -36,30 +36,69 @@ interface Message {
     translations?: Record<string, string>;
 }
 
+async function getProjects(token: string) {
+    // In a real app, this URL would come from a config file
+    const API_URL = 'http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/projects';
+    try {
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch projects');
+        }
+        const data = await response.json();
+        return data.data; // The API returns { success: true, data: [...] }
+    } catch (error) {
+        console.error("API Error fetching projects:", error);
+        throw error;
+    }
+}
+
+
 export default function MessagesPage() {
     const { toast } = useToast();
     const [input, setInput] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
     const scrollAreaRef = useRef<HTMLDivElement>(null);
     const firestore = useFirestore();
-    const { user } = useUser();
+    const { user, isUserLoading } = useUser();
+    const auth = useAuth();
     const [activeChat, setActiveChat] = useState<any>(null);
 
+    const [projects, setProjects] = useState<any[]>([]);
+    const [projectsLoading, setProjectsLoading] = useState(true);
 
-    // In a real app, you would fetch a list of user's projects/chats
-    const projectsQuery = useMemo(() => {
-        if (!firestore || !user) return null;
-        return query(collection(firestore, 'projects'), where("clientId", "==", user.uid));
-    }, [firestore, user]);
-
-    const { data: projects, isLoading: projectsLoading } = useCollection(projectsQuery);
-    
     useEffect(() => {
-        if (!activeChat && projects && projects.length > 0) {
-            setActiveChat(projects[0]);
+        const fetchProjects = async () => {
+        if (user && auth) {
+            setProjectsLoading(true);
+            try {
+            const token = await user.getIdToken();
+            const userProjects = await getProjects(token);
+            setProjects(userProjects);
+            if (!activeChat && userProjects.length > 0) {
+                setActiveChat(userProjects[0]);
+            }
+            } catch (err: any) {
+            toast({
+                variant: "destructive",
+                title: "Error fetching projects",
+                description: err.message,
+            });
+            } finally {
+            setProjectsLoading(false);
+            }
+        } else if (!isUserLoading) {
+            setProjectsLoading(false);
         }
-    }, [projects, activeChat]);
+        };
 
+        fetchProjects();
+    }, [user, auth, isUserLoading, toast, activeChat]);
+    
     const activeChatId = activeChat?.id;
 
     const messagesQuery = useMemo(() => {
@@ -92,7 +131,6 @@ export default function MessagesPage() {
         text: messageText,
         timestamp: serverTimestamp(),
         projectId: activeChatId,
-        clientId: user.uid,
       };
 
       const messagesCollection = collection(firestore, `projects/${activeChatId}/messages`);
@@ -264,5 +302,3 @@ export default function MessagesPage() {
     </div>
   );
 }
-
-    

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useState, Suspense } from 'react';
+import React, { useMemo, useState, Suspense, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import {
   Card,
@@ -19,15 +19,10 @@ import {
   Clock,
   CheckCircle,
   Smile,
-  Users,
-  GitCommit,
-  Brush,
-  Bug,
   FileText,
   Code,
   MessageSquare,
   ArrowRight,
-  User,
   Star,
   Loader2,
   AlertTriangle
@@ -36,14 +31,10 @@ import { type ChartConfig } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { StartProjectDialog } from '@/components/start-project-dialog';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
-import { useUser, useFirestore, useCollection } from '@/firebase';
+import { useUser, useAuth } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
-import { collection, query, where, orderBy, limit } from 'firebase/firestore';
 
 
 const ChartContainer = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartContainer), {
@@ -89,19 +80,68 @@ const recentFiles = [
     { name: 'कोड.ज़िप', size: '45.2 MB', icon: <Code className="h-6 w-6 text-green-500" /> },
 ]
 
+async function getProjects(token: string) {
+    // In a real app, this URL would come from a config file
+    const API_URL = 'http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/projects';
+    try {
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch projects');
+        }
+        const data = await response.json();
+        return data.data; // The API returns { success: true, data: [...] }
+    } catch (error) {
+        console.error("API Error fetching projects:", error);
+        throw error;
+    }
+}
+
+
 export default function AdminDashboard() {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const firestore = useFirestore();
+  const auth = useAuth();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const displayName = user?.displayName?.split(' ')[0] || 'उपयोगकर्ता';
   const { toast } = useToast();
 
-  const projectsQuery = useMemo(() => {
-    if (!firestore || !user) return null;
-    return query(collection(firestore, 'projects'), where("clientId", "==", user.uid), orderBy('endDate', 'desc'), limit(2));
-  }, [firestore, user]);
-  const { data: projects, isLoading: projectsLoading, error: projectsError } = useCollection(projectsQuery);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [projectsLoading, setProjectsLoading] = useState(true);
+  const [projectsError, setProjectsError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (user && auth) {
+        setProjectsLoading(true);
+        try {
+          const token = await user.getIdToken();
+          const userProjects = await getProjects(token);
+          // Get only the 2 most recent projects based on endDate
+          const sortedProjects = userProjects.sort((a: any, b: any) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
+          setProjects(sortedProjects.slice(0, 2));
+        } catch (err: any) {
+          setProjectsError(err);
+          toast({
+            variant: "destructive",
+            title: "त्रुटि",
+            description: "प्रोजेक्ट लोड करने में विफल: " + err.message,
+          });
+        } finally {
+          setProjectsLoading(false);
+        }
+      } else if (!isUserLoading) {
+        setProjectsLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [user, auth, isUserLoading, toast]);
+
 
   const { totalBudget, totalSpent } = useMemo(() => {
     if (!projects) return { totalBudget: 0, totalSpent: 0 };
@@ -185,7 +225,7 @@ export default function AdminDashboard() {
                     <Skeleton className="h-10 w-full" />
                 </div>
              }
-             {projectsError && <p className="text-xs text-destructive text-center">प्रोजेक्ट लोड करने में विफल।</p>}
+             {projectsError && <p className="text-xs text-destructive text-center">{projectsError.message}</p>}
             {projects?.map((project: any) => (
                 <Link href={`/dashboard/project/${project.id}`} key={project.id} className="block hover:bg-secondary/50 p-2 rounded-lg cursor-pointer">
                     <div className="flex justify-between items-baseline mb-2">
@@ -233,13 +273,20 @@ export default function AdminDashboard() {
 
         <Card className="lg:col-span-1">
             <CardHeader>
-                <CardTitle className="font-headline flex items-center text-lg">
-                    <Users className="mr-2 h-5 w-5 text-primary" />
-                    👥 टीम गतिविधि
+                 <CardTitle className="font-headline text-lg flex items-center">
+                    <MessageSquare className="mr-2 h-5 w-5 text-primary" />
+                    💬 हाल के संदेश
                 </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-xs text-muted-foreground text-center py-4">टीम गतिविधि देखने के लिए व्यवस्थापकीय अनुमतियों की आवश्यकता है।</p>
+            <CardContent>
+                 <div className="text-center text-sm text-muted-foreground py-8">
+                    <p>अपने सभी संदेश देखने के लिए संदेश केंद्र पर जाएँ।</p>
+                    <Button asChild variant="link" className="mt-2">
+                        <Link href="/dashboard/messages">
+                            संदेश केंद्र पर जाएं <ArrowRight className="ml-2 h-4 w-4" />
+                        </Link>
+                    </Button>
+                </div>
             </CardContent>
         </Card>
 
@@ -267,33 +314,14 @@ export default function AdminDashboard() {
         
         {/* Third Row */}
         <Card className="lg:col-span-2">
-            <CardHeader>
-                 <CardTitle className="font-headline flex items-center text-lg">
-                    <MessageSquare className="mr-2 h-5 w-5 text-primary" />
-                    💬 हाल के संदेश
-                </CardTitle>
-            </CardHeader>
-            <CardContent>
-                 <div className="text-center text-sm text-muted-foreground py-8">
-                    <p>अपने सभी संदेश देखने के लिए संदेश केंद्र पर जाएँ।</p>
-                    <Button asChild variant="link" className="mt-2">
-                        <Link href="/dashboard/messages">
-                            संदेश केंद्र पर जाएं <ArrowRight className="ml-2 h-4 w-4" />
-                        </Link>
-                    </Button>
-                </div>
-            </CardContent>
-        </Card>
-
-        <Card>
-            <CardHeader>
-                <CardTitle className="font-headline flex items-center text-lg">
-                    <Wallet className="mr-2 h-5 w-5 text-primary" />
-                    💰 बजट स्नैपशॉट
-                </CardTitle>
-                <CardDescription>
-                  सभी प्रोजेक्ट्स का संयुक्त बजट।
-                </CardDescription>
+           <CardHeader>
+              <CardTitle className="font-headline flex items-center text-lg">
+                <Wallet className="mr-2 h-5 w-5 text-primary" />
+                💰 बजट स्नैपशॉट
+              </CardTitle>
+              <CardDescription>
+                सभी प्रोजेक्ट्स का संयुक्त बजट।
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
                  {projectsLoading ? (
@@ -320,6 +348,18 @@ export default function AdminDashboard() {
                     <Link href="/dashboard/reports">विस्तृत रिपोर्ट देखें</Link>
                 </Button>
             </CardFooter>
+        </Card>
+
+        <Card>
+           <CardHeader>
+            <CardTitle className="font-headline flex items-center text-lg">
+                <Users className="mr-2 h-5 w-5 text-primary" />
+                👥 टीम गतिविधि
+            </CardTitle>
+           </CardHeader>
+           <CardContent className="space-y-3">
+              <p className="text-xs text-muted-foreground text-center py-4">टीम गतिविधि देखने के लिए व्यवस्थापकीय अनुमतियों की आवश्यकता है।</p>
+           </CardContent>
         </Card>
 
       </div>
