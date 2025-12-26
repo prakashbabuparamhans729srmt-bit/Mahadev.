@@ -42,10 +42,10 @@ export default function LoginPage() {
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
-    if (user && !isUserLoading) {
-      window.location.href = '/dashboard';
+    if (!isUserLoading && user) {
+      router.push('/dashboard');
     }
-  }, [user, isUserLoading]);
+  }, [user, isUserLoading, router]);
 
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -60,8 +60,7 @@ export default function LoginPage() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // Use direct navigation instead of router.push for reliability
-      window.location.href = '/dashboard';
+      // Let the useEffect handle the redirect
     } catch (error: any) {
       let message = 'लॉगिन विफल। कृपया पुनः प्रयास करें।';
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
@@ -90,7 +89,7 @@ export default function LoginPage() {
     setIsPending(true);
     try {
       await signInWithPopup(auth, provider);
-      window.location.href = '/dashboard';
+      // Let the useEffect handle the redirect
     } catch (error: any) {
       console.error("Social login error:", error);
       let message = 'सोशल लॉगिन विफल।';

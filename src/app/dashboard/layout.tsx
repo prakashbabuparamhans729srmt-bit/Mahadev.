@@ -30,13 +30,12 @@ import {
   AreaChart,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import { useRouter } from 'next/navigation';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -121,8 +120,7 @@ function UserNav() {
   const handleLogout = async () => {
     if (auth) {
         await signOut(auth);
-        // This will trigger a reload and middleware will redirect to /login
-        window.location.href = '/';
+        router.push('/login');
     }
   };
 
@@ -139,7 +137,6 @@ function UserNav() {
   }
 
   if (!user) {
-    // This case should ideally not be hit due to middleware, but as a fallback:
     return <Button onClick={() => router.push('/login')}>लॉग इन</Button>;
   }
   
@@ -192,15 +189,20 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, isUserLoading } = useUser();
   const [globalSearch, setGlobalSearch] = useState('');
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.push('/login');
+    }
+  }, [isUserLoading, user, router]);
+
   const isActive = (path: string) => {
-    // Special case for the main dashboard page
     if (path === '/dashboard' && pathname !== '/dashboard/search') {
       return pathname === path;
     }
-    // For other pages, use startsWith, but avoid matching search page
     return pathname.startsWith(path) && path !== '/dashboard';
   }
 
@@ -209,7 +211,14 @@ export default function DashboardLayout({
         router.push(`/dashboard/search?q=${encodeURIComponent(globalSearch.trim())}`);
     }
   }
-
+  
+  if (isUserLoading || !user) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center bg-background">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>
@@ -366,7 +375,7 @@ export default function DashboardLayout({
                         <SidebarMenuButton
                           onClick={() => {
                             const auth = useAuth();
-                            if(auth) signOut(auth).then(() => window.location.href = '/');
+                            if(auth) signOut(auth).then(() => router.push('/'));
                           }}
                           tooltip="लॉगआउट"
                           size="lg"
