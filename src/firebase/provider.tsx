@@ -1,8 +1,8 @@
 'use client';
 
-import React, { createContext, ReactNode, useMemo, useState, useEffect, useContext } from 'react';
+import React, { createContext, ReactNode, useState, useEffect, useContext } from 'react';
 import { FirebaseApp, initializeApp, getApps, getApp } from 'firebase/app';
-import { Firestore, getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { Firestore, initializeFirestore, persistentLocalCache } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
@@ -54,17 +54,23 @@ export const FirebaseProvider: React.FC<{
     if (typeof window !== 'undefined') {
       const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
       const authInstance = getAuth(app);
-      const firestoreInstance = getFirestore(app);
       const storageInstance = getStorage(app);
-
-      enableIndexedDbPersistence(firestoreInstance).catch((err) => {
+      
+      let firestoreInstance: Firestore;
+      try {
+        firestoreInstance = initializeFirestore(app, {
+          cache: persistentLocalCache({}),
+        });
+      } catch (err: any) {
         if (err.code === 'failed-precondition') {
           console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
         } else if (err.code === 'unimplemented') {
           console.warn("The current browser does not support all of the features required to enable persistence.");
         }
-      });
-      
+        // Fallback to in-memory persistence if offline fails
+        firestoreInstance = initializeFirestore(app, {});
+      }
+
       if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
         initializeAppCheck(app, {
           provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
@@ -100,7 +106,7 @@ export const FirebaseProvider: React.FC<{
     return () => unsubscribe();
   }, [services.auth]);
 
-  const contextValue = useMemo((): FirebaseContextState => ({
+  const contextValue = React.useMemo((): FirebaseContextState => ({
     ...services,
     ...userAuthState,
   }), [services, userAuthState]);
