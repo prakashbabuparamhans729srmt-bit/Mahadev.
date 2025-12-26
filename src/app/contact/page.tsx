@@ -49,12 +49,12 @@ export default function ContactPage() {
             description: "आपकी पूछताछ प्राप्त हो गई है। हम जल्द ही आपसे संपर्क करेंगे।",
         });
         form.reset();
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error submitting inquiry:", error);
         toast({
             variant: "destructive",
             title: "त्रुटि",
-            description: "आपका संदेश भेजने में विफल। कृपया बाद में पुनः प्रयास करें।",
+            description: error.message || "आपका संदेश भेजने में विफल। कृपया बाद में पुनः प्रयास करें।",
         });
     } finally {
         setIsLoading(false);

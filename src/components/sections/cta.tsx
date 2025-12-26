@@ -55,12 +55,12 @@ export default function CtaSection() {
         
         setIsAlertOpen(true);
         form.reset();
-    } catch (error) {
+    } catch (error: any) {
         console.error("Error submitting inquiry:", error);
         toast({
             variant: "destructive",
             title: "त्रुटि",
-            description: "आपकी पूछताछ भेजने में विफल। कृपया बाद में पुनः प्रयास करें।",
+            description: error.message || "आपकी पूछताछ भेजने में विफल। कृपया बाद में पुनः प्रयास करें।",
         });
     } finally {
         setIsLoading(false);

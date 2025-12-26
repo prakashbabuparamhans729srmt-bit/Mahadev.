@@ -2,9 +2,10 @@
 
 import React, { createContext, ReactNode, useMemo, useState, useEffect, useContext } from 'react';
 import { FirebaseApp, initializeApp, getApps, getApp } from 'firebase/app';
-import { Firestore, getFirestore } from 'firebase/firestore';
+import { Firestore, getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { firebaseConfig } from './config';
 
@@ -33,6 +34,25 @@ function getFirebaseServices() {
   const authInstance = getAuth(app);
   const firestoreInstance = getFirestore(app);
   const storageInstance = getStorage(app);
+
+  // Enable offline persistence
+  enableIndexedDbPersistence(firestoreInstance).catch((err) => {
+    if (err.code == 'failed-precondition') {
+      console.warn("Multiple tabs open, persistence can only be enabled in one tab at a time.");
+    } else if (err.code == 'unimplemented') {
+      console.warn("The current browser does not support all of the features required to enable persistence.");
+    }
+  });
+  
+  // Initialize App Check
+  if (process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY) {
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY),
+      isTokenAutoRefreshEnabled: true
+    });
+  }
+
+
   return { firebaseApp: app, firestore: firestoreInstance, auth: authInstance, storage: storageInstance };
 }
 
