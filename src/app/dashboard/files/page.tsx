@@ -161,14 +161,14 @@ export default function FileManagerPage() {
                     type: file.type.split('/')[0] || 'file',
                     modified: serverTimestamp(),
                     url: downloadURL,
-                    storagePath: filePath, // Store the path for deletion
+                    storagePath: filePath,
                 };
 
                 await setDoc(fileDocRef, newFile);
 
                 toast({
                     title: 'फ़ाइल सफलतापूर्वक अपलोड हुई',
-                    description: `${file.name} अब आपकी फ़ाइल सूची में है।`,
+                    description: `${file.name} अब आपकी फ़ाइल सूची में है। Resize Images एक्सटेंशन द्वारा थंबनेल बनाया जाएगा।`,
                 });
             } catch (e) {
                  console.error("File upload error:", e);
@@ -198,6 +198,15 @@ export default function FileManagerPage() {
             const storage = getStorage();
             const fileStorageRef = storageRef(storage, file.storagePath);
             await deleteObject(fileStorageRef);
+            
+            // Also delete the resized image if it exists (created by extension)
+            try {
+                const resizedPath = file.storagePath.replace(/(\.[\w\d_-]+)$/i, '_200x200$1');
+                const resizedRef = storageRef(storage, resizedPath);
+                await deleteObject(resizedRef);
+            } catch (resizedError) {
+                // Ignore if resized image doesn't exist
+            }
 
             toast({
                 title: 'फ़ाइल हटाई गई',
@@ -231,15 +240,31 @@ export default function FileManagerPage() {
     if (viewMode === 'grid') {
         return (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
-                {filteredFiles.map((file) => (
-                    <Card key={file.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
-                        <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2">
-                           <div className="text-4xl group-hover:scale-110 transition-transform">{getFileIcon(file.type)}</div>
-                           <p className="text-xs font-semibold truncate w-full">{file.name}</p>
-                           <p className="text-xs text-muted-foreground">{file.size}</p>
-                        </CardContent>
-                    </Card>
-                ))}
+                {filteredFiles.map((file: any) => {
+                    const isImage = file.type === 'image';
+                    // The Resize Images extension typically adds a suffix like `_200x200` before the file extension.
+                    const thumbnailUrl = isImage ? file.url.replace(/(\.[\w\d_-]+)$/i, '_200x200$1') : file.url;
+
+                    return (
+                        <Card key={file.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
+                            <CardContent className="p-0 flex flex-col items-center justify-center text-center gap-2 aspect-square">
+                               {isImage ? (
+                                   <img src={thumbnailUrl} alt={file.name} className="w-full h-full object-cover rounded-t-lg" 
+                                        onError={(e) => (e.currentTarget.src = file.url)} // Fallback to original if thumb fails
+                                   />
+                               ) : (
+                                   <div className="text-4xl group-hover:scale-110 transition-transform flex-1 flex items-center justify-center">
+                                       {getFileIcon(file.type)}
+                                   </div>
+                               )}
+                            </CardContent>
+                             <CardFooter className="p-2 flex-col items-start w-full">
+                                <p className="text-xs font-semibold truncate w-full text-left">{file.name}</p>
+                                <p className="text-xs text-muted-foreground">{file.size}</p>
+                            </CardFooter>
+                        </Card>
+                    );
+                })}
             </div>
         );
     }
