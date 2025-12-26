@@ -19,13 +19,15 @@ import {
   Star,
   Loader2,
   AlertTriangle,
+  Mic,
 } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { useCollection, useFirestore, useUser, useAuth } from '@/firebase';
-import { addDoc, collection, query, where, orderBy, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, query, where, orderBy, serverTimestamp, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { FirestorePermissionError, errorEmitter } from '@/firebase';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
+import { debounce } from 'lodash';
 
 interface Message {
     id?: string;
@@ -34,6 +36,7 @@ interface Message {
     senderAvatar: string;
     text: string;
     timestamp: any;
+    status?: 'sending' | 'sent' | 'failed';
     translations?: Record<string, string>;
 }
 
@@ -54,6 +57,48 @@ async function getProjects(token: string) {
     });
 }
 
+const useTypingIndicator = (chatId: string | null) => {
+    const firestore = useFirestore();
+    const { user } = useUser();
+    const [typingUsers, setTypingUsers] = useState<Record<string, string>>({});
+
+    const sendTypingEvent = useMemo(() =>
+        debounce(() => {
+            if (!firestore || !user || !chatId) return;
+            const typingRef = doc(firestore, `projects/${chatId}/typing`, user.uid);
+            setDoc(typingRef, {
+                displayName: user.displayName || 'अनाम',
+                timestamp: serverTimestamp(),
+            });
+        }, 500),
+    [firestore, user, chatId]);
+
+    useEffect(() => {
+        if (!firestore || !chatId || !user) return;
+
+        const typingColRef = collection(firestore, `projects/${chatId}/typing`);
+        const unsubscribe = onSnapshot(typingColRef, (snapshot) => {
+            const now = Date.now();
+            const newTypingUsers: Record<string, string> = {};
+
+            snapshot.docs.forEach((doc) => {
+                const data = doc.data();
+                const docTime = data.timestamp?.toDate().getTime();
+                
+                // Only consider recent typing events (within 10 seconds) and not self
+                if (doc.id !== user.uid && now - docTime < 10000) {
+                     newTypingUsers[doc.id] = data.displayName || 'कोई';
+                }
+            });
+            setTypingUsers(newTypingUsers);
+        });
+
+        return () => unsubscribe();
+    }, [firestore, chatId, user]);
+    
+    return { typingUsers, sendTypingEvent };
+}
+
 
 export default function MessagesPage() {
     const { toast } = useToast();
@@ -71,30 +116,31 @@ export default function MessagesPage() {
     useEffect(() => {
         const fetchProjects = async () => {
             if (!isUserLoading && user && auth) {
-                setProjectsLoading(true);
                 try {
-                const token = await user.getIdToken();
-                const userProjects = await getProjects(token);
-                setProjects(userProjects);
-                if (!activeChat && userProjects.length > 0) {
-                    setActiveChat(userProjects[0]);
-                }
+                    const token = await user.getIdToken();
+                    const userProjects = await getProjects(token);
+                    setProjects(userProjects);
+                    if (!activeChat && userProjects.length > 0) {
+                        setActiveChat(userProjects[0]);
+                    }
                 } catch (err: any) {
-                toast({
-                    variant: "destructive",
-                    title: "Error fetching projects",
-                    description: err.message,
-                });
+                    toast({
+                        variant: "destructive",
+                        title: "Error fetching projects",
+                        description: err.message,
+                    });
                 } finally {
-                setProjectsLoading(false);
+                    setProjectsLoading(false);
                 }
             } else if (!isUserLoading) {
                 setProjectsLoading(false);
             }
         };
 
-        fetchProjects();
-    }, [user, auth, isUserLoading, toast, activeChat]);
+        if(projectsLoading) {
+            fetchProjects();
+        }
+    }, [user, auth, isUserLoading, toast, activeChat, projectsLoading]);
     
     const activeChatId = activeChat?.id;
 
@@ -103,7 +149,10 @@ export default function MessagesPage() {
         return query(collection(firestore, `projects/${activeChatId}/messages`), orderBy('timestamp', 'asc'));
     }, [firestore, activeChatId]);
 
-    const { data: messages, isLoading: messagesLoading, error: messagesError } = useCollection<Message>(messagesQuery);
+    const { data: messages, setData: setMessages, isLoading: messagesLoading, error: messagesError } = useCollection<Message>(messagesQuery);
+    const { typingUsers, sendTypingEvent } = useTypingIndicator(activeChatId);
+    
+    const otherTypingUser = Object.values(typingUsers)[0];
     
     useEffect(() => {
         if (scrollAreaRef.current) {
@@ -112,33 +161,56 @@ export default function MessagesPage() {
                 behavior: 'smooth'
             });
         }
-    }, [messages]);
+    }, [messages, typingUsers]);
 
 
     const handleSend = useCallback(async () => {
       if (!input.trim() || !firestore || !user || !activeChatId) return;
 
+      const tempId = `temp-${Date.now()}`;
       const messageText = input;
       setInput('');
 
-      const messageData = {
+      const tempMessage: Message = {
+        id: tempId,
         senderId: user.uid,
         senderName: user.displayName || 'अनाम',
         senderAvatar: user.photoURL || user.displayName?.[0] || 'U',
         text: messageText,
-        timestamp: serverTimestamp(),
-        projectId: activeChatId,
+        timestamp: new Date(),
+        status: 'sending',
       };
-
-      const messagesCollection = collection(firestore, `projects/${activeChatId}/messages`);
       
-      addDoc(messagesCollection, messageData)
-        .catch(async (serverError) => {
+      // Optimistic UI update
+      setMessages(prev => prev ? [...prev, tempMessage] : [tempMessage]);
+      
+      try {
+        const messagesCollection = collection(firestore, `projects/${activeChatId}/messages`);
+        const messageDocRef = doc(messagesCollection); // Get a new doc ref
+        
+        await setDoc(messageDocRef, {
+            senderId: user.uid,
+            senderName: user.displayName || 'अनाम',
+            senderAvatar: user.photoURL || user.displayName?.[0] || 'U',
+            text: messageText,
+            timestamp: serverTimestamp(),
+            projectId: activeChatId,
+        });
+
+        // No need to update status on success, onSnapshot will handle it.
+        // We remove the temp message once the real one arrives via onSnapshot.
+        // This logic is implicitly handled by `useCollection` as it refreshes `messages`
+        // and the temp message with its ID won't be in the new snapshot.
+        // To be perfectly robust, one might filter out the temp message if the real one has arrived.
+        // But for now, we rely on the collection refresh.
+
+      } catch (serverError) {
+            setMessages(prev => prev?.map(m => m.id === tempId ? { ...m, status: 'failed' } : m) ?? null);
             console.error("Error sending message:", serverError);
             const permissionError = new FirestorePermissionError({
-              path: messagesCollection.path,
+              path: `projects/${activeChatId}/messages`,
               operation: 'create',
-              requestResourceData: messageData,
+              requestResourceData: { text: messageText },
             });
             errorEmitter.emit('permission-error', permissionError);
             toast({
@@ -147,9 +219,8 @@ export default function MessagesPage() {
                 description: 'संदेश भेजने में विफल।',
             });
             setInput(messageText); // Re-set input if sending failed
-        });
-
-    }, [input, firestore, user, activeChatId, toast]);
+      }
+    }, [input, firestore, user, activeChatId, toast, setMessages]);
 
     const handleAction = (message: string) => {
         toast({
@@ -222,10 +293,14 @@ export default function MessagesPage() {
                         </Avatar>
                         <div>
                             <h3 className="font-bold">{activeChat?.name || 'चैट चुनें'}</h3>
-                            <p className="text-xs text-green-400 flex items-center gap-1.5">
-                                <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                                ऑनलाइन
-                            </p>
+                            {otherTypingUser ? (
+                                <p className="text-xs text-primary animate-pulse">{otherTypingUser} टाइप कर रहा है...</p>
+                            ) : (
+                                <p className="text-xs text-green-400 flex items-center gap-1.5">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></span>
+                                    ऑनलाइन
+                                </p>
+                            )}
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -238,6 +313,10 @@ export default function MessagesPage() {
                         {messagesLoading && <div className="flex justify-center items-center h-full"><Loader2 className="h-6 w-6 animate-spin"/></div>}
                         {messagesError && <div className="text-center text-destructive"><AlertTriangle className="mx-auto mb-2"/> संदेश लोड करने में विफल।</div>}
                         {messages?.map((msg) => {
+                            const isSending = msg.status === 'sending';
+                            const isFailed = msg.status === 'failed';
+                            const timestamp = msg.timestamp ? (msg.timestamp.toDate ? msg.timestamp.toDate() : new Date(msg.timestamp)) : new Date();
+
                             return (
                                 <div key={msg.id} className={`flex items-start gap-3 ${msg.senderId === user?.uid ? 'justify-end' : ''}`}>
                                     {msg.senderId !== user?.uid && (
@@ -246,10 +325,12 @@ export default function MessagesPage() {
                                             <AvatarFallback>{msg.senderName?.[0]}</AvatarFallback>
                                         </Avatar>
                                     )}
-                                    <div>
+                                    <div className={isFailed ? 'opacity-70' : ''}>
                                         <div className={`flex items-baseline gap-2 ${msg.senderId === user?.uid ? 'justify-end' : ''}`}>
                                             <p className="font-semibold text-sm">{msg.senderId === user?.uid ? 'आप' : msg.senderName}</p>
-                                            <p className="text-xs text-muted-foreground">{msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit'}) : ''}</p>
+                                            <p className="text-xs text-muted-foreground">
+                                                {isSending ? 'भेज रहा है...' : new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit'})}
+                                            </p>
                                         </div>
                                         <div className={`max-w-xs rounded-2xl p-3 mt-1 relative group ${
                                             msg.senderId === user?.uid
@@ -258,6 +339,7 @@ export default function MessagesPage() {
                                         }`}
                                         >
                                             {msg.text}
+                                            {isFailed && <span className="text-destructive-foreground text-xs block pt-1">(विफल)</span>}
                                         </div>
                                     </div>
                                     {msg.senderId === user?.uid && (
@@ -282,16 +364,25 @@ export default function MessagesPage() {
                             placeholder="अपना संदेश यहाँ टाइप करें..." 
                             className="bg-transparent border-none rounded-full h-12 pr-24 pl-12" 
                             value={input}
-                            onChange={(e) => setInput(e.target.value)}
+                            onChange={(e) => {
+                                setInput(e.target.value);
+                                sendTypingEvent();
+                            }}
                             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                             disabled={!user || !activeChatId}
                         />
                         <Button variant="ghost" size="icon" className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8" onClick={() => handleAction('फ़ाइल अटैचमेंट की सुविधा जल्द ही आ रही है।')}>
                             <Paperclip />
                         </Button>
-                        <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-primary hover:bg-primary/90" onClick={handleSend} disabled={!input.trim()}>
-                            <Send />
-                        </Button>
+                        {input.trim() ? (
+                            <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-primary hover:bg-primary/90" onClick={handleSend} disabled={!input.trim()}>
+                                <Send />
+                            </Button>
+                        ) : (
+                             <Button size="icon" className="absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-primary hover:bg-primary/90" onClick={() => handleAction('ऑडियो संदेश की सुविधा जल्द ही आ रही है।')}>
+                                <Mic />
+                            </Button>
+                        )}
                     </div>
                 </div>
             </Card>
