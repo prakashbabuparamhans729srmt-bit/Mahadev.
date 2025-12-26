@@ -83,13 +83,6 @@ const healthData = {
     satisfaction: 70,
 };
 
-const teamActivityIcons: { [key: string]: React.ReactNode } = {
-  'update': <Brush className="h-4 w-4 text-blue-500" />,
-  'create': <GitCommit className="h-4 w-4 text-green-500" />,
-  'delete': <Bug className="h-4 w-4 text-red-500" />,
-  'default': <GitCommit className="h-4 w-4 text-gray-500" />,
-};
-
 const recentFiles = [
     { name: 'SRS.docx', size: '2.4 MB', icon: <FileText className="h-6 w-6 text-blue-500" /> },
     { name: 'डिज़ाइन.fig', size: '5.7 MB', icon: <Star className="h-6 w-6 text-pink-500" /> },
@@ -121,12 +114,6 @@ export default function AdminDashboard() {
     }, { totalBudget: 0, totalSpent: 0 });
   }, [projects]);
   
-  const teamActivityQuery = useMemo(() => {
-      if (!firestore || !user) return null;
-      return query(collection(firestore, 'projects'), where("clientId", "==", user.uid), orderBy('endDate', 'desc'), limit(3));
-  }, [firestore, user]);
-  const { data: teamActivity, isLoading: activityLoading } = useCollection(teamActivityQuery);
-
 
   const handleAction = (message: string) => {
     toast({
@@ -252,22 +239,7 @@ export default function AdminDashboard() {
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-                {activityLoading && <Loader2 className="mx-auto h-5 w-5 animate-spin" />}
-                {teamActivity?.map((activity: any, index) => (
-                    <div key={index} className="flex items-center gap-3 text-sm">
-                        <Avatar className="h-8 w-8">
-                            <AvatarFallback>{activity.name?.[0] || '?'}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                           <span className="font-semibold">{activity.name}</span>
-                           <span className="text-muted-foreground"> ने `{activity.serviceTier}` को अपडेट किया</span>
-                        </div>
-                        {teamActivityIcons[activity.status] || teamActivityIcons.default}
-                    </div>
-                ))}
-                {!activityLoading && (!teamActivity || teamActivity.length === 0) && (
-                    <p className="text-xs text-muted-foreground text-center py-4">कोई हाल की गतिविधि नहीं।</p>
-                )}
+              <p className="text-xs text-muted-foreground text-center py-4">टीम गतिविधि देखने के लिए व्यवस्थापकीय अनुमतियों की आवश्यकता है।</p>
             </CardContent>
         </Card>
 
