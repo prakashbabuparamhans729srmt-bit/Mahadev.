@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import {
   Card,
@@ -35,7 +35,6 @@ import {
 import { type ChartConfig } from '@/components/ui/chart';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
 import { StartProjectDialog } from '@/components/start-project-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -211,6 +210,9 @@ export default function AdminDashboard() {
                     <Progress value={project.progress || 0} className="h-2" />
                 </Link>
             ))}
+             {(!projects || projects.length === 0) && !projectsLoading && (
+                <p className="text-xs text-muted-foreground text-center py-4">कोई सक्रिय प्रोजेक्ट नहीं।</p>
+            )}
           </CardContent>
            <CardFooter>
                  <Button variant="outline" className="w-full" asChild>

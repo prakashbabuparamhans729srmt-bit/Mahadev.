@@ -41,7 +41,7 @@ import Link from 'next/link';
 import React, { useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import { useDoc, useFirestore, useCollection } from '@/firebase';
-import { doc, collection } from 'firebase/firestore';
+import { doc, collection, query, orderBy } from 'firebase/firestore';
 import { format } from 'date-fns';
 import { getFileIcon } from '@/lib/file-icons';
 
@@ -82,13 +82,13 @@ export default function ProjectDetailsPage() {
     
     const filesQuery = useMemo(() => {
         if (!firestore || !projectId) return null;
-        return collection(firestore, `projects/${projectId}/files`);
+        return query(collection(firestore, `projects/${projectId}/files`), orderBy('modified', 'desc'));
     }, [firestore, projectId]);
     const { data: files, isLoading: isFilesLoading } = useCollection<IFile>(filesQuery);
 
     const timelineQuery = useMemo(() => {
         if (!firestore || !projectId) return null;
-        return collection(firestore, `projects/${projectId}/timeline`);
+        return query(collection(firestore, `projects/${projectId}/timeline`), orderBy('order', 'asc'));
     }, [firestore, projectId]);
     const { data: timeline, isLoading: isTimelineLoading } = useCollection(timelineQuery);
 
@@ -132,7 +132,7 @@ export default function ProjectDetailsPage() {
         )
     }
 
-    const budgetSpent = project.budget ? (project.budget / 100) * 60 : 0; // Dummy spent amount
+    const budgetSpent = project.budget ? (project.budget / 100) * (project.progress || 0) : 0;
     const budgetRemaining = project.budget - budgetSpent;
     const health = {
         overall: 68,
