@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -168,7 +169,7 @@ export default function FileManagerPage() {
 
                 toast({
                     title: 'फ़ाइल सफलतापूर्वक अपलोड हुई',
-                    description: `${file.name} अब आपकी फ़ाइल सूची में है। Resize Images एक्सटेंशन द्वारा थंबनेल बनाया जाएगा।`,
+                    description: `${file.name} अब आपकी फ़ाइल सूची में है।`,
                 });
             } catch (e) {
                  console.error("File upload error:", e);
@@ -198,15 +199,6 @@ export default function FileManagerPage() {
             const storage = getStorage();
             const fileStorageRef = storageRef(storage, file.storagePath);
             await deleteObject(fileStorageRef);
-            
-            // Also delete the resized image if it exists (created by extension)
-            try {
-                const resizedPath = file.storagePath.replace(/(\.[\w\d_-]+)$/i, '_200x200$1');
-                const resizedRef = storageRef(storage, resizedPath);
-                await deleteObject(resizedRef);
-            } catch (resizedError) {
-                // Ignore if resized image doesn't exist
-            }
 
             toast({
                 title: 'फ़ाइल हटाई गई',
@@ -242,16 +234,11 @@ export default function FileManagerPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 p-4">
                 {filteredFiles.map((file: any) => {
                     const isImage = file.type === 'image';
-                    // The Resize Images extension typically adds a suffix like `_200x200` before the file extension.
-                    const thumbnailUrl = isImage ? file.url.replace(/(\.[\w\d_-]+)$/i, '_200x200$1') : file.url;
-
                     return (
                         <Card key={file.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
                             <CardContent className="p-0 flex flex-col items-center justify-center text-center gap-2 aspect-square">
                                {isImage ? (
-                                   <img src={thumbnailUrl} alt={file.name} className="w-full h-full object-cover rounded-t-lg" 
-                                        onError={(e) => (e.currentTarget.src = file.url)} // Fallback to original if thumb fails
-                                   />
+                                   <img src={file.url} alt={file.name} className="w-full h-full object-cover rounded-t-lg" />
                                ) : (
                                    <div className="text-4xl group-hover:scale-110 transition-transform flex-1 flex items-center justify-center">
                                        {getFileIcon(file.type)}

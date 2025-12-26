@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -42,15 +43,15 @@ function NewsletterForm() {
         }
 
         try {
-            // The Mailchimp extension will be configured to listen to this collection
-            const subscriberRef = doc(firestore, 'mailchimp_subscribers', email);
+            // This collection can be manually exported later.
+            const subscriberRef = doc(firestore, 'subscribers', email);
             await setDoc(subscriberRef, {
                 subscribed_at: serverTimestamp(),
             });
 
             toast({
                 title: "सब्सक्राइब करने के लिए धन्यवाद!",
-                description: "आपको हमारे न्यूज़लेटर में जोड़ दिया गया है।",
+                description: "आपको हमारी सूची में जोड़ दिया गया है।",
             });
             form.reset();
         } catch (error) {

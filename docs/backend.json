@@ -314,7 +314,7 @@
         }
       },
       {
-        "path": "/mailchimp_subscribers/{email}",
+        "path": "/subscribers/{email}",
         "definition": {
             "entityName": "Subscriber",
             "schema": {
@@ -327,7 +327,7 @@
                     }
                 }
             },
-            "description": "Stores email addresses for Mailchimp newsletter. The Mailchimp extension will watch this collection.",
+            "description": "Stores email addresses for manual newsletter export.",
             "params": [
                 {
                     "name": "email",
