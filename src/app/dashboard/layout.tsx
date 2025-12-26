@@ -121,7 +121,8 @@ function UserNav() {
   const handleLogout = async () => {
     if (auth) {
         await signOut(auth);
-        router.push('/');
+        // This will trigger a reload and middleware will redirect to /login
+        window.location.href = '/';
     }
   };
 
@@ -138,8 +139,8 @@ function UserNav() {
   }
 
   if (!user) {
-    // This could be a sign-in button or null if the user is redirected
-    return null;
+    // This case should ideally not be hit due to middleware, but as a fallback:
+    return <Button onClick={() => router.push('/login')}>लॉग इन</Button>;
   }
   
   return (
@@ -190,25 +191,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const auth = useAuth();
-  const { user, isUserLoading } = useUser();
   const router = useRouter();
   const [globalSearch, setGlobalSearch] = useState('');
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
-
-  useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.replace('/login');
-    }
-  }, [isUserLoading, user, router]);
-
-  if (isUserLoading || !user) {
-    return (
-      <div className="flex h-screen w-screen items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
-      </div>
-    );
-  }
 
   const isActive = (path: string) => {
     // Special case for the main dashboard page
@@ -218,13 +203,6 @@ export default function DashboardLayout({
     // For other pages, use startsWith, but avoid matching search page
     return pathname.startsWith(path) && path !== '/dashboard';
   }
-
-  const handleLogout = async () => {
-    if (auth) {
-        await signOut(auth);
-        router.push('/');
-    }
-  };
 
   const handleGlobalSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && globalSearch.trim()) {
@@ -386,7 +364,10 @@ export default function DashboardLayout({
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton
-                          onClick={handleLogout}
+                          onClick={() => {
+                            const auth = useAuth();
+                            if(auth) signOut(auth).then(() => window.location.href = '/');
+                          }}
                           tooltip="लॉगआउट"
                           size="lg"
                           variant="ghost"
