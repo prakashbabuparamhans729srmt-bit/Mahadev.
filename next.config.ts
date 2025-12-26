@@ -13,12 +13,7 @@ const securityHeaders = [
       font-src 'self' data: https://fonts.gstatic.com;
       connect-src 'self' https://*.cloudworkstations.dev wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.google-analytics.com *.google-analytics.com;
       form-action 'self';
-      frame-ancestors 'none';
     `.replace(/\s{2,}/g, ' ').trim()
-  },
-  {
-    key: 'X-Frame-Options',
-    value: 'DENY'
   },
   {
     key: 'X-Content-Type-Options',
