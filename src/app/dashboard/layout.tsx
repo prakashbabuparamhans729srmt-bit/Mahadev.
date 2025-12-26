@@ -191,16 +191,17 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const auth = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
   const [globalSearch, setGlobalSearch] = useState('');
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
 
   const isActive = (path: string) => {
-    if (path === '/dashboard') {
+    // Special case for the main dashboard page
+    if (path === '/dashboard' && pathname !== '/dashboard/search') {
       return pathname === path;
     }
-    return pathname.startsWith(path);
+    // For other pages, use startsWith, but avoid matching search page
+    return pathname.startsWith(path) && path !== '/dashboard';
   }
 
   const handleLogout = async () => {
@@ -211,11 +212,8 @@ export default function DashboardLayout({
   };
 
   const handleGlobalSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-        toast({
-            title: "सुविधा जल्द ही आ रही है",
-            description: "वैश्विक खोज अभी उपलब्ध नहीं है, लेकिन हम इस पर काम कर रहे हैं!",
-        });
+    if (e.key === 'Enter' && globalSearch.trim()) {
+        router.push(`/dashboard/search?q=${encodeURIComponent(globalSearch.trim())}`);
     }
   }
 
@@ -401,7 +399,7 @@ export default function DashboardLayout({
                 <div className="relative flex-1 max-w-xl">
                     <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                        placeholder="खोजें..."
+                        placeholder="प्रोजेक्ट, फ़ाइलें, और संदेश खोजें..."
                         className="pl-10 h-11 bg-card/50 border-border/30"
                         value={globalSearch}
                         onChange={(e) => setGlobalSearch(e.target.value)}
