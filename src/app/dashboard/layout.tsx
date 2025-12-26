@@ -48,9 +48,10 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { StartProjectDialog } from '@/components/start-project-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Loader2 } from 'lucide-react';
 
 const notifications = [
     {
@@ -190,10 +191,24 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const auth = useAuth();
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
   const [globalSearch, setGlobalSearch] = useState('');
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (!isUserLoading && !user) {
+      router.replace('/login');
+    }
+  }, [isUserLoading, user, router]);
+
+  if (isUserLoading || !user) {
+    return (
+      <div className="flex h-screen w-screen items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   const isActive = (path: string) => {
     // Special case for the main dashboard page

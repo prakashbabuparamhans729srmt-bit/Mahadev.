@@ -126,9 +126,9 @@ export default function TermsPage() {
     }
     toast({
       title: 'स्वीकृत!',
-      description: 'शर्तें और नीतियां स्वीकार कर ली गई हैं। डैशबोर्ड पर रीडायरेक्ट किया जा रहा है...',
+      description: 'शर्तें और नीतियां स्वीकार कर ली गई हैं। अब आप साइन अप कर सकते हैं।',
     });
-    router.push('/dashboard');
+    router.push('/signup');
   }
 
   const toggleAllSections = () => {
