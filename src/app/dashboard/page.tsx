@@ -122,11 +122,11 @@ export default function AdminDashboard() {
   }, [projects]);
   
   const recentMessagesQuery = useMemo(() => {
-      if (!firestore || !projects?.[0]?.id) return null;
+      if (!firestore || !user) return null;
       // This is a simplified query. A real app would query across multiple project message subcollections.
-      const messagesCollection = collection(firestore, `projects/${projects[0].id}/messages`);
-      return query(messagesCollection, orderBy('timestamp', 'desc'), limit(2));
-  }, [firestore, projects]);
+      const messagesCollection = collection(firestore, 'messages');
+      return query(messagesCollection, where("clientId", "==", user.uid), orderBy('timestamp', 'desc'), limit(2));
+  }, [firestore, user]);
   const { data: recentMessages, isLoading: messagesLoading } = useCollection(recentMessagesQuery);
   
   const teamActivityQuery = useMemo(() => {
@@ -381,3 +381,5 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+    

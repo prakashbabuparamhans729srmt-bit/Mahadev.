@@ -91,7 +91,8 @@ export default function MessagesPage() {
         senderAvatar: user.photoURL || user.displayName?.[0] || 'U',
         text: messageText,
         timestamp: serverTimestamp(),
-        projectId: activeChatId, // Not strictly needed for subcollection, but good for context
+        projectId: activeChatId,
+        clientId: user.uid,
       };
 
       const messagesCollection = collection(firestore, `projects/${activeChatId}/messages`);
@@ -263,3 +264,5 @@ export default function MessagesPage() {
     </div>
   );
 }
+
+    

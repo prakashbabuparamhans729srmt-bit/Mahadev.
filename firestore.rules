@@ -32,10 +32,10 @@ service cloud.firestore {
       allow create, delete: if false;
     }
 
-    // A user can only read projects where their UID matches the clientId field.
+    // A user can only read/list projects where their UID matches the clientId field.
     // A user can create, update, or delete a project only if they are the owner.
     match /projects/{projectId} {
-      allow read: if isAuthenticated() && resource.data.clientId == request.auth.uid;
+      allow read, list: if isAuthenticated() && (resource == null || resource.data.clientId == request.auth.uid) && (request.query.limit == null || request.query.limit <= 10);
       // For create, check the incoming document's data.
       allow create: if isAuthenticated() && request.resource.data.clientId == request.auth.uid;
       // For update/delete, check the existing document's data.
@@ -55,3 +55,5 @@ service cloud.firestore {
     }
   }
 }
+
+    

@@ -1,10 +1,9 @@
-
 'use client';
 
 import { Suspense, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useCollection, useFirestore, useUser } from '@/firebase';
-import { collection, collectionGroup, getDocs, query, where, limit } from 'firebase/firestore';
+import { collection, query, where } from 'firebase/firestore';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileText, Loader2, MessageSquare, Briefcase, Search, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
@@ -24,7 +23,6 @@ function SearchResults() {
 
     const { data: projects, isLoading: projectsLoading } = useCollection(projectsQuery);
     
-    // Note: Firestore doesn't support full-text search on subcollections out of the box.
     // This is a simplified client-side filter. For production, use a search service like Algolia.
     const { data: files, isLoading: filesLoading } = useCollection(projects?.[0] ? collection(firestore, 'projects', projects[0].id, 'files') : null);
     const { data: messages, isLoading: messagesLoading } = useCollection(projects?.[0] ? collection(firestore, 'projects', projects[0].id, 'messages') : null);
@@ -39,10 +37,10 @@ function SearchResults() {
             .map(p => ({ type: 'प्रोजेक्ट', ...p })) || [];
 
         const foundFiles = files?.filter(f => f.name.toLowerCase().includes(lowerCaseQuery))
-            .map(f => ({ type: 'फ़ाइल', ...f, projectId: projects?.[0]?.id })) || [];
+            .map(f => ({ type: 'फ़ाइल', ...f, projectId: projects?.[0].id })) || [];
         
         const foundMessages = messages?.filter(m => m.text.toLowerCase().includes(lowerCaseQuery))
-            .map(m => ({ type: 'संदेश', ...m, projectId: projects?.[0]?.id })) || [];
+            .map(m => ({ type: 'संदेश', ...m, projectId: projects?.[0].id })) || [];
 
         return [...foundProjects, ...foundFiles, ...foundMessages];
     }, [q, projects, files, messages]);
@@ -143,3 +141,5 @@ export default function SearchPage() {
         </div>
     );
 }
+
+    

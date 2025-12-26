@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -138,7 +137,7 @@ export default function FileManagerPage() {
 
     const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
-        if (file && firestore && activeProjectId) {
+        if (file && firestore && activeProjectId && user) {
             toast({
                 title: 'फ़ाइल अपलोड हो रही है...',
                 description: `${file.name} को Firebase Storage में अपलोड किया जा रहा है।`,
@@ -163,6 +162,7 @@ export default function FileManagerPage() {
                     modified: serverTimestamp(),
                     url: downloadURL,
                     storagePath: filePath,
+                    clientId: user.uid,
                 };
 
                 await setDoc(fileDocRef, newFile);
@@ -377,3 +377,5 @@ export default function FileManagerPage() {
     </div>
   );
 }
+
+    
