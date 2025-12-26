@@ -3,8 +3,6 @@ import dynamic from 'next/dynamic';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
-
-// HeroSection is critical for LCP, so we load it statically.
 import HeroSection from '@/components/sections/hero';
 
 const ServicesSection = dynamic(() => import('@/components/sections/services'), {
