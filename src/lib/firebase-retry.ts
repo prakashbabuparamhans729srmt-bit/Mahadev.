@@ -1,4 +1,3 @@
-
 /**
  * A utility function to retry an async operation with exponential backoff.
  * This is particularly useful for network requests that might fail intermittently.
