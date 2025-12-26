@@ -1,21 +1,18 @@
-'use client';
-
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
-import { Toaster } from "@/components/ui/toaster"
-import { FirebaseProvider } from '@/firebase/provider';
-import { HelpAssistant } from '@/components/help-assistant';
-import { CookieConsent } from '@/components/cookie-consent';
-import dynamic from 'next/dynamic';
+import { FirebaseClientProvider } from '@/firebase/client-provider';
 
-const SentryProvider = dynamic(() => import('./sentry-provider'), { ssr: false });
+export const metadata: Metadata = {
+  title: 'Hajaro Grahako - Digital Solutions',
+  description:
+    'Your trusted partner for website, mobile app, and custom software solutions. We turn your vision into powerful software.',
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="hi" className="dark">
       <head>
@@ -26,12 +23,7 @@ export default function RootLayout({
         </style>
       </head>
       <body>
-        <SentryProvider>
-            <FirebaseProvider>{children}</FirebaseProvider>
-        </SentryProvider>
-        <Toaster />
-        <HelpAssistant />
-        <CookieConsent />
+        <FirebaseClientProvider>{children}</FirebaseClientProvider>
       </body>
     </html>
   );
