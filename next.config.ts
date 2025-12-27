@@ -35,9 +35,6 @@ const nextConfig: NextConfig = {
   experimental: {
     // Kept for any other potential experimental flags
   },
-  devIndicators: {
-    buildActivity: true,
-  },
   typescript: {
     ignoreBuildErrors: true,
   },

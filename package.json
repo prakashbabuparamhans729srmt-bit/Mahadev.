@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "npm run start_and_deploy",
+    "dev": "genkit start & next dev",
     "build": "NODE_ENV=production next build",
-    "start": "npm run deploy",
+    "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "whereami": "echo C:\\Users\\win 10\\studio-953489467-c7e5b",
