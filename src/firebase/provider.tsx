@@ -8,18 +8,6 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 import { firebaseConfig } from './config';
-import { Toaster } from '@/components/ui/toaster';
-import { HelpAssistant } from '@/components/help-assistant';
-import { CookieConsent } from '@/components/cookie-consent';
-import SentryProvider from '@/app/sentry-provider';
-
-// A simple hook to check if the component is running on the client
-const useIsClient = () => {
-  const [isClient, setIsClient] = useState(false);
-  useEffect(() => setIsClient(true), []);
-  return isClient;
-};
-
 
 // --- SINGLE INITIALIZATION ---
 // This logic now runs only once per application lifecycle.
@@ -84,7 +72,6 @@ export const FirebaseContext = createContext<FirebaseContextState | undefined>(u
 export const FirebaseProvider: React.FC<{
   children: ReactNode;
 }> = ({ children }) => {
-  const isClient = useIsClient();
   const [userAuthState, setUserAuthState] = useState<{
     user: User | null;
     isUserLoading: boolean;
@@ -119,17 +106,8 @@ export const FirebaseProvider: React.FC<{
 
   return (
     <FirebaseContext.Provider value={contextValue}>
-      <SentryProvider>
         <FirebaseErrorListener />
         {children}
-        <Toaster />
-        {isClient && (
-          <>
-            <HelpAssistant />
-            <CookieConsent />
-          </>
-        )}
-      </SentryProvider>
     </FirebaseContext.Provider>
   );
 };

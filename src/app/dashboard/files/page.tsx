@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
@@ -21,6 +22,7 @@ import { collection, deleteDoc, doc, addDoc, query, orderBy, serverTimestamp, se
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { customAlphabet } from 'nanoid';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
+import Image from 'next/image';
 
 const nanoid = customAlphabet('abcdefghijklmnopqrstuvwxyz1234567890', 10);
 
@@ -152,7 +154,7 @@ export default function FileManagerPage() {
             }
         };
         fetchProjects();
-    }, [user, isUserLoading]);
+    }, [user, isUserLoading, auth, toast]);
     
     const activeProjectId = projects?.[0]?.id;
 
@@ -417,5 +419,3 @@ export default function FileManagerPage() {
     </div>
   );
 }
-
-    

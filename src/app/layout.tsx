@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { FirebaseProvider } from '@/firebase/provider';
+import { FirebaseClientProvider } from '@/firebase/provider';
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Toaster } from '@/components/ui/toaster';
@@ -34,9 +34,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body>
-        <FirebaseProvider>
+        <FirebaseClientProvider>
             {children}
-        </FirebaseProvider>
+        </FirebaseClientProvider>
       </body>
     </html>
   );
