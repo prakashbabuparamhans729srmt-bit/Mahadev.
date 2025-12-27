@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "genkit start & next dev",
+    "dev": "npm run start_and_deploy",
     "build": "NODE_ENV=production next build",
     "start": "npm run deploy",
     "lint": "next lint",
