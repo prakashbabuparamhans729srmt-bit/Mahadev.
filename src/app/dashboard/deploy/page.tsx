@@ -3,66 +3,17 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Rocket, Loader2, Server, Terminal, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Rocket, Loader2, Server, Terminal, AlertTriangle, Construction } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-// This is a simplified mock of a shell command execution for the demo.
-// In a real application, this would be a call to a backend API
-// that securely triggers a CI/CD pipeline.
-async function triggerDeploy(logCallback: (line: string) => void): Promise<boolean> {
-  logCallback('🚀 डिप्लॉयमेंट प्रक्रिया शुरू हो रही है...');
-  await new Promise(res => setTimeout(res, 1000));
-  
-  logCallback('📦 निर्भरताएँ स्थापित की जा रही हैं...');
-  await new Promise(res => setTimeout(res, 2000));
-  
-  logCallback('⚙️ एप्लिकेशन का निर्माण (Building) हो रहा है...');
-  logCallback('> next build');
-  await new Promise(res => setTimeout(res, 5000));
-  logCallback('✓ निर्माण सफलतापूर्वक पूरा हुआ।');
-  
-  logCallback('☁️ फायरबेस पर तैनात किया जा रहा है...');
-  logCallback('> firebase deploy --only hosting');
-  await new Promise(res => setTimeout(res, 4000));
-  logCallback('✔ तैनाती सफलतापूर्वक पूरी हुई!');
-  logCallback('🎉 आपका ऐप अब लाइव है!');
-
-  return true;
-}
-
 
 export default function DeployPage() {
   const { toast } = useToast();
-  const [isDeploying, setIsDeploying] = useState(false);
-  const [logs, setLogs] = useState<string[]>(['डिप्लॉयमेंट शुरू करने के लिए प्रतीक्षा कर रहा है...']);
 
-  const handleDeploy = async () => {
-    setIsDeploying(true);
-    setLogs([]);
-
-    const logCallback = (line: string) => {
-        setLogs(prev => [...prev, line]);
-    }
-
-    try {
-        const success = await triggerDeploy(logCallback);
-        if (success) {
-            toast({
-                title: "🚀 तैनाती सफल!",
-                description: "आपका एप्लिकेशन सफलतापूर्वक फायरबेस होस्टिंग पर तैनात कर दिया गया है।",
-                className: "bg-green-500/20 border-green-500 text-green-700"
-            });
-        }
-    } catch (error) {
-         logCallback(`❌ त्रुटि: ${error instanceof Error ? error.message : String(error)}`);
-         toast({
-            variant: "destructive",
-            title: "डिपार्टमेंट विफल",
-            description: "तैनाती के दौरान एक त्रुटि हुई।",
-        });
-    } finally {
-        setIsDeploying(false);
-    }
+  const handleDeploy = () => {
+    toast({
+        title: "डेमो सुविधा",
+        description: "यह तैनाती सुविधा वर्तमान में केवल एक प्रदर्शन है। वास्तविक कार्यान्वयन जल्द ही आ रहा है।",
+    });
   };
 
   return (
@@ -83,39 +34,22 @@ export default function DeployPage() {
               <p className="text-muted-foreground mb-6">
                 आपका एप्लिकेशन डिप्लॉयमेंट के लिए तैयार है।
               </p>
-              <Button size="lg" onClick={handleDeploy} disabled={isDeploying} className="animate-fast-blinking-glow h-14 text-lg">
-                 {isDeploying ? (
-                    <>
-                        <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                        तैनात हो रहा है...
-                    </>
-                 ) : (
-                    <>
-                        <Rocket className="mr-2 h-5 w-5" />
-                         ऐप लॉन्च करें
-                    </>
-                 )}
+              <Button size="lg" onClick={handleDeploy} className="animate-fast-blinking-glow h-14 text-lg">
+                <Rocket className="mr-2 h-5 w-5" />
+                ऐप लॉन्च करें (डेमो)
               </Button>
             </div>
-            <Card className="bg-secondary/50 text-left mt-6">
-              <CardHeader>
-                <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                  <Terminal />
-                  डिप्लॉयमेंट लॉग
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <pre className="text-xs font-mono bg-black text-white p-4 rounded-lg h-64 overflow-y-auto whitespace-pre-wrap">
-                    {logs.map((log, index) => (
-                        <div key={index}>
-                            <span className="text-green-400 mr-2">{`>`}</span>
-                            <span>{log}</span>
-                        </div>
-                    ))}
-                    {isDeploying && <div className="flex items-center gap-2"><span className="text-green-400 mr-2">{`>`}</span><Loader2 className="h-4 w-4 animate-spin" /></div>}
-                </pre>
-              </CardContent>
-            </Card>
+             <Card className="bg-secondary/50 text-left mt-6">
+                <CardHeader className="flex-row items-center gap-4">
+                    <Construction className="h-8 w-8 text-primary" />
+                    <div>
+                        <h4 className="font-semibold">डेवलपर नोट</h4>
+                        <p className="text-xs text-muted-foreground">
+                          यह बटन वर्तमान में केवल एक डेमो है। वास्तविक तैनाती कार्यक्षमता को एक सुरक्षित बैकएंड के माध्यम से लागू किया जाना है।
+                        </p>
+                    </div>
+                </CardHeader>
+             </Card>
         </CardContent>
       </Card>
     </div>
