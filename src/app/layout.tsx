@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { FirebaseProvider } from '@/firebase/provider';
+import React, { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
   title: 'Hajaro Grahako - Digital Solutions',
@@ -31,7 +34,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body>
-        <FirebaseProvider>{children}</FirebaseProvider>
+        <FirebaseProvider>
+            {children}
+        </FirebaseProvider>
       </body>
     </html>
   );

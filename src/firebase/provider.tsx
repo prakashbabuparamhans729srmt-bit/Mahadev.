@@ -122,9 +122,9 @@ export const FirebaseProvider: React.FC<{
       <SentryProvider>
         <FirebaseErrorListener />
         {children}
+        <Toaster />
         {isClient && (
           <>
-            <Toaster />
             <HelpAssistant />
             <CookieConsent />
           </>
