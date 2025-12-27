@@ -4,7 +4,6 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { Skeleton } from '@/components/ui/skeleton';
 import HeroSection from '@/components/sections/hero';
-import LazySection from '@/components/lazy-section';
 
 const ServicesSection = dynamic(() => import('@/components/sections/services'), {
   loading: () => <Skeleton className="h-[50vh] w-full" />,
@@ -43,24 +42,12 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <HeroSection />
-        <LazySection>
-          <ServicesSection />
-        </LazySection>
-        <LazySection>
-          <PortfolioSection />
-        </LazySection>
-        <LazySection>
-          <ProcessSection />
-        </LazySection>
-        <LazySection>
-          <TestimonialsSection />
-        </LazySection>
-        <LazySection>
-          <CtaSection />
-        </LazySection>
-        <LazySection>
-          <PricingSection />
-        </LazySection>
+        <ServicesSection />
+        <PortfolioSection />
+        <ProcessSection />
+        <TestimonialsSection />
+        <CtaSection />
+        <PricingSection />
       </main>
       <Footer />
     </div>
