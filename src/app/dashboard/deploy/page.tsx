@@ -7,30 +7,24 @@ import { Rocket, Loader2, Server, Terminal, CheckCircle, AlertTriangle } from 'l
 
 // This is a mock function for the demonstration. In a real scenario,
 // this would trigger a backend process or a cloud function.
-const triggerDeploy = async (setLog: (log: string) => void): Promise<string> => {
-  return new Promise(resolve => {
-    let step = 0;
-    const steps = [
-      "ℹ जानकारी: फायरबेस टूल्स को शुरू किया जा रहा है...",
-      "✔ तैयारी: डिप्लॉयमेंट के लिए तैयारी पूरी हुई।",
-      "i डिप्लॉयमेंट: सार्वजनिक संपत्तियों को अपलोड किया जा रहा है...",
-      "✔ डिप्लॉयमेंट: (1/3) build/next/static/... (15%)...",
-      "✔ डिप्लॉयमेंट: (2/3) build/server/... (65%)...",
-      "✔ डिप्लॉयमेंट: (3/3) public/... (98%)...",
-      "✔ रिलीज़: नया संस्करण जारी किया जा रहा है...",
-      "✔ सफलता! डिप्लॉयमेंट पूरा हुआ।",
-    ];
+const triggerDeploy = async (setLog: (log: (prev: string) => string) => void): Promise<string> => {
+  const steps = [
+    "ℹ जानकारी: फायरबेस टूल्स को शुरू किया जा रहा है...",
+    "✔ तैयारी: डिप्लॉयमेंट के लिए तैयारी पूरी हुई।",
+    "i डिप्लॉयमेंट: सार्वजनिक संपत्तियों को अपलोड किया जा रहा है...",
+    "✔ डिप्लॉयमेंट: (1/3) build/next/static/... (15%)...",
+    "✔ डिप्लॉयमेंट: (2/3) build/server/... (65%)...",
+    "✔ डिप्लॉयमेंट: (3/3) public/... (98%)...",
+    "✔ रिलीज़: नया संस्करण जारी किया जा रहा है...",
+    "✔ सफलता! डिप्लॉयमेंट पूरा हुआ।",
+  ];
 
-    const interval = setInterval(() => {
-      if (step < steps.length) {
-        setLog(steps.slice(0, step + 1).join('\n'));
-        step++;
-      } else {
-        clearInterval(interval);
-        resolve("https://studio-953489467-c7e5b.web.app");
-      }
-    }, 1500);
-  });
+  for (const step of steps) {
+    await new Promise(resolve => setTimeout(resolve, 800));
+    setLog(prev => `${prev}\n${step}`.trim());
+  }
+
+  return "https://studio-953489467-c7e5b.web.app";
 };
 
 export default function DeployPage() {
@@ -46,9 +40,7 @@ export default function DeployPage() {
     setError('');
     
     try {
-      const url = await triggerDeploy((newLog) => {
-        setLog(prev => `${prev}\n${newLog}`.trim());
-      });
+      const url = await triggerDeploy(setLog);
       setDeployUrl(url);
     } catch (e: any) {
       setError('डिप्लॉयमेंट में एक अप्रत्याशित त्रुटि हुई।');
