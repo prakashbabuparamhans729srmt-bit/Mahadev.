@@ -35,11 +35,9 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body>
-        <SentryProvider>
           <FirebaseClientProvider>
               {children}
           </FirebaseClientProvider>
-        </SentryProvider>
       </body>
     </html>
   );
