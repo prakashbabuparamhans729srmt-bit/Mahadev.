@@ -279,6 +279,20 @@ export default function DashboardLayout({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/deploy')}
+                  tooltip="डिप्लॉय"
+                   size="lg"
+                   className="!justify-start"
+                >
+                  <Link href="/dashboard/deploy">
+                    <Rocket />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">डिप्लॉय</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
