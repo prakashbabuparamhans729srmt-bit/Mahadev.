@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "genkit start & next dev",
     "build": "NODE_ENV=production next build",
-    "start": "npm run build && firebase deploy --only hosting",
+    "start": "npm run deploy",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "whereami": "echo C:\\Users\\win 10\\studio-953489467-c7e5b",
