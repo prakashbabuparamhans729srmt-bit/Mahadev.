@@ -67,7 +67,7 @@ function SearchResults() {
 
         fetchSearch();
 
-    }, [user, auth, q, isUserLoading, toast]);
+    }, [user, auth, q, isUserLoading]);
 
 
     if (!q) {
@@ -177,3 +177,5 @@ export default function SearchPage() {
         </div>
     );
 }
+
+    

@@ -137,10 +137,8 @@ export default function MessagesPage() {
             }
         };
 
-        if(projectsLoading) {
-            fetchProjects();
-        }
-    }, [user, isUserLoading, toast, activeChat, projectsLoading]);
+        fetchProjects();
+    }, [user, isUserLoading]);
     
     const activeChatId = activeChat?.id;
 
@@ -390,3 +388,5 @@ export default function MessagesPage() {
     </div>
   );
 }
+
+    

@@ -138,7 +138,7 @@ export default function AdminDashboard() {
     };
 
     fetchProjects();
-  }, [user, isUserLoading, toast]);
+  }, [user, isUserLoading]);
 
 
   const { totalBudget, totalSpent } = useMemo(() => {
@@ -366,3 +366,5 @@ export default function AdminDashboard() {
     </>
   );
 }
+
+    

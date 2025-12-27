@@ -66,7 +66,7 @@ export default function ProjectOversightPage() {
     };
 
     fetchProjects();
-  }, [user, isUserLoading, toast]);
+  }, [user, isUserLoading]);
 
 
   return (
@@ -147,3 +147,5 @@ export default function ProjectOversightPage() {
     </div>
   );
 }
+
+    

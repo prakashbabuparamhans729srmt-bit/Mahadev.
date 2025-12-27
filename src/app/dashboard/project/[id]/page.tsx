@@ -95,13 +95,13 @@ export default function ProjectDetailsPage() {
             if (!isAuthLoading && user && auth && projectId) {
                 setIsProjectLoading(true);
                 try {
-                const token = await user.getIdToken();
-                const projectData = await getProject(token, projectId);
-                setProject(projectData);
+                    const token = await user.getIdToken();
+                    const projectData = await getProject(token, projectId);
+                    setProject(projectData);
                 } catch (err: any) {
-                setProjectError(err);
+                    setProjectError(err);
                 } finally {
-                setIsProjectLoading(false);
+                    setIsProjectLoading(false);
                 }
             } else if (!isAuthLoading) {
                 setIsProjectLoading(false);
@@ -389,3 +389,5 @@ export default function ProjectDetailsPage() {
     </div>
   );
 }
+
+    

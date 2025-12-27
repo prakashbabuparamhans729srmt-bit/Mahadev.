@@ -55,7 +55,7 @@ const ImagePreviewCard = dynamic(() => Promise.resolve(({ handleAction }: { hand
         </CardHeader>
         <CardContent className="space-y-4">
             <div className="aspect-video bg-secondary rounded-md flex items-center justify-center text-muted-foreground overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1593693397649-3ca9c877a192?q=80&w=800" alt="Color Palette" className="w-full h-full object-cover" />
+                <Image src="https://images.unsplash.com/photo-1593693397649-3ca9c877a192?q=80&w=800" alt="Color Palette" width={800} height={450} className="w-full h-full object-cover" />
             </div>
              <div className="flex justify-between items-center">
                  <div className="flex gap-2">
@@ -135,24 +135,24 @@ export default function FileManagerPage() {
             if (!isUserLoading && user && auth) {
                 setProjectsLoading(true);
                 try {
-                const token = await user.getIdToken();
-                const userProjects = await getProjects(token);
-                setProjects(userProjects);
+                    const token = await user.getIdToken();
+                    const userProjects = await getProjects(token);
+                    setProjects(userProjects);
                 } catch (err: any) {
-                toast({
-                    variant: "destructive",
-                    title: "Error fetching projects",
-                    description: err.message,
-                });
+                    toast({
+                        variant: "destructive",
+                        title: "Error fetching projects",
+                        description: err.message,
+                    });
                 } finally {
-                setProjectsLoading(false);
+                    setProjectsLoading(false);
                 }
             } else if (!isUserLoading) {
                 setProjectsLoading(false);
             }
         };
         fetchProjects();
-    }, [user, isUserLoading, toast]);
+    }, [user, isUserLoading]);
     
     const activeProjectId = projects?.[0]?.id;
 
@@ -278,7 +278,7 @@ export default function FileManagerPage() {
                         <Card key={file.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
                             <CardContent className="p-0 flex flex-col items-center justify-center text-center gap-2 aspect-square">
                                {isImage ? (
-                                   <img src={file.url} alt={file.name} className="w-full h-full object-cover rounded-t-lg" />
+                                   <Image src={file.url} alt={file.name} width={200} height={200} className="w-full h-full object-cover rounded-t-lg" />
                                ) : (
                                    <div className="text-4xl group-hover:scale-110 transition-transform flex-1 flex items-center justify-center">
                                        {getFileIcon(file.type)}
@@ -417,3 +417,5 @@ export default function FileManagerPage() {
     </div>
   );
 }
+
+    
