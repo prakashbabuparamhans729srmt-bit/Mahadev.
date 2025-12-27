@@ -28,6 +28,7 @@ import {
   Cookie,
   Shield,
   AreaChart,
+  Rocket,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -360,6 +361,20 @@ export default function DashboardLayout({
                     <Settings />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">सेटिंग्स</span>
                     </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+                <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/deploy')}
+                  tooltip="डिप्लॉय"
+                   size="lg"
+                   className="!justify-start"
+                >
+                  <Link href="/dashboard/deploy">
+                    <Rocket />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">डिप्लॉय</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
