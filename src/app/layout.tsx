@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import React, { Suspense } from 'react';
@@ -11,12 +11,15 @@ export const metadata: Metadata = {
   description:
     'Your trusted partner for website, mobile app, and custom software solutions. We turn your vision into powerful software.',
   manifest: '/manifest.json',
-  themeColor: '#4B0082',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
     title: 'Hajaro Grahako',
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#4B0082',
 };
 
 export default function RootLayout({
