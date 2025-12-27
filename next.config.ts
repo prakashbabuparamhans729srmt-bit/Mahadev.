@@ -33,7 +33,8 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   experimental: {
-    // Kept for any other potential experimental flags
+    // Add the development origin to suppress the cross-origin warning
+    allowedDevOrigins: ["*.cloudworkstations.dev"],
   },
   typescript: {
     ignoreBuildErrors: true,
