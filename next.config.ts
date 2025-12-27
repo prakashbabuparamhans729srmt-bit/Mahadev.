@@ -32,6 +32,10 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // This allows cross-origin requests in development, which is needed for the cloud IDE.
+    allowedDevOrigins: ["*.cloudworkstations.dev"],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
