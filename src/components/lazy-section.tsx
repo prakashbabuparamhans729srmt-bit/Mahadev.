@@ -13,17 +13,19 @@ export default function LazySection({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, rootMargin: '200px' });
-  const [hasBeenInView, setHasBeenInView] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (isInView && !hasBeenInView) {
-      setHasBeenInView(true);
-    }
-  }, [isInView, hasBeenInView]);
+    // This ensures the component has mounted on the client before we start checking for visibility.
+    // This helps prevent hydration mismatches.
+    setIsMounted(true);
+  }, []);
+
+  const shouldRender = isInView && isMounted;
 
   return (
     <div ref={ref} className={className}>
-      {hasBeenInView ? (
+      {shouldRender ? (
         children
       ) : (
         <div className="container py-12 md:py-24 lg:py-32">
