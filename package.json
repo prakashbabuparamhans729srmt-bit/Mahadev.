@@ -7,7 +7,8 @@
     "build": "NODE_ENV=production next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "whereami": "echo C:\\Users\\win 10\\studio-953489467-c7e5b"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.20.0",
