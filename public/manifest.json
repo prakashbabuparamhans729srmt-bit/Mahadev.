@@ -1,20 +1,19 @@
-
 {
   "name": "HG Hub - Hajaro Grahako",
   "short_name": "HG Hub",
-  "description": "पूर्ण विकास समाधान - वेबसाइट, मोबाइल ऐप और कस्टम सॉफ्टवेयर।",
+  "description": "Hajaro Grahako - Digital Solutions: Your trusted partner for website, mobile app, and custom software solutions.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#2dd4bf",
+  "background_color": "#111827",
+  "theme_color": "#4B0082",
   "icons": [
     {
-      "src": "/icon-192x192.png",
+      "src": "/icons/icon-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/icon-512x512.png",
+      "src": "/icons/icon-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

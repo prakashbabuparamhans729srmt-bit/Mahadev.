@@ -1,5 +1,6 @@
 
 import type {NextConfig} from 'next';
+import withPWA from 'next-pwa';
 
 const securityHeaders = [
   {
@@ -13,6 +14,7 @@ const securityHeaders = [
       font-src 'self' data: https://fonts.gstatic.com;
       connect-src 'self' https://*.googleusercontent.com https://*.cloudworkstations.dev http://127.0.0.1:5001 wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.google-analytics.com *.google-analytics.com https://*.googletagmanager.com;
       form-action 'self';
+      manifest-src 'self';
     `.replace(/\s{2,}/g, ' ').trim()
   },
   {
@@ -74,4 +76,11 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+const pwaConfig = withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development',
+});
+
+export default pwaConfig(nextConfig);
