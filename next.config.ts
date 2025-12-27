@@ -72,10 +72,6 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/local-deploy',
-        destination: 'http://localhost:8088/deploy',
-      },
-      {
         source: '/api/:path*',
         destination: 'http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/:path*',
       },
