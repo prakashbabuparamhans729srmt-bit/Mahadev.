@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Rocket, Loader2, Server, Terminal, AlertTriangle, Construction } from 'lucide-react';
+import { Rocket, Server, Construction } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function DeployPage() {
@@ -45,7 +45,7 @@ export default function DeployPage() {
                     <div>
                         <h4 className="font-semibold">डेवलपर नोट</h4>
                         <p className="text-xs text-muted-foreground">
-                          यह बटन वर्तमान में केवल एक डेमो है। वास्तविक तैनाती कार्यक्षमता को एक सुरक्षित बैकएंड के माध्यम से लागू किया जाना है।
+                          यह बटन वर्तमान में केवल एक डेमो है। वास्तविक तैनाती कार्यक्षमता को एक सुरक्षित बैकएंड के माध्यम से लागू किया जाना है। ऐप को डिप्लॉय करने के लिए, टर्मिनल में `npm run deploy` कमांड चलाएँ।
                         </p>
                     </div>
                 </CardHeader>
