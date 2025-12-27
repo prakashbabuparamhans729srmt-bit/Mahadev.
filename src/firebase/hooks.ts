@@ -2,9 +2,9 @@
 
 import { useContext } from 'react';
 import { FirebaseContext, type FirebaseContextState } from './provider';
-import type { Auth } from 'firebase/auth';
 import type { FirebaseApp } from 'firebase/app';
 import type { Firestore } from 'firebase/firestore';
+import type { Auth } from 'firebase/auth';
 
 
 /**

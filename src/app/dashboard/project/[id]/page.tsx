@@ -95,7 +95,8 @@ export default function ProjectDetailsPage() {
             if (!isAuthLoading && user && auth && projectId) {
                 setIsProjectLoading(true);
                 try {
-                    const token = await user.getIdToken();
+                    const token = await auth.currentUser?.getIdToken();
+                    if (!token) throw new Error("Authentication token not available.");
                     const projectData = await getProject(token, projectId);
                     setProject(projectData);
                 } catch (err: any) {
@@ -108,7 +109,7 @@ export default function ProjectDetailsPage() {
             }
         };
         fetchProject();
-    }, [user, isAuthLoading, projectId]);
+    }, [user, isAuthLoading, projectId, auth]);
 
 
     const clientRef = useMemo(() => {
@@ -389,5 +390,3 @@ export default function ProjectDetailsPage() {
     </div>
   );
 }
-
-    

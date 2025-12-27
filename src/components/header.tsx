@@ -9,7 +9,7 @@ import { useRouter, usePathname } from 'next/navigation';
 
 import { Icons } from "@/components/icons";
 import { Button } from "@/components/ui/button";
-import { useAuth, useUser } from "@/firebase/provider";
+import { useAuth, useUser } from "@/firebase";
 import {
   DropdownMenu,
   DropdownMenuContent,

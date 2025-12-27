@@ -117,7 +117,8 @@ export default function AdminDashboard() {
       if (!isUserLoading && user && auth) {
         setProjectsLoading(true);
         try {
-          const token = await user.getIdToken();
+            const token = await auth.currentUser?.getIdToken();
+            if (!token) throw new Error("Authentication token not available.");
           const userProjects = await getProjects(token);
           // Get only the 2 most recent projects based on endDate
           const sortedProjects = userProjects.sort((a: any, b: any) => new Date(b.endDate).getTime() - new Date(a.endDate).getTime());
@@ -138,7 +139,7 @@ export default function AdminDashboard() {
     };
 
     fetchProjects();
-  }, [user, isUserLoading]);
+  }, [user, isUserLoading, auth, toast]);
 
 
   const { totalBudget, totalSpent } = useMemo(() => {
@@ -366,5 +367,3 @@ export default function AdminDashboard() {
     </>
   );
 }
-
-    

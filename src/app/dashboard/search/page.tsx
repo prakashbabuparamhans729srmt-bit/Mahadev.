@@ -47,7 +47,8 @@ function SearchResults() {
                 setIsLoading(true);
                 setError(null);
                 try {
-                    const token = await user.getIdToken();
+                    const token = await auth.currentUser?.getIdToken();
+                    if (!token) throw new Error("Authentication token not available.");
                     const results = await performSearch(token, q);
                     setSearchResults(results);
                 } catch (err: any) {
@@ -67,7 +68,7 @@ function SearchResults() {
 
         fetchSearch();
 
-    }, [user, auth, q, isUserLoading]);
+    }, [user, auth, q, isUserLoading, toast]);
 
 
     if (!q) {
@@ -177,5 +178,3 @@ export default function SearchPage() {
         </div>
     );
 }
-
-    

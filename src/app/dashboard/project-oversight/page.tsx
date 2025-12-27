@@ -48,7 +48,8 @@ export default function ProjectOversightPage() {
       if (!isUserLoading && user && auth) {
         setIsLoading(true);
         try {
-          const token = await user.getIdToken();
+          const token = await auth.currentUser?.getIdToken();
+          if (!token) throw new Error("Authentication token not available.");
           const userProjects = await getProjects(token);
           setProjects(userProjects);
         } catch (err: any) {
@@ -67,7 +68,7 @@ export default function ProjectOversightPage() {
     };
 
     fetchProjects();
-  }, [user, isUserLoading]);
+  }, [user, isUserLoading, auth, toast]);
 
 
   return (

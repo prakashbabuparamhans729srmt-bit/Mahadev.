@@ -117,7 +117,8 @@ export default function MessagesPage() {
         const fetchProjects = async () => {
             if (!isUserLoading && user && auth) {
                 try {
-                    const token = await user.getIdToken();
+                    const token = await auth.currentUser?.getIdToken();
+                    if (!token) throw new Error("Authentication token not available.");
                     const userProjects = await getProjects(token);
                     setProjects(userProjects);
                     if (!activeChat && userProjects.length > 0) {
@@ -138,7 +139,7 @@ export default function MessagesPage() {
         };
 
         fetchProjects();
-    }, [user, isUserLoading]);
+    }, [user, isUserLoading, auth, toast, activeChat]);
     
     const activeChatId = activeChat?.id;
 
@@ -388,5 +389,3 @@ export default function MessagesPage() {
     </div>
   );
 }
-
-    

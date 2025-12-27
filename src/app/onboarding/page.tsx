@@ -253,7 +253,7 @@ const Step3 = ({ setStep }: { setStep: (step: number) => void }) => {
                         {["व्हाट्सएप", "ईमेल", "फोन कॉल", "टेलीग्राम"].map(method => (
                              <div key={method} className="flex items-center space-x-2">
                                 <Checkbox id={method} disabled />
-                                <Label htmlFor={method} className="font-normal">{method}</Label>
+                                <Label htmlFor={method} className="font-normal text-sm">{method}</Label>
                             </div>
                         ))}
                     </div>
