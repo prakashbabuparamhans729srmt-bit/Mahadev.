@@ -1,55 +1,79 @@
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
     // --- HELPER FUNCTIONS ---
 
-    // Checks if the user is authenticated.
     function isAuthenticated() {
       return request.auth != null;
     }
 
-    // Checks if the requesting user is the owner of a document.
-    // Used for user-specific documents like their own profile.
-    function isOwner(userId) {
-      return isAuthenticated() && request.auth.uid == userId;
+    function isClientOwner(clientId) {
+      return isAuthenticated() && request.auth.uid == clientId;
     }
 
+    // --- PUBLIC & SEMI-PUBLIC COLLECTIONS ---
 
-    // --- BACKEND-ONLY ACCESS ---
-
-    // By default, block all direct reads and writes from the client.
-    // All data access should go through the backend (Firebase Functions).
-    // This is the most secure approach.
-    match /{path=**}/documents/{wildcard} {
-      allow read, write: if false;
-    }
-
-    // --- CLIENT-ACCESSIBLE COLLECTIONS (Exceptions) ---
-
-    // Publicly readable data (e.g., public templates, general info)
-    // No public data in this app yet, but this is the pattern.
-    // match /public_data/{docId} {
-    //   allow read: if true;
-    //   allow write: if false; // Should be written by backend/admin only
-    // }
-
-    // Allow users to read and write to their OWN client document only.
-    // This is necessary for profile updates from the client-side.
-    match /clients/{clientId} {
-      allow read, write: if isOwner(clientId);
-    }
-    
-    // Allow users to submit inquiries. This is a write-only entry point for anyone.
+    // Inquiries can be created by anyone (e.g., public contact form).
+    // They cannot be read, updated, or deleted by clients.
     match /inquiries/{inquiryId} {
       allow create: if true;
-      allow read, update, delete: if false; // Readable only by backend/admin
+      allow read, update, delete: if false; // Should only be readable by an admin role.
     }
 
-    // Allow anyone to subscribe to the newsletter.
+    // Subscribers can be created by anyone.
     match /subscribers/{email} {
       allow create: if true;
-      allow read, update, delete: if false; // Readable only by backend/admin
+      allow read, update, delete: if false; // Should only be readable by an admin role.
+    }
+
+    // --- CLIENT-SPECIFIC DATA ---
+
+    // A client can only read or update their own document.
+    // They cannot create a client document for another user or delete their own.
+    match /clients/{clientId} {
+      allow read, update, write: if isClientOwner(clientId);
+      allow create, delete: if isClientOwner(clientId);
+    }
+
+    // --- PROJECTS AND SUBCOLLECTIONS ---
+
+    // A user can only list projects where their UID matches the clientId field.
+    match /projects/{projectId} {
+      allow list: if isAuthenticated() && request.query.get("clientId") == request.auth.uid;
+      allow read: if isAuthenticated() && resource.data.clientId == request.auth.uid;
+      // For create, check the incoming document's data.
+      allow create: if isAuthenticated() && request.resource.data.clientId == request.auth.uid;
+      // For update/delete, check the existing document's data.
+      allow update, delete: if isAuthenticated() && resource.data.clientId == request.auth.uid;
+    }
+
+    // Project subcollections can be read or written to only by the owner of the parent project.
+    // This is a secure way to manage related data like messages, files, invoices, etc.
+    match /projects/{projectId}/messages/{messageId} {
+       allow read, write: if isAuthenticated() && get(/databases/$(database)/documents/projects/$(projectId)).data.clientId == request.auth.uid;
+    }
+     match /projects/{projectId}/files/{fileId} {
+       allow read, write: if isAuthenticated() && get(/databases/$(database)/documents/projects/$(projectId)).data.clientId == request.auth.uid;
+    }
+     match /projects/{projectId}/timeline/{timelineId} {
+       allow read, write: if isAuthenticated() && get(/databases/$(database)/documents/projects/$(projectId)).data.clientId == request.auth.uid;
+    }
+     match /projects/{projectId_rest}/{subcollection}/{docId=**} {
+       allow read, write: if isAuthenticated() && get(/databases/$(database)/documents/projects/$(projectId_rest)).data.clientId == request.auth.uid;
+    }
+
+    // Rule for typing indicators
+    match /projects/{projectId}/typing/{userId} {
+        allow read: if isAuthenticated();
+        // Only the user themselves can write to their own typing indicator document
+        allow write: if isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Team members can only be read by admins (future implementation).
+    match /team_members/{teamMemberId} {
+        allow read, write: if false; // Locked for clients
     }
   }
 }
