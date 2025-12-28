@@ -4,8 +4,8 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useState, useEffect, type FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, type FormEvent, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Loader2 } from 'lucide-react';
 import { Icons } from '@/components/icons';
 import { useUser, useAuth, useFirestore } from '@/firebase';
@@ -40,8 +40,9 @@ const StepperItem = ({ number, title, active }: { number: number, title: string,
     </div>
 )
 
-export default function SignupPage() {
+function SignupFormComponent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const firestore = useFirestore();
@@ -55,13 +56,15 @@ export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
-
+  
+  const plan = searchParams.get('plan');
 
   useEffect(() => {
     if (user && !isUserLoading) {
-      router.push('/dashboard');
+      const redirectUrl = plan ? `/onboarding?plan=${plan}` : '/dashboard';
+      router.push(redirectUrl);
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, plan]);
 
   const handleSignup = async (e: FormEvent) => {
     e.preventDefault();
@@ -104,7 +107,8 @@ export default function SignupPage() {
         title: 'सत्यापन ईमेल भेजा गया',
         description: 'कृपया अपना इनबॉक्स जांचें और अपना खाता सत्यापित करें। आपको ऑनबोर्डिंग के लिए रीडायरेक्ट किया जा रहा है।',
       });
-      router.push('/onboarding');
+      const redirectUrl = plan ? `/onboarding?plan=${plan}` : '/onboarding';
+      router.push(redirectUrl);
     } catch (error: any) {
       let message = 'साइनअप विफल। कृपया पुनः प्रयास करें।';
       if (error.code === 'auth/email-already-in-use') {
@@ -134,7 +138,7 @@ export default function SignupPage() {
     setIsPending(true);
     try {
       await signInWithPopup(auth, provider);
-      window.location.href = '/dashboard';
+      // Let the useEffect handle the redirect
     } catch (error: any) {
       console.error("Social login error:", error);
       let message = 'सोशल साइन-अप विफल।';
@@ -301,4 +305,12 @@ export default function SignupPage() {
       </div>
     </div>
   );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>}>
+      <SignupFormComponent />
+    </Suspense>
+  )
 }

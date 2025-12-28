@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -70,12 +71,13 @@ const steps = [
     { name: 'भुगतान', progress: 100 },
 ];
 
-const SocialButton = ({ icon, label }: { icon: React.ReactNode, label: string }) => (
-    <Button variant="outline" className="flex-1 flex flex-col h-auto p-3 gap-1">
-        {icon}
-        <span className="text-xs">{label}</span>
-    </Button>
-)
+const allPlans = {
+  basic: { name: 'बेसिक', price: '₹15-35K', features: ['6-8 पेज', 'बेसिक डिज़ाइन', 'कॉन्टेक्ट फॉर्म'], timeline: '2-4 सप्ताह' },
+  standard: { name: 'स्टैंडर्ड', price: '₹40-80K', features: ['ग्राहक पोर्टल', 'प्रोजेक्ट ट्रैकिंग', 'बेसिक से सब कुछ'], timeline: '4-8 सप्ताह' },
+  premium: { name: 'प्रीमियम', price: '₹90K-2L+', features: ['AI टूल्स', 'ऑटोमेशन', 'रियल-टाइम कोलैब'], timeline: '8-16 सप्ताह' },
+  enterprise: { name: 'एंटरप्राइज', price: 'कस्टम', features: ['समर्पित टीम', '24/7 सपोर्ट'], timeline: '12+ सप्ताह' },
+};
+
 
 const Step1 = ({ setStep }: { setStep: (step: number) => void }) => {
     const router = useRouter();
@@ -341,7 +343,12 @@ const Step4 = ({ setStep }: { setStep: (step: number) => void }) => {
     )
 }
 
-const Step5 = ({ setStep }: { setStep: (step: number) => void }) => {
+const Step5 = ({ setStep, planId }: { setStep: (step: number) => void; planId: string }) => {
+    const selectedPlan = allPlans[planId as keyof typeof allPlans] || allPlans.standard;
+    const priceNumeric = parseFloat(selectedPlan.price.replace(/[^0-9-]/g, '').split('-')[0] || '0') * 1000;
+    const discount = priceNumeric * 0.10;
+    const finalPrice = priceNumeric - discount;
+
     return (
         <div className="space-y-6">
             <div className="text-center">
@@ -353,21 +360,19 @@ const Step5 = ({ setStep }: { setStep: (step: number) => void }) => {
                         <CardTitle className="flex items-center gap-2">📋 आपका चयनित प्रोजेक्ट</CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-3">
-                        <h3 className="font-bold text-lg">🏘️ रियल एस्टेट वेबसाइट</h3>
+                        <h3 className="font-bold text-lg text-accent">{selectedPlan.name} प्लान</h3>
                         <ul className="text-sm text-muted-foreground list-disc list-inside space-y-1">
-                            <li>प्रॉपर्टी लिस्टिंग पेज</li>
-                            <li>वर्चुअल प्रॉपर्टी टूर</li>
-                            <li>एजेंट संपर्क फॉर्म</li>
-                            <li>मोबाइल रिस्पॉन्सिव डिज़ाइन</li>
-                            <li>बेसिक SEO</li>
+                            {selectedPlan.features.map(feature => (
+                                <li key={feature}>{feature}</li>
+                            ))}
                         </ul>
                          <Separator />
                         <div className="space-y-1 text-sm">
-                            <p className="flex justify-between"><span>⏱️ समय:</span> <strong>4-6 सप्ताह</strong></p>
-                            <p className="flex justify-between"><span>💰 मूल्य:</span> <strong>₹65,000</strong></p>
-                            <p className="flex justify-between text-green-500"><span>🎁 स्वागत छूट (10%):</span> <strong>-₹6,500</strong></p>
+                            <p className="flex justify-between"><span>⏱️ समय:</span> <strong>{selectedPlan.timeline}</strong></p>
+                            <p className="flex justify-between"><span>💰 मूल्य:</span> <strong>{selectedPlan.price}</strong></p>
+                             <p className="flex justify-between text-green-500"><span>🎁 स्वागत छूट (10%):</span> <strong>-₹{discount.toLocaleString('en-IN')}</strong></p>
                              <Separator />
-                             <p className="flex justify-between text-lg font-bold"><span>✅ अंतिम मूल्य:</span> <strong>₹58,500</strong></p>
+                             <p className="flex justify-between text-lg font-bold"><span>✅ अनुमानित लागत:</span> <strong>₹{finalPrice.toLocaleString('en-IN')}</strong></p>
                         </div>
                     </CardContent>
                 </Card>
@@ -471,8 +476,10 @@ const CompletionScreen = () => {
 }
 
 
-export default function OnboardingPage() {
+function OnboardingComponent() {
     const [step, setStep] = useState(1);
+    const searchParams = useSearchParams();
+    const planId = searchParams.get('plan') || 'standard'; // Default to standard if no plan is in URL
     const progressValue = steps[step - 1]?.progress || 0;
     
     const renderStep = () => {
@@ -481,7 +488,7 @@ export default function OnboardingPage() {
             case 2: return <Step2 setStep={setStep} />;
             case 3: return <Step3 setStep={setStep} />;
             case 4: return <Step4 setStep={setStep} />;
-            case 5: return <Step5 setStep={setStep} />;
+            case 5: return <Step5 setStep={setStep} planId={planId} />;
             case 6: return <CompletionScreen />;
             default: return <Step1 setStep={setStep} />;
         }
@@ -514,4 +521,12 @@ export default function OnboardingPage() {
             </div>
         </div>
     )
+}
+
+export default function OnboardingPage() {
+    return (
+        <Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>}>
+            <OnboardingComponent />
+        </Suspense>
+    );
 }

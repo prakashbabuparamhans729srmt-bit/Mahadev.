@@ -5,6 +5,7 @@ import Link from "next/link";
 
 const tiers = [
   {
+    id: "basic",
     name: "बेसिक",
     price: "₹15-35K",
     timeline: "2-4 सप्ताह",
@@ -14,6 +15,7 @@ const tiers = [
     highlight: false,
   },
   {
+    id: "standard",
     name: "स्टैंडर्ड",
     price: "₹40-80K",
     timeline: "4-8 सप्ताह",
@@ -23,6 +25,7 @@ const tiers = [
     highlight: true,
   },
   {
+    id: "premium",
     name: "प्रीमियम",
     price: "₹90K-2L+",
     timeline: "8-16 सप्ताह",
@@ -32,6 +35,7 @@ const tiers = [
     highlight: false,
   },
   {
+    id: "enterprise",
     name: "एंटरप्राइज",
     price: "कस्टम",
     timeline: "12+ सप्ताह",
@@ -82,7 +86,7 @@ export default function PricingSection() {
               </CardContent>
               <CardFooter>
                 <Button asChild className={`w-full ${tier.highlight ? 'bg-accent text-accent-foreground hover:bg-accent/90' : ''}`} variant={tier.highlight ? "default" : "outline"}>
-                   <Link href="/onboarding">{tier.cta}</Link>
+                   <Link href={`/signup?plan=${tier.id}`}>{tier.cta}</Link>
                 </Button>
               </CardFooter>
             </Card>
