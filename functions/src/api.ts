@@ -9,6 +9,7 @@ const app = express();
 const allowedOrigins = [
     'http://localhost:3000',
     'https://mahadev-app.vercel.app', // Your Vercel production URL
+    'https://mahadev-eight.vercel.app',
 ];
 
 // Automatically allow cross-origin requests from any origin
