@@ -119,22 +119,22 @@ export function CookieConsent() {
             </DialogTitle>
             <DialogDescription>
               {isCustomizing 
-                ? 'यहां आप नियंत्रित कर सकते हैं कि कौन सी कुकीज़ सक्षम हैं।'
-                : 'सर्वोत्तम अनुभव प्रदान करने के लिए, हम कुकीज़ और समान तकनीकों का उपयोग करते हैं।'
+                ? 'यहाँ आप नियंत्रित कर सकते हैं कि कौन सी कुकीज़ सक्षम हैं।'
+                : 'यह वेबसाइट अनुभव को बेहतर बनाने और वेबसाइट ट्रैफ़िक का विश्लेषण करने के लिए कुकीज़ का उपयोग करती है।'
               }
             </DialogDescription>
         </DialogHeader>
         
         {!isCustomizing ? (
           <>
-            <div className="p-6">
-              <Button onClick={handleAcceptAll} className="w-full mb-2">
-                <Check className="mr-2 h-4 w-4" />
-                सभी स्वीकार करें
-              </Button>
-              <Button variant="outline" onClick={handleRejectAll} className="w-full">
+            <div className="p-6 grid grid-cols-2 gap-4">
+              <Button variant="outline" onClick={handleRejectAll}>
                 <X className="mr-2 h-4 w-4" />
                 केवल आवश्यक
+              </Button>
+               <Button onClick={handleAcceptAll}>
+                <Check className="mr-2 h-4 w-4" />
+                सभी स्वीकार करें
               </Button>
             </div>
             <DialogFooter className="p-4 bg-secondary/30">
