@@ -22,8 +22,10 @@ import { useUser } from '@/firebase';
 
 // This is a placeholder. In a real app, this would be determined from a secure source like a custom claim.
 const checkIsAdmin = (uid: string | undefined): boolean => {
+  if (!uid) return false;
   // For demonstration, let's assume a specific UID is the admin.
-  // Replace 'YOUR_ADMIN_UID' with your actual Firebase User ID.
+  // In a real application, you would get this from a custom claim on the user's token.
+  // e.g., `user.customClaims.admin === true`
   const ADMIN_UID = 'REPLACE_WITH_YOUR_ADMIN_UID'; 
   return uid === ADMIN_UID;
 }
@@ -35,22 +37,27 @@ export default function UserManagementPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    // We wait until the user object is no longer loading.
     if (!isUserLoading) {
+      // Then we check if a user exists and if they are an admin.
       const adminStatus = checkIsAdmin(user?.uid);
       setIsAdmin(adminStatus);
+      // We are done loading the page's permission checks.
       setIsLoading(false);
     }
-  }, [user, isUserLoading]);
+  }, [user, isUserLoading]); // This effect re-runs when the user or loading state changes.
 
+  // While checking permissions, show a loading state.
   if (isLoading) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="ml-2">Checking permissions...</p>
+        <p className="ml-4">अनुमतियों की जाँच हो रही है...</p>
       </div>
     );
   }
 
+  // If the user is not an admin, show the "Insufficient Permissions" message.
   if (!isAdmin) {
     return (
       <div className="p-4 md:p-6 lg:p-8">
@@ -58,14 +65,14 @@ export default function UserManagementPage() {
           <ShieldAlert className="h-10 w-10 mb-4 text-destructive" />
           <h3 className="text-xl font-semibold text-foreground">अपर्याप्त अनुमतियाँ</h3>
           <p className="text-sm max-w-sm mt-2 text-muted-foreground">
-            उपयोगकर्ता प्रबंधन केवल व्यवस्थापकों (Admins) के लिए उपलब्ध है। यह एक उच्च-सुरक्षा सुविधा है और सीधे क्लाइंट-साइड से एक्सेस नहीं की जा सकती।
+            यह पेज केवल एडमिनिस्ट्रेटर्स के लिए उपलब्ध है। यदि आपको लगता है कि यह एक गलती है, तो कृपया समर्थन से संपर्क करें।
           </p>
         </div>
       </div>
     );
   }
   
-  // Admin-only content starts here
+  // If the user IS an admin, show the actual management page.
   return (
     <>
       <div className="p-4 md:p-6 lg:p-8">
