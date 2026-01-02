@@ -5,29 +5,29 @@ import * as Sentry from "@sentry/react";
 
 // Check if we are in a browser environment before initializing
 if (typeof window !== "undefined") {
-  Sentry.init({
-    // IMPORTANT: Replace this with your actual DSN from Sentry.
-    // You should probably use an environment variable for this.
-    dsn: "https://YOUR_DSN@sentry.io/123456", 
-    integrations: [
-      Sentry.browserTracingIntegration(),
-      Sentry.replayIntegration(),
-    ],
+  // IMPORTANT: The DSN should be set via an environment variable in a real production app.
+  // For this demo, we are leaving it blank to prevent crashes if not configured.
+  const SENTRY_DSN = ""; 
 
-    // Set tracesSampleRate to 1.0 to capture 100%
-    // of transactions for performance monitoring.
-    // We recommend adjusting this value in production
-    tracesSampleRate: 1.0,
-    
-    // Capture Replay for 10% of all sessions,
-    // plus for 100% of sessions with an error
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
-
-
-    // You can also add more configuration options here
-    // environment: process.env.NODE_ENV,
-  });
+  // Only initialize Sentry if a DSN is provided.
+  if (SENTRY_DSN) {
+    Sentry.init({
+      dsn: SENTRY_DSN,
+      integrations: [
+        Sentry.browserTracingIntegration(),
+        Sentry.replayIntegration(),
+      ],
+      // Set tracesSampleRate to 1.0 to capture 100%
+      // of transactions for performance monitoring.
+      tracesSampleRate: 1.0,
+      // Capture Replay for 10% of all sessions,
+      // plus for 100% of sessions with an error
+      replaysSessionSampleRate: 0.1,
+      replaysOnErrorSampleRate: 1.0,
+      // You can also add more configuration options here
+      // environment: process.env.NODE_ENV,
+    });
+  }
 }
 
 function SentryErrorFallback() {
