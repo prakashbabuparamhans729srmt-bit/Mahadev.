@@ -1,3 +1,4 @@
+
 'use client';
 
 import {
@@ -34,7 +35,11 @@ export default function UserManagementLayout({
   const pathname = usePathname();
 
   const isActive = (path: string) => {
-    return pathname === path || pathname.startsWith(path + '/');
+    // Exact match for the main page, startsWith for sub-pages
+    if (path === '/dashboard/user-management') {
+      return pathname === path;
+    }
+    return pathname.startsWith(path);
   };
 
   return (
@@ -73,8 +78,9 @@ export default function UserManagementLayout({
                   tooltip="प्रोजेक्ट्स"
                    size="lg"
                    className="!justify-start"
+                   disabled
                 >
-                  <Link href="/dashboard/user-management">
+                  <Link href="#">
                     <Briefcase />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">प्रोजेक्ट्स</span>
                   </Link>
@@ -87,8 +93,9 @@ export default function UserManagementLayout({
                   tooltip="एनालिटिक्स"
                    size="lg"
                    className="!justify-start"
+                   disabled
                 >
-                  <Link href="/dashboard/user-management">
+                  <Link href="#">
                     <BarChart2 />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">एनालिटिक्स</span>
                   </Link>
@@ -102,7 +109,7 @@ export default function UserManagementLayout({
                    size="lg"
                    className="!justify-start"
                 >
-                  <Link href="/dashboard/user-management">
+                  <Link href="/dashboard/user-management/settings">
                     <Settings />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">सेटिंग्स</span>
                   </Link>
