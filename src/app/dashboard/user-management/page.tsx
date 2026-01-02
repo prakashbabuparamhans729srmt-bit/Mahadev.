@@ -57,37 +57,44 @@ export default function UserManagementPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
 
+  useEffect(() => {
+    if (!isUserLoading) {
+      setIsAdmin(checkIsAdmin(user));
+    }
+  }, [user, isUserLoading]);
+
   const clientsQuery = useMemo(() => {
+      // Only create the query if we know the user is an admin
       if (!firestore || !isAdmin) return null;
       return query(collection(firestore, 'clients'));
   }, [firestore, isAdmin]);
 
   const { data: clients, isLoading: clientsLoading, error: clientsError } = useCollection(clientsQuery);
   
+  // This effect will properly manage the overall loading state
+  useEffect(() => {
+    // Stop loading if auth check is done and user is not admin
+    if (!isUserLoading && !isAdmin) {
+      setIsLoading(false);
+      return;
+    }
+    // If user is admin, the loading state depends on the clients query
+    if (isAdmin) {
+      setIsLoading(clientsLoading);
+    }
+  }, [isUserLoading, isAdmin, clientsLoading]);
+
   const filteredClients = useMemo(() => {
+    // Always check if clients is not null or undefined before filtering
     if (!clients) return [];
     return clients.filter(client => 
         (client.firstName + ' ' + client.lastName).toLowerCase().includes(searchQuery.toLowerCase()) ||
-        client.email.toLowerCase().includes(searchQuery.toLowerCase())
+        (client.email || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [clients, searchQuery]);
 
 
-  useEffect(() => {
-    if (!isUserLoading) {
-      const adminStatus = checkIsAdmin(user);
-      setIsAdmin(adminStatus);
-      // Main loading state should depend on both auth and data loading
-      if (!adminStatus) {
-        setIsLoading(false);
-      }
-    }
-  }, [user, isUserLoading]);
-
-  // Combine loading states
-  const combinedLoading = isLoading || (isAdmin && clientsLoading);
-
-  if (combinedLoading) {
+  if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -165,7 +172,7 @@ export default function UserManagementPage() {
                                             <AvatarFallback>{(client.firstName?.[0] || 'U').toUpperCase()}</AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <p className="font-medium">{`${client.firstName} ${client.lastName}`}</p>
+                                            <p className="font-medium">{`${client.firstName || ''} ${client.lastName || ''}`.trim()}</p>
                                             <p className="text-xs text-muted-foreground">{client.email}</p>
                                         </div>
                                     </Link>
