@@ -53,12 +53,6 @@ interface IFile {
     url: string;
 }
 
-const dummyTeam = [
-    { id: '1', name: 'राहुल शर्मा', role: 'प्रोजेक्ट मैनेजर' },
-    { id: '2', name: 'प्रिया गुप्ता', role: 'UI/UX डिजाइनर' },
-    { id: '3', name: 'सुमित पटेल', role: 'लीड डेवलपर' },
-];
-
 async function getProject(token: string, projectId: string) {
     const API_URL = `/api/projects/${projectId}`;
     return firebaseWithRetry(async () => {
@@ -126,8 +120,6 @@ export default function ProjectDetailsPage() {
     const { data: files, isLoading: isFilesLoading } = useCollection<IFile>(filesQuery);
 
     const timelineQuery = useMemo(() => {
-        // Assuming a `timeline` subcollection with an `order` field.
-        // If your data model is different, this needs to be adjusted.
         if (!firestore || !projectId) return null;
         const timelineCollectionRef = collection(firestore, 'projects', projectId, 'timeline');
         return query(timelineCollectionRef, orderBy('date', 'asc'));
@@ -176,13 +168,6 @@ export default function ProjectDetailsPage() {
 
     const budgetSpent = project.budget ? (project.budget * (project.progress || 0)) / 100 : 0;
     const budgetRemaining = project.budget - budgetSpent;
-    const health = {
-        overall: 68,
-        time: 80,
-        budget: 50,
-        quality: 60,
-        satisfaction: 70,
-    };
 
   return (
     <div className="p-4 md:p-6 lg:p-8">
@@ -266,30 +251,7 @@ export default function ProjectDetailsPage() {
               <label className="text-sm font-medium">
                 प्रोजेक्ट हेल्थ स्कोर:
               </label>
-              <div className="flex items-center gap-4 mt-2">
-                <Progress value={health.overall} className="h-4" />
-                <span className="font-bold text-lg text-primary">
-                  {health.overall}%
-                </span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-muted-foreground mt-4">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4" />
-                  <span>समय: {health.time}%</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Wallet className="h-4 w-4" />
-                  <span>बजट: {health.budget}%</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="h-4 w-4" />
-                  <span>गुणवत्ता: {health.quality}%</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Smile className="h-4 w-4" />
-                  <span>संतुष्टि: {health.satisfaction}%</span>
-                </div>
-              </div>
+               <p className="text-xs text-muted-foreground text-center py-4">प्रोजेक्ट हेल्थ डेटा अभी उपलब्ध नहीं है।</p>
             </div>
           </CardContent>
         </Card>
@@ -326,18 +288,7 @@ export default function ProjectDetailsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 flex-1">
-              {dummyTeam.map((t: any) => (
-                <div key={t.id} className="flex items-center gap-3">
-                  <Avatar>
-                    <AvatarFallback>{t.name?.[0] || 'U'}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-sm">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
-                  </div>
-                </div>
-              ))}
-              {(dummyTeam.length === 0) && <p className="text-sm text-muted-foreground">कोई टीम सदस्य असाइन नहीं किया गया है।</p>}
+                 <p className="text-sm text-muted-foreground text-center pt-4">कोई टीम सदस्य असाइन नहीं किया गया है।</p>
             </CardContent>
             <CardFooter>
               <Button variant="outline" size="sm" className="w-full" onClick={() => handleAction('नए सदस्यों को जोड़ने की सुविधा जल्द ही आ रही है।')}>

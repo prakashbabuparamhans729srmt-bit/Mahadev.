@@ -31,6 +31,9 @@ import { useToast } from '@/hooks/use-toast';
 import { UserActivityCard } from '../user-activity-card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
+import { useState, useEffect } from 'react';
+import { useAuth } from '@/firebase';
+import { firebaseWithRetry } from '@/lib/firebase-retry';
 
 // Mock data - in a real app, this would come from your backend
 const mockUsers = [
@@ -40,12 +43,22 @@ const mockUsers = [
     { id: 'usr_4', name: 'स्मार्ट सॉल्यूशंस', email: 'support@smartsol.dev', role: 'ग्राहक', status: 'सक्रिय', joined: '05 अप्रैल, 2024', avatar: 'https://i.pravatar.cc/150?u=smart', phone: '+91 76543 21098' },
 ];
 
-const mockProjects = [
-    { id: 'proj_1', name: 'ई-कॉमर्स वेबसाइट', client: 'राजेश इंडस्ट्रीज', status: 'जारी', budget: '₹1,50,000', progress: 75 },
-    { id: 'proj_2', name: 'CRM सॉफ्टवेयर', client: 'स्मार्ट सॉल्यूशंस', status: 'पूर्ण', budget: '₹3,00,000', progress: 100 },
-    { id: 'proj_3', name: 'पोर्टफोलियो वेबसाइट', client: 'प्रकाश कुमार', status: 'योजना', budget: '₹50,000', progress: 10 },
-    { id: 'proj_4', name: 'मोबाइल बैंकिंग ऐप', client: 'प्रकाश कुमार', status: 'रुका हुआ', budget: '₹2,50,000', progress: 40 },
-];
+async function getAllProjects(token: string) {
+    const API_URL = `/api/projects/all`;
+    return firebaseWithRetry(async () => {
+        const response = await fetch(API_URL, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch all projects');
+        }
+        const data = await response.json();
+        return data.data;
+    });
+}
 
 
 export default function UserDetailPage() {
@@ -53,10 +66,41 @@ export default function UserDetailPage() {
   const router = useRouter();
   const { toast } = useToast();
   const id = params.id as string;
+  const auth = useAuth();
+  
+  const [projects, setProjects] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   // In a real app, you'd fetch this data based on the ID.
   const user = mockUsers.find(u => u.id === id);
-  const userProjects = mockProjects.filter(p => p.client === user?.name);
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (auth?.currentUser && user) {
+        setIsLoading(true);
+        try {
+          const token = await auth.currentUser.getIdToken(true);
+          const allProjects = await getAllProjects(token);
+          // Filter projects for the specific user being viewed
+          setProjects(allProjects.filter((p:any) => p.clientId === user.id || p.client.email === user.email));
+        } catch (err: any) {
+          setError(err);
+          toast({
+            variant: "destructive",
+            title: "त्रुटि",
+            description: "ग्राहक के प्रोजेक्ट्स लोड करने में विफल: " + err.message,
+          });
+        } finally {
+          setIsLoading(false);
+        }
+      } else if (!auth?.currentUser) {
+        setIsLoading(true);
+      }
+    };
+    fetchProjects();
+  }, [auth, user, toast]);
+
 
   if (!user) {
     return (
@@ -133,7 +177,8 @@ export default function UserDetailPage() {
                 </Button>
             </CardHeader>
             <CardContent>
-                {userProjects.length > 0 ? (
+                {isLoading && <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>}
+                {!isLoading && projects.length > 0 ? (
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -144,10 +189,10 @@ export default function UserDetailPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {userProjects.map(project => (
+                            {projects.map(project => (
                                 <TableRow key={project.id}>
                                     <TableCell className="font-medium">{project.name}</TableCell>
-                                    <TableCell>{project.budget}</TableCell>
+                                    <TableCell>{`₹${(project.budget || 0).toLocaleString('en-IN')}`}</TableCell>
                                     <TableCell><Progress value={project.progress} className="h-2 w-24" /></TableCell>
                                     <TableCell>{getStatusBadge(project.status)}</TableCell>
                                 </TableRow>
@@ -155,7 +200,7 @@ export default function UserDetailPage() {
                         </TableBody>
                     </Table>
                 ) : (
-                    <div className="text-center py-20 text-muted-foreground">
+                    !isLoading && <div className="text-center py-20 text-muted-foreground">
                         <Briefcase className="h-12 w-12 mx-auto mb-4" />
                         <h3 className="font-semibold text-lg">इस ग्राहक के पास अभी कोई प्रोजेक्ट नहीं है</h3>
                         <p className="text-sm">आप ऊपर दिए गए "नया प्रोजेक्ट" बटन का उपयोग करके एक नया प्रोजेक्ट बना सकते हैं।</p>
@@ -163,7 +208,7 @@ export default function UserDetailPage() {
                 )}
             </CardContent>
              <CardFooter className="justify-end border-t pt-4">
-                <p className="text-sm text-muted-foreground">कुल {userProjects.length} प्रोजेक्ट्स</p>
+                <p className="text-sm text-muted-foreground">कुल {projects.length} प्रोजेक्ट्स</p>
             </CardFooter>
           </Card>
         </div>

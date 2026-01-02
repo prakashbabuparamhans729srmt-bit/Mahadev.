@@ -33,10 +33,12 @@ import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
 import { StartProjectDialog } from '@/components/start-project-dialog';
 import Link from 'next/link';
-import { useUser, useAuth } from '@/firebase';
+import { useUser, useAuth, useCollection, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
+import { getFileIcon } from '@/lib/file-icons';
+import { collection, query, orderBy, limit } from 'firebase/firestore';
 
 
 const ChartContainer = dynamic(() => import('@/components/ui/chart').then(mod => mod.ChartContainer), {
@@ -68,20 +70,6 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const healthData = {
-    overall: 68,
-    time: 80,
-    budget: 50,
-    quality: 60,
-    satisfaction: 70,
-};
-
-const recentFiles = [
-    { name: 'SRS.docx', size: '2.4 MB', icon: <FileText className="h-6 w-6 text-blue-500" /> },
-    { name: 'डिज़ाइन.fig', size: '5.7 MB', icon: <Star className="h-6 w-6 text-pink-500" /> },
-    { name: 'कोड.ज़िप', size: '45.2 MB', icon: <Code className="h-6 w-6 text-green-500" /> },
-]
-
 async function getProjects(token: string) {
     const API_URL = '/api/projects';
     return firebaseWithRetry(async () => {
@@ -104,6 +92,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const displayName = user?.displayName?.split(' ')[0] || 'उपयोगकर्ता';
   const { toast } = useToast();
@@ -140,6 +129,14 @@ export default function AdminDashboard() {
 
     fetchProjects();
   }, [user, isUserLoading, auth, toast]);
+
+    const activeProjectId = projects?.[0]?.id;
+    const filesQuery = useMemo(() => {
+        if (!firestore || !activeProjectId) return null;
+        return query(collection(firestore, `projects/${activeProjectId}/files`), orderBy('modified', 'desc'), limit(3));
+    }, [firestore, activeProjectId]);
+
+    const { data: recentFiles, isLoading: filesLoading } = useCollection(filesQuery);
 
 
   const { totalBudget, totalSpent } = useMemo(() => {
@@ -254,19 +251,7 @@ export default function AdminDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium">समग्र स्वास्थ्य</label>
-                <div className="flex items-center gap-4 mt-1">
-                    <Progress value={healthData.overall} className="h-3" />
-                    <span className="font-bold text-lg text-primary">{healthData.overall}%</span>
-                </div>
-              </div>
-               <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm text-muted-foreground pt-2">
-                <div className="flex items-center gap-2"><Clock className="h-4 w-4 text-blue-400" /><span>समय: {healthData.time}%</span></div>
-                <div className="flex items-center gap-2"><Wallet className="h-4 w-4 text-green-400" /><span>बजट: {healthData.budget}%</span></div>
-                <div className="flex items-center gap-2"><CheckCircle className="h-4 w-4 text-purple-400" /><span>गुणवत्ता: {healthData.quality}%</span></div>
-                <div className="flex items-center gap-2"><Smile className="h-4 w-4 text-yellow-400" /><span>संतुष्टि: {healthData.satisfaction}%</span></div>
-              </div>
+               <p className="text-sm text-muted-foreground text-center py-4">प्रोजेक्ट हेल्थ डेटा अभी उपलब्ध नहीं है।</p>
           </CardContent>
         </Card>
 
@@ -297,17 +282,21 @@ export default function AdminDashboard() {
                 </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-                {recentFiles.map((file, index) => (
-                    <Link href="/dashboard/files" key={index}>
+                 {filesLoading && Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-12 w-full" />)}
+                 {!filesLoading && recentFiles?.map((file) => (
+                    <Link href="/dashboard/files" key={file.id}>
                         <div className="flex items-center gap-3 p-2 rounded-md hover:bg-secondary/50 cursor-pointer">
-                            {file.icon}
+                            <div className="text-2xl">{getFileIcon(file.type)}</div>
                             <div>
-                                <p className="font-semibold text-sm">{file.name}</p>
+                                <p className="font-semibold text-sm truncate w-40">{file.name}</p>
                                 <p className="text-xs text-muted-foreground">{file.size}</p>
                             </div>
                         </div>
                     </Link>
                 ))}
+                 {!filesLoading && (!recentFiles || recentFiles.length === 0) && (
+                    <p className="text-xs text-muted-foreground text-center py-4">कोई हाल की फाइल नहीं।</p>
+                 )}
             </CardContent>
         </Card>
         
