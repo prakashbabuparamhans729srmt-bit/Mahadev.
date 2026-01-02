@@ -227,7 +227,7 @@ export default function ReportsPage() {
         <CardContent>
             {isLoading && <div className="flex justify-center items-center h-40"><Loader2 className="h-8 w-8 animate-spin" /></div>}
             {error && <div className="text-destructive text-center p-4"><ShieldAlert className="mx-auto h-8 w-8 mb-2" />त्रुटि: {error.message}</div>}
-            {healthData && (
+            {healthData && healthData.length > 0 ? (
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -253,7 +253,7 @@ export default function ReportsPage() {
                         ))}
                     </TableBody>
                 </Table>
-            )}
+            ) : !isLoading && <p className="text-center text-muted-foreground py-4">कोई प्रोजेक्ट स्वास्थ्य डेटा उपलब्ध नहीं है।</p>}
         </CardContent>
       </Card>
     </div>

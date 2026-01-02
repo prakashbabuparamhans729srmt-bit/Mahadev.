@@ -82,7 +82,7 @@ export default function AllProjectsPage() {
         } finally {
           setIsLoading(false);
         }
-      } else {
+      } else if(auth) {
           // Wait for auth to be initialized
           setIsLoading(true);
       }
