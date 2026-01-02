@@ -24,6 +24,7 @@ import {
   Send,
   Loader2,
   Building,
+  ShieldAlert,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -76,6 +77,7 @@ export default function UserDetailPage() {
     const fetchProjects = async () => {
       if (auth?.currentUser && user) {
         setIsLoading(true);
+        setError(null);
         try {
           const token = await auth.currentUser.getIdToken(true);
           const allProjects = await getAllProjects(token);
@@ -186,7 +188,14 @@ export default function UserDetailPage() {
             </CardHeader>
             <CardContent>
                 {isLoading && <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>}
-                {!isLoading && projects.length > 0 ? (
+                {error && (
+                  <div className="text-center py-10 text-destructive bg-destructive/10 rounded-lg">
+                      <ShieldAlert className="mx-auto h-8 w-8 mb-2"/>
+                      <p className="font-semibold">प्रोजेक्ट्स लोड करने में विफल</p>
+                      <p className="text-sm">{error.message}</p>
+                  </div>
+                )}
+                {!isLoading && !error && projects.length > 0 ? (
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -208,7 +217,7 @@ export default function UserDetailPage() {
                         </TableBody>
                     </Table>
                 ) : (
-                    !isLoading && <div className="text-center py-20 text-muted-foreground">
+                    !isLoading && !error && <div className="text-center py-20 text-muted-foreground">
                         <Briefcase className="h-12 w-12 mx-auto mb-4" />
                         <h3 className="font-semibold text-lg">इस ग्राहक के पास अभी कोई प्रोजेक्ट नहीं है</h3>
                         <p className="text-sm">आप ऊपर दिए गए "नया प्रोजेक्ट" बटन का उपयोग करके एक नया प्रोजेक्ट बना सकते हैं।</p>

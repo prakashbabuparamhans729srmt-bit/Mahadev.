@@ -59,6 +59,7 @@ export default function AnalyticsPage() {
     useEffect(() => {
         const fetchProjects = async () => {
             if (auth?.currentUser) {
+                setError(null);
                 try {
                     const token = await auth.currentUser.getIdToken(true);
                     const allProjects = await getAllProjects(token);
@@ -81,17 +82,20 @@ export default function AnalyticsPage() {
     }, [auth, toast, clientsLoading]);
 
     useEffect(() => {
-        if (!clientsLoading && !auth?.currentUser) {
-            setIsLoading(false);
-        } else if (!clientsLoading && projects.length > 0) {
-            setIsLoading(false);
-        }
-         if (clientsError) {
-            setError(clientsError);
-            setIsLoading(false);
+        const anyError = error || clientsError;
+        if (anyError) {
+          setError(anyError);
+          setIsLoading(false);
+          return;
         }
 
-    }, [clientsLoading, projects, clientsError, auth]);
+        if (!clientsLoading && auth?.currentUser && projects) {
+          setIsLoading(false);
+        } else if (!clientsLoading && !auth?.currentUser) {
+          setIsLoading(false);
+        }
+
+    }, [clientsLoading, projects, auth, error, clientsError]);
 
 
     const totalProjects = projects.length;
@@ -201,6 +205,11 @@ export default function AnalyticsPage() {
             </CardHeader>
             <CardContent className="h-[350px]">
                 {isLoading ? <div className="flex h-full items-center justify-center"><Loader2 className="animate-spin" /></div> : 
+                 error ? (
+                    <div className="flex h-full items-center justify-center text-destructive-foreground bg-destructive/10 rounded-md">
+                        <ShieldAlert className="mr-2" /> डेटा लोड करने में विफल: {error.message}
+                    </div>
+                 ) :
                  projectStatusData.length > 0 ? (
                     <ChartContainer config={{}} className="w-full h-full">
                         <BarChart data={projectStatusData} margin={{ top: 20, right: 20, left: -10, bottom: 0 }}>
