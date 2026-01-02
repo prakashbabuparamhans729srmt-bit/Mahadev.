@@ -19,11 +19,11 @@ import Link from 'next/link';
 
 // This is a placeholder for a real admin check. 
 // In a production app, this should be a custom claim on the Firebase user token.
-const checkIsAdmin = (uid: string | undefined): boolean => {
-    if (!uid) return false;
-    // This is the actual Admin User ID.
-    const ADMIN_UID = 'h2bT0WkxL3bA0YVzJ5f4Z6yI3oE2';
-    return uid === ADMIN_UID;
+const checkIsAdmin = (user: User | null): boolean => {
+    if (!user) return false;
+    // Using email for identification as requested by the user.
+    const ADMIN_EMAIL = 'divyahanssuperpower@gmail.com';
+    return user.email === ADMIN_EMAIL;
 }
 
 export function SecuritySettings({ user }: { user: User | null }) {
@@ -38,7 +38,7 @@ export function SecuritySettings({ user }: { user: User | null }) {
   const [deletePassword, setDeletePassword] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const isAdmin = checkIsAdmin(user?.uid);
+  const isAdmin = checkIsAdmin(user);
 
   const handlePasswordSave = async () => {
     if (!auth || !auth.currentUser) {

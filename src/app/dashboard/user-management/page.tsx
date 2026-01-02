@@ -19,14 +19,14 @@ import {
   Loader2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser } from '@/firebase';
+import { useUser, type User } from '@/firebase';
 
 // This is a placeholder. In a real app, this would be determined from a secure source like a custom claim.
-const checkIsAdmin = (uid: string | undefined): boolean => {
-  if (!uid) return false;
-  // This is the actual Admin User ID.
-  const ADMIN_UID = 'h2bT0WkxL3bA0YVzJ5f4Z6yI3oE2';
-  return uid === ADMIN_UID;
+const checkIsAdmin = (user: User | null): boolean => {
+  if (!user) return false;
+  // Using email for identification as requested by the user.
+  const ADMIN_EMAIL = 'divyahanssuperpower@gmail.com';
+  return user.email === ADMIN_EMAIL;
 }
 
 export default function UserManagementPage() {
@@ -39,7 +39,7 @@ export default function UserManagementPage() {
     // We wait until the user object is no longer loading.
     if (!isUserLoading) {
       // Then we check if a user exists and if they are an admin.
-      const adminStatus = checkIsAdmin(user?.uid);
+      const adminStatus = checkIsAdmin(user);
       setIsAdmin(adminStatus);
       // We are done loading the page's permission checks.
       setIsLoading(false);
