@@ -19,6 +19,7 @@ import {
   ArrowLeft,
   UserCog,
   LayoutDashboard,
+  List,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -82,6 +83,20 @@ export default function UserManagementLayout({
                   <Link href="/dashboard/user-management">
                     <Users />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">ग्राहक</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/user-management/details-list')}
+                  tooltip="यूज़र डिटेल्स लिस्ट"
+                  size="lg"
+                  className="!justify-start"
+                >
+                  <Link href="/dashboard/user-management/details-list">
+                    <List />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">यूज़र डिटेल्स लिस्ट</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
