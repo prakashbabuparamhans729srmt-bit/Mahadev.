@@ -51,8 +51,8 @@ export default function UserManagementLayout({
   const router = useRouter();
   const { user, isUserLoading } = useUser();
 
+  // This effect acts as a route guard.
   useEffect(() => {
-    // This effect acts as a route guard.
     if (!isUserLoading && !checkIsAdmin(user)) {
       // If the user is loaded and they are NOT an admin, redirect them.
       router.replace('/dashboard');
