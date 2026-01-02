@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -49,7 +48,7 @@ const checkIsAdmin = (user: User | null): boolean => {
   return user.email === ADMIN_EMAIL;
 }
 
-export default function UserManagementPage() {
+export default function UserManagementPage({ isAuthorized }: { isAuthorized: boolean }) {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const [isAdmin, setIsAdmin] = useState(false);
@@ -64,28 +63,24 @@ export default function UserManagementPage() {
   }, [user, isUserLoading]);
 
   const clientsQuery = useMemo(() => {
-      // Only create the query if we know the user is an admin
-      if (!firestore || !isAdmin) return null;
+      // Only create the query if authorization has been confirmed by the layout.
+      if (!firestore || !isAuthorized) return null;
       return query(collection(firestore, 'clients'));
-  }, [firestore, isAdmin]);
+  }, [firestore, isAuthorized]);
 
   const { data: clients, isLoading: clientsLoading, error: clientsError } = useCollection(clientsQuery);
   
   // This effect will properly manage the overall loading state
   useEffect(() => {
-    // Stop loading if auth check is done and user is not admin
-    if (!isUserLoading && !isAdmin) {
-      setIsLoading(false);
-      return;
+    if (!isAuthorized) {
+        setIsLoading(true); // Keep loading if not authorized yet
+        return;
     }
-    // If user is admin, the loading state depends on the clients query
-    if (isAdmin) {
-      setIsLoading(clientsLoading);
-    }
-  }, [isUserLoading, isAdmin, clientsLoading]);
+    // If authorized, the loading state depends on the clients query
+    setIsLoading(clientsLoading);
+  }, [isAuthorized, clientsLoading]);
 
   const filteredClients = useMemo(() => {
-    // Always check if clients is not null or undefined before filtering
     if (!clients) return [];
     return clients.filter(client => 
         (client.firstName + ' ' + client.lastName).toLowerCase().includes(searchQuery.toLowerCase()) ||

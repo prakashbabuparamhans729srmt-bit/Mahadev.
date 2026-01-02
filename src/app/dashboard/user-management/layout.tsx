@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import {
   Sidebar,
   SidebarProvider,
@@ -17,11 +18,9 @@ import {
   Settings,
   ArrowLeft,
   UserCog,
-  LayoutDashboard,
   List,
   LineChart,
   Loader2,
-  ShieldAlert,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -31,7 +30,6 @@ import { UserNav } from '@/components/layout/user-nav';
 import { SearchInput } from '@/components/layout/search-input';
 import { useUser } from '@/firebase';
 import { useEffect, useState } from 'react';
-
 
 // This is a placeholder. In a real app, this should be determined from a secure source like a custom claim.
 const checkIsAdmin = (user: import('firebase/auth').User | null): boolean => {
@@ -51,8 +49,9 @@ export default function UserManagementLayout({
   const router = useRouter();
   const { user, isUserLoading } = useUser();
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // This effect acts as a route guard.
+  // This effect acts as a strict route guard.
   useEffect(() => {
     // Wait until auth state is determined
     if (isUserLoading) {
@@ -60,30 +59,28 @@ export default function UserManagementLayout({
     }
 
     const isAdmin = checkIsAdmin(user);
+    const isAuthPage = pathname === '/dashboard/user-management/auth';
 
-    // If user is not admin, redirect them immediately.
     if (!isAdmin) {
       router.replace('/dashboard');
-      return;
+      return; // Early exit
     }
 
-    // If the path is not the auth page, check for re-authentication flag
-    if (pathname !== '/dashboard/user-management/auth') {
+    if (!isAuthPage) {
       const isReauthenticated = sessionStorage.getItem('isAdminReauthenticated') === 'true';
       if (!isReauthenticated) {
         router.replace('/dashboard/user-management/auth');
-      } else {
-        setIsAuthorized(true);
+        return; // Early exit
       }
-    } else {
-      // If on the auth page, they are considered "authorized" to see that page.
-      setIsAuthorized(true);
     }
+
+    setIsAuthorized(true);
+    setAuthChecked(true);
+
   }, [user, isUserLoading, router, pathname]);
 
-  if (!isAuthorized) {
-    // Show a loading screen while authorization checks are in progress.
-    // This prevents rendering content before redirection/authorization is complete.
+  // Show a loading screen while all authorization checks are in progress.
+  if (!authChecked) {
     return (
        <div className="flex h-screen w-full items-center justify-center bg-background text-center p-4">
         <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -91,19 +88,28 @@ export default function UserManagementLayout({
     );
   }
 
-  // If on the auth page, render it without the main layout
+  // Render the auth page without the main layout, as it has its own simple layout
   if (pathname === '/dashboard/user-management/auth') {
     return <>{children}</>;
   }
 
+  // If we reach here, the user is authorized to see the admin panel.
+  // We can now safely render the layout and its children.
 
   const isActive = (path: string) => {
-    // Exact match for the main page, startsWith for sub-pages
     if (path === '/dashboard/user-management') {
       return pathname === path;
     }
     return pathname.startsWith(path);
   };
+  
+  const childrenWithProps = React.Children.map(children, child => {
+    if (React.isValidElement(child)) {
+      // Pass the isAuthorized flag to the child pages.
+      return React.cloneElement(child, { isAuthorized } as { isAuthorized: boolean });
+    }
+    return child;
+  });
 
   return (
     <SidebarProvider>
@@ -124,7 +130,7 @@ export default function UserManagementLayout({
                 <SidebarMenuButton
                   asChild
                   isActive={isActive('/dashboard/user-management/analytics')}
-                  tooltip="एडमिन डैशबोर्ड"
+                  tooltip="एनालिटिक्स"
                   size="lg"
                   className="!justify-start"
                 >
@@ -226,7 +232,7 @@ export default function UserManagementLayout({
                  </div>
             </header>
             <main className="flex-1 bg-background/95">
-                {children}
+                {childrenWithProps}
             </main>
         </div>
       </div>

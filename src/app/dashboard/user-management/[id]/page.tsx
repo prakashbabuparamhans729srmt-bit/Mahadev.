@@ -16,7 +16,6 @@ import {
   ArrowLeft,
   Mail,
   Phone,
-  Calendar,
   Briefcase,
   MoreVertical,
   UserX,
@@ -55,7 +54,7 @@ async function getAllProjects(token: string) {
 }
 
 
-export default function UserDetailPage() {
+export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean }) {
   const params = useParams();
   const router = useRouter();
   const { toast } = useToast();
@@ -68,14 +67,17 @@ export default function UserDetailPage() {
   const [error, setError] = useState<Error | null>(null);
 
   const clientRef = useMemo(() => {
-      if (!firestore || !id) return null;
+      // Only create the query if authorization has been confirmed by the layout.
+      if (!firestore || !id || !isAuthorized) return null;
       return doc(firestore, 'clients', id);
-  }, [firestore, id]);
+  }, [firestore, id, isAuthorized]);
+
   const { data: user, isLoading: userLoading, error: userError } = useDoc(clientRef);
 
   useEffect(() => {
     const fetchProjects = async () => {
-      if (auth?.currentUser && user) {
+      // Fetch projects only if authorized, and we have a user object.
+      if (isAuthorized && auth?.currentUser && user) {
         setIsLoading(true);
         setError(null);
         try {
@@ -93,14 +95,15 @@ export default function UserDetailPage() {
         } finally {
           setIsLoading(false);
         }
-      } else if (!auth?.currentUser || !user) {
+      } else if (isAuthorized) {
+        // If authorized but no user, we can stop loading projects.
         setIsLoading(false);
       }
     };
-    if (!userLoading) {
+    if (!userLoading) { // Wait for the user doc to load first
         fetchProjects();
     }
-  }, [auth, user, toast, userLoading]);
+  }, [isAuthorized, auth, user, userLoading, toast]);
   
   const combinedLoading = userLoading || isLoading;
   const combinedError = userError || error;

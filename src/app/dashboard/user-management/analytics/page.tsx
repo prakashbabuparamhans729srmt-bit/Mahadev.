@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -44,7 +44,7 @@ async function getAllProjects(token: string) {
 
 const DUMMY_SATISFACTION = 92;
 
-export default function AnalyticsPage() {
+export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean }) {
     const auth = useAuth();
     const firestore = useFirestore();
     const { toast } = useToast();
@@ -53,13 +53,13 @@ export default function AnalyticsPage() {
     const [error, setError] = useState<Error | null>(null);
 
     const { data: clients, isLoading: clientsLoading, error: clientsError } = useCollection(
-        firestore ? collection(firestore, 'clients') : null
+        // Only fetch if authorized by the layout
+        isAuthorized && firestore ? collection(firestore, 'clients') : null
     );
 
     useEffect(() => {
         const fetchProjects = async () => {
-            if (auth?.currentUser) {
-                // setError(null); // Keep previous error until loading is done
+            if (isAuthorized && auth?.currentUser) {
                 try {
                     const token = await auth.currentUser.getIdToken(true);
                     const allProjects = await getAllProjects(token);
@@ -75,13 +75,16 @@ export default function AnalyticsPage() {
             }
         };
 
-        if(!clientsLoading){
-             fetchProjects();
-        }
+        fetchProjects();
 
-    }, [auth, toast, clientsLoading]);
+    }, [isAuthorized, auth, toast]);
 
     useEffect(() => {
+        if (!isAuthorized) {
+            setIsLoading(true);
+            return;
+        }
+        
         const anyError = error || clientsError;
         if (anyError) {
           setError(anyError);
@@ -89,20 +92,19 @@ export default function AnalyticsPage() {
           return;
         }
 
-        if (!clientsLoading && auth?.currentUser && projects) {
-          setIsLoading(false);
-        } else if (!clientsLoading && !auth?.currentUser) {
+        // We are loading until both clients and projects are done.
+        if (!clientsLoading && projects) {
           setIsLoading(false);
         }
 
-    }, [clientsLoading, projects, auth, error, clientsError]);
+    }, [isAuthorized, clientsLoading, projects, error, clientsError]);
 
 
     const totalProjects = projects.length;
     const totalRevenue = projects.reduce((acc, p) => acc + (p.budget || 0), 0);
     
     const projectStatusData = React.useMemo(() => {
-        if (isLoading || error) return [];
+        if (isLoading || error || !projects) return [];
         const statusCounts: { [key: string]: { status: string, count: number, fill: string } } = {
             'जारी': { status: 'जारी', count: 0, fill: 'hsl(var(--chart-2))' },
             'पूर्ण': { status: 'पूर्ण', count: 0, fill: 'hsl(var(--chart-1))' },

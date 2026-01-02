@@ -1,7 +1,6 @@
-
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Card,
   CardContent,
@@ -30,15 +29,16 @@ import { Button } from '@/components/ui/button';
 import { useCollection, useFirestore } from '@/firebase';
 import { collection, query } from 'firebase/firestore';
 
-export default function UserDetailsListPage() {
+export default function UserDetailsListPage({ isAuthorized }: { isAuthorized: boolean }) {
   const { toast } = useToast();
   const firestore = useFirestore();
   const [searchQuery, setSearchQuery] = useState('');
   
   const clientsQuery = useMemo(() => {
-      if (!firestore) return null;
+      // Only create the query if authorization has been confirmed by the layout.
+      if (!firestore || !isAuthorized) return null;
       return query(collection(firestore, 'clients'));
-  }, [firestore]);
+  }, [firestore, isAuthorized]);
 
   const { data: clients, isLoading, error } = useCollection(clientsQuery);
 

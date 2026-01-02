@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -55,7 +54,7 @@ async function getAllProjects(token: string) {
 }
 
 
-export default function AllProjectsPage() {
+export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolean }) {
   const { toast } = useToast();
   const auth = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,7 +64,7 @@ export default function AllProjectsPage() {
 
   useEffect(() => {
     const fetchProjects = async () => {
-      if (auth?.currentUser) {
+      if (isAuthorized && auth?.currentUser) {
         setIsLoading(true);
         setError(null);
         try {
@@ -82,13 +81,10 @@ export default function AllProjectsPage() {
         } finally {
           setIsLoading(false);
         }
-      } else if(auth) {
-          // Wait for auth to be initialized
-          setIsLoading(true);
       }
     };
     fetchProjects();
-  }, [auth, toast]);
+  }, [isAuthorized, auth, toast]);
 
 
   const filteredProjects = projects.filter(p => 
