@@ -19,6 +19,7 @@ import {
   Settings,
   ArrowLeft,
   UserCog,
+  LayoutDashboard,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -60,7 +61,21 @@ export default function UserManagementLayout({
               <SidebarMenuItem>
                 <SidebarMenuButton
                   asChild
-                  isActive={isActive('/dashboard/user-management')}
+                  isActive={isActive('/dashboard/user-management/analytics')}
+                  tooltip="एडमिन डैशबोर्ड"
+                  size="lg"
+                  className="!justify-start"
+                >
+                  <Link href="/dashboard/user-management/analytics">
+                    <LayoutDashboard />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">एडमिन डैशबोर्ड</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/user-management') && pathname === '/dashboard/user-management'}
                   tooltip="ग्राहक"
                   size="lg"
                   className="!justify-start"
@@ -78,26 +93,10 @@ export default function UserManagementLayout({
                   tooltip="प्रोजेक्ट्स"
                    size="lg"
                    className="!justify-start"
-                   disabled
                 >
-                  <Link href="#">
+                  <Link href="/dashboard/user-management/projects">
                     <Briefcase />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">प्रोजेक्ट्स</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-               <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive('/dashboard/user-management/analytics')}
-                  tooltip="एनालिटिक्स"
-                   size="lg"
-                   className="!justify-start"
-                   disabled
-                >
-                  <Link href="#">
-                    <BarChart2 />
-                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">एनालिटिक्स</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
