@@ -1,13 +1,11 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
-  CardDescription,
 } from '@/components/ui/card';
 import {
   Table,
@@ -22,30 +20,37 @@ import {
   Search,
   Download,
   Copy,
-  Users
+  Users,
+  Loader2,
+  ShieldAlert
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-
-// Using the same mock data for consistency
-const mockUsers = [
-    { id: 'usr_1', name: 'प्रकाश कुमार', email: 'prakash@example.com', phone: '+91 98765 43210', address: '123, गांधी नगर, दिल्ली', joined: '15 मार्च, 2024' },
-    { id: 'usr_2', name: 'राजेश इंडस्ट्रीज', email: 'contact@rajeshind.com', phone: '+91 91234 56789', address: '456, नेहरू प्लेस, मुंबई', joined: '22 फरवरी, 2024' },
-    { id: 'usr_3', name: 'नेहा गुप्ता', email: 'neha.gupta@mail.com', phone: '+91 87654 32109', address: '789, सेक्टर 18, नोएडा', joined: '10 जनवरी, 2024' },
-    { id: 'usr_4', name: 'स्मार्ट सॉल्यूशंस', email: 'support@smartsol.dev', phone: '+91 76543 21098', address: '101, आईटी पार्क, बैंगलोर', joined: '05 अप्रैल, 2024' },
-];
+import { useCollection, useFirestore } from '@/firebase';
+import { collection, query } from 'firebase/firestore';
 
 export default function UserDetailsListPage() {
   const { toast } = useToast();
+  const firestore = useFirestore();
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const clientsQuery = useMemo(() => {
+      if (!firestore) return null;
+      return query(collection(firestore, 'clients'));
+  }, [firestore]);
 
-  const filteredUsers = mockUsers.filter(u => 
-    u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    u.phone.includes(searchQuery) ||
-    u.address.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const { data: clients, isLoading, error } = useCollection(clientsQuery);
+
+  const filteredUsers = useMemo(() => {
+    if (!clients) return [];
+    return clients.filter(u => 
+      (u.firstName + ' ' + u.lastName).toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (u.phone || '').includes(searchQuery)
+    );
+  }, [clients, searchQuery]);
+
 
   const handleAction = (message: string) => {
     toast({
@@ -53,6 +58,31 @@ export default function UserDetailsListPage() {
       description: message,
     });
   };
+  
+  const copyToClipboard = () => {
+    if (!clients) return;
+    const csvContent = [
+      "Name,Email,Phone",
+      ...clients.map(u => `${u.firstName || ''} ${u.lastName || ''},${u.email},${u.phone || ''}`)
+    ].join("\n");
+    navigator.clipboard.writeText(csvContent);
+    toast({ description: "ग्राहक डेटा क्लिपबोर्ड पर कॉपी किया गया।" });
+  };
+  
+  const downloadCSV = () => {
+    if (!clients) return;
+    const csvContent = "data:text/csv;charset=utf-8," + [
+      "Name,Email,Phone",
+      ...clients.map(u => `${u.firstName || ''} ${u.lastName || ''},${u.email},${u.phone || ''}`)
+    ].join("\n");
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "user_details_list.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 
   return (
     <div className="p-4 md:p-6 lg:p-8 space-y-6">
@@ -81,41 +111,41 @@ export default function UserDetailsListPage() {
                   />
               </div>
               <div className="flex items-center gap-2">
-                 <Button variant="outline" onClick={() => handleAction('डेटा को CSV फ़ाइल के रूप में डाउनलोड करने की सुविधा जल्द ही आएगी।')}>
+                 <Button variant="outline" onClick={downloadCSV} disabled={isLoading || !clients || clients.length === 0}>
                     <Download className="mr-2 h-4 w-4" /> CSV डाउनलोड करें
                  </Button>
-                  <Button variant="outline" onClick={() => handleAction('टेबल डेटा आपके क्लिपबोर्ड पर कॉपी हो जाएगा।')}>
+                  <Button variant="outline" onClick={copyToClipboard} disabled={isLoading || !clients || clients.length === 0}>
                     <Copy className="mr-2 h-4 w-4" /> डेटा कॉपी करें
                  </Button>
               </div>
             </div>
           </CardHeader>
           <CardContent>
-              {filteredUsers.length > 0 ? (
+              {isLoading && <div className="flex justify-center items-center h-60"><Loader2 className="h-8 w-8 animate-spin" /></div>}
+              {error && <div className="text-center text-destructive p-4"><ShieldAlert className="mx-auto h-8 w-8 mb-2" />{error.message}</div>}
+              {!isLoading && filteredUsers.length > 0 ? (
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>नाम</TableHead>
                             <TableHead>ईमेल</TableHead>
                             <TableHead>मोबाइल नंबर</TableHead>
-                            <TableHead>पता</TableHead>
-                            <TableHead>सदस्यता तिथि</TableHead>
+                            <TableHead>कंपनी</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {filteredUsers.map(user => (
                             <TableRow key={user.id}>
-                                <TableCell className="font-medium">{user.name}</TableCell>
+                                <TableCell className="font-medium">{`${user.firstName || ''} ${user.lastName || ''}`.trim()}</TableCell>
                                 <TableCell>{user.email}</TableCell>
-                                <TableCell>{user.phone}</TableCell>
-                                <TableCell>{user.address}</TableCell>
-                                <TableCell>{user.joined}</TableCell>
+                                <TableCell>{user.phone || 'N/A'}</TableCell>
+                                <TableCell>{user.companyName || 'N/A'}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
               ) : (
-                <div className="text-center py-20 text-muted-foreground">
+                !isLoading && <div className="text-center py-20 text-muted-foreground">
                     <Users className="h-12 w-12 mx-auto mb-4" />
                     <h3 className="font-semibold text-lg">
                         {searchQuery ? `"${searchQuery}" के लिए कोई यूज़र नहीं मिला` : 'अभी कोई यूज़र डेटा नहीं है'}

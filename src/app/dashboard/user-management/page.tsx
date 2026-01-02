@@ -1,31 +1,25 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
-  CardDescription,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Users,
   ShieldAlert,
   Loader2,
-  Briefcase,
-  BarChart2,
-  Settings,
   MoreHorizontal,
   Plus,
   Search,
   Download,
-  ArrowRight,
   UserCheck,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, type User } from '@/firebase';
+import { useUser, type User, useFirestore, useCollection } from '@/firebase';
 import {
   Table,
   TableBody,
@@ -45,9 +39,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { Progress } from '@/components/ui/progress';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Line, LineChart, XAxis, YAxis } from 'recharts';
+import { collection, query } from 'firebase/firestore';
 
 // This is a placeholder. In a real app, this would be determined from a secure source like a custom claim.
 const checkIsAdmin = (user: User | null): boolean => {
@@ -57,34 +49,49 @@ const checkIsAdmin = (user: User | null): boolean => {
   return user.email === ADMIN_EMAIL;
 }
 
-// Mock Data for a realistic UI
-const mockUsers = [
-    { id: 'usr_1', name: 'प्रकाश कुमार', email: 'prakash@example.com', role: 'ग्राहक', status: 'सक्रिय', joined: '15 मार्च, 2024', avatar: 'https://i.pravatar.cc/150?u=prakash', projects: 2, totalSpent: 75000 },
-    { id: 'usr_2', name: 'राजेश इंडस्ट्रीज', email: 'contact@rajeshind.com', role: 'ग्राहक', status: 'सक्रिय', joined: '22 फरवरी, 2024', avatar: 'https://i.pravatar.cc/150?u=rajesh', projects: 1, totalSpent: 150000 },
-    { id: 'usr_3', name: 'नेहा गुप्ता', email: 'neha.gupta@mail.com', role: 'ग्राहक', status: 'निष्क्रिय', joined: '10 जनवरी, 2024', avatar: 'https://i.pravatar.cc/150?u=neha', projects: 0, totalSpent: 0 },
-    { id: 'usr_4', name: 'स्मार्ट सॉल्यूशंस', email: 'support@smartsol.dev', role: 'ग्राहक', status: 'सक्रिय', joined: '05 अप्रैल, 2024', avatar: 'https://i.pravatar.cc/150?u=smart', projects: 1, totalSpent: 300000 },
-];
-
 export default function UserManagementPage() {
   const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
+
+  const clientsQuery = useMemo(() => {
+      if (!firestore || !isAdmin) return null;
+      return query(collection(firestore, 'clients'));
+  }, [firestore, isAdmin]);
+
+  const { data: clients, isLoading: clientsLoading, error: clientsError } = useCollection(clientsQuery);
+  
+  const filteredClients = useMemo(() => {
+    if (!clients) return [];
+    return clients.filter(client => 
+        (client.firstName + ' ' + client.lastName).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        client.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [clients, searchQuery]);
 
 
   useEffect(() => {
     if (!isUserLoading) {
       const adminStatus = checkIsAdmin(user);
       setIsAdmin(adminStatus);
-      setIsLoading(false);
+      // Main loading state should depend on both auth and data loading
+      if (!adminStatus) {
+        setIsLoading(false);
+      }
     }
   }, [user, isUserLoading]);
 
-  if (isLoading) {
+  // Combine loading states
+  const combinedLoading = isLoading || (isAdmin && clientsLoading);
+
+  if (combinedLoading) {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="ml-4">अनुमतियों की जाँच हो रही है...</p>
+        <p className="ml-4">अनुमतियों और ग्राहकों की जाँच हो रही है...</p>
       </div>
     );
   }
@@ -129,41 +136,43 @@ export default function UserManagementPage() {
           <CardHeader>
               <div className="relative w-full max-w-sm">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input placeholder="ग्राहक खोजें (नाम या ईमेल से)..." className="pl-9" />
+                  <Input 
+                    placeholder="ग्राहक खोजें (नाम या ईमेल से)..." 
+                    className="pl-9"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
               </div>
           </CardHeader>
           <CardContent>
-              {mockUsers.length > 0 ? (
+              {clientsError && <p className="text-destructive text-center">त्रुटि: {clientsError.message}</p>}
+              {!clientsLoading && filteredClients.length > 0 ? (
                 <Table>
                     <TableHeader>
                         <TableRow>
                             <TableHead>ग्राहक</TableHead>
-                            <TableHead>स्थिति</TableHead>
-                            <TableHead>प्रोजेक्ट्स</TableHead>
-                            <TableHead>कुल खर्च</TableHead>
+                            <TableHead>भूमिका</TableHead>
                             <TableHead className="text-right">कार्रवाई</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockUsers.map(user => (
-                            <TableRow key={user.id}>
+                        {filteredClients.map(client => (
+                            <TableRow key={client.id}>
                                 <TableCell>
-                                <Link href={`/dashboard/user-management/${user.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">
+                                <Link href={`/dashboard/user-management/${client.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">
                                         <Avatar>
-                                            <AvatarImage src={user.avatar} />
-                                            <AvatarFallback>{user.name[0]}</AvatarFallback>
+                                            <AvatarImage src={client.photoURL} />
+                                            <AvatarFallback>{(client.firstName?.[0] || 'U').toUpperCase()}</AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <p className="font-medium">{user.name}</p>
-                                            <p className="text-xs text-muted-foreground">{user.email}</p>
+                                            <p className="font-medium">{`${client.firstName} ${client.lastName}`}</p>
+                                            <p className="text-xs text-muted-foreground">{client.email}</p>
                                         </div>
                                     </Link>
                                 </TableCell>
                                 <TableCell>
-                                    <Badge variant={user.status === 'सक्रिय' ? 'default' : 'destructive'} className={user.status === 'सक्रिय' ? 'bg-green-500/20 text-green-700' : ''}>{user.status}</Badge>
+                                    <Badge variant="secondary">ग्राहक</Badge>
                                 </TableCell>
-                                <TableCell>{user.projects}</TableCell>
-                                <TableCell>₹{user.totalSpent.toLocaleString('en-IN')}</TableCell>
                                 <TableCell className="text-right">
                                     <DropdownMenu>
                                         <DropdownMenuTrigger asChild>
@@ -172,10 +181,10 @@ export default function UserManagementPage() {
                                         <DropdownMenuContent>
                                             <DropdownMenuLabel>कार्रवाई</DropdownMenuLabel>
                                             <DropdownMenuItem asChild>
-                                            <Link href={`/dashboard/user-management/${user.id}`}>विवरण देखें</Link>
+                                            <Link href={`/dashboard/user-management/${client.id}`}>विवरण देखें</Link>
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => toast({ description: `ग्राहक ${user.name} को संपादित किया गया।` })}>संपादित करें</DropdownMenuItem>
-                                            <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: `ग्राहक ${user.name} को हटा दिया गया।`, variant: 'destructive' })}>हटाएं</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => toast({ description: `ग्राहक ${client.firstName} को संपादित किया गया।` })}>संपादित करें</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: `ग्राहक ${client.firstName} को हटा दिया गया।`, variant: 'destructive' })}>हटाएं</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
@@ -184,9 +193,11 @@ export default function UserManagementPage() {
                     </TableBody>
                 </Table>
               ) : (
-                <div className="text-center py-20 text-muted-foreground">
+                !clientsLoading && <div className="text-center py-20 text-muted-foreground">
                     <Users className="h-12 w-12 mx-auto mb-4" />
-                    <h3 className="font-semibold text-lg">अभी कोई ग्राहक नहीं है</h3>
+                    <h3 className="font-semibold text-lg">
+                      {searchQuery ? `"${searchQuery}" के लिए कोई ग्राहक नहीं मिला` : 'अभी कोई ग्राहक नहीं है'}
+                    </h3>
                     <p className="text-sm">जब नए ग्राहक साइन अप करेंगे, तो वे यहां दिखाई देंगे।</p>
                 </div>
               )}
