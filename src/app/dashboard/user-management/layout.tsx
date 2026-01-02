@@ -14,19 +14,33 @@ import {
 import {
   Users,
   Briefcase,
-  BarChart2,
   Settings,
   ArrowLeft,
   UserCog,
   LayoutDashboard,
   List,
+  LineChart,
+  Loader2,
+  ShieldAlert,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
 import { UserNav } from '@/components/layout/user-nav';
 import { SearchInput } from '@/components/layout/search-input';
+import { useUser } from '@/firebase';
+import { useEffect } from 'react';
+
+
+// This is a placeholder. In a real app, this should be determined from a secure source like a custom claim.
+const checkIsAdmin = (user: import('firebase/auth').User | null): boolean => {
+  if (!user) return false;
+  // Using email for identification as requested by the user.
+  const ADMIN_EMAIL = 'divyahanssuperpower@gmail.com';
+  return user.email === ADMIN_EMAIL;
+}
+
 
 export default function UserManagementLayout({
   children,
@@ -34,6 +48,36 @@ export default function UserManagementLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, isUserLoading } = useUser();
+
+  useEffect(() => {
+    // This effect acts as a route guard.
+    if (!isUserLoading && !checkIsAdmin(user)) {
+      // If the user is loaded and they are NOT an admin, redirect them.
+      router.replace('/dashboard');
+    }
+  }, [user, isUserLoading, router]);
+
+  if (isUserLoading || !checkIsAdmin(user)) {
+    // While loading, or if the user is not an admin, show a loading/access-denied screen.
+    // This prevents any part of the admin layout from rendering for non-admins.
+    return (
+       <div className="flex h-screen w-full items-center justify-center bg-background text-center p-4">
+        {isUserLoading ? (
+            <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        ) : (
+             <div className="flex flex-col items-center gap-4 text-destructive">
+                <ShieldAlert className="h-12 w-12" />
+                <h1 className="text-xl font-bold">एक्सेस प्रतिबंधित</h1>
+                <p className="text-muted-foreground">आपके पास इस सेक्शन को देखने की अनुमति नहीं है।</p>
+                <Button onClick={() => router.replace('/dashboard')}>डैशबोर्ड पर वापस जाएं</Button>
+            </div>
+        )}
+      </div>
+    );
+  }
+
 
   const isActive = (path: string) => {
     // Exact match for the main page, startsWith for sub-pages
@@ -67,8 +111,8 @@ export default function UserManagementLayout({
                   className="!justify-start"
                 >
                   <Link href="/dashboard/user-management/analytics">
-                    <LayoutDashboard />
-                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">एडमिन डैशबोर्ड</span>
+                    <LineChart />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">एनालिटिक्स</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

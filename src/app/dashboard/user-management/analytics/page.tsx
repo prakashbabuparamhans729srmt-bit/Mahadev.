@@ -22,9 +22,10 @@ import {
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { Progress } from '@/components/ui/progress';
-import { useAuth } from '@/firebase';
+import { useAuth, useCollection, useFirestore } from '@/firebase';
 import { useToast } from '@/hooks/use-toast';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
+import { collection } from 'firebase/firestore';
 
 async function getAllProjects(token: string) {
     const API_URL = `/api/projects/all`;
@@ -41,21 +42,23 @@ async function getAllProjects(token: string) {
     });
 }
 
-// In a real app, this would be fetched from a dedicated '/users' endpoint
-const DUMMY_USER_COUNT = 4;
 const DUMMY_SATISFACTION = 92;
 
 export default function AnalyticsPage() {
     const auth = useAuth();
+    const firestore = useFirestore();
     const { toast } = useToast();
     const [projects, setProjects] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<Error | null>(null);
 
+    const { data: clients, isLoading: clientsLoading, error: clientsError } = useCollection(
+        firestore ? collection(firestore, 'clients') : null
+    );
+
     useEffect(() => {
         const fetchProjects = async () => {
             if (auth?.currentUser) {
-                setIsLoading(true);
                 try {
                     const token = await auth.currentUser.getIdToken(true);
                     const allProjects = await getAllProjects(token);
@@ -67,16 +70,29 @@ export default function AnalyticsPage() {
                         title: "त्रुटि",
                         description: "विश्लेषण डेटा लोड करने में विफल: " + err.message,
                     });
-                } finally {
-                    setIsLoading(false);
                 }
-            } else if (!auth?.currentUser && !auth?.user) {
-                // Wait for auth to be initialized
-                setIsLoading(true);
             }
         };
-        fetchProjects();
-    }, [auth, toast]);
+
+        if(!clientsLoading){
+             fetchProjects();
+        }
+
+    }, [auth, toast, clientsLoading]);
+
+    useEffect(() => {
+        if (!clientsLoading && !auth?.currentUser) {
+            setIsLoading(false);
+        } else if (!clientsLoading && projects.length > 0) {
+            setIsLoading(false);
+        }
+         if (clientsError) {
+            setError(clientsError);
+            setIsLoading(false);
+        }
+
+    }, [clientsLoading, projects, clientsError, auth]);
+
 
     const totalProjects = projects.length;
     const totalRevenue = projects.reduce((acc, p) => acc + (p.budget || 0), 0);
@@ -136,7 +152,7 @@ export default function AnalyticsPage() {
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">{DUMMY_USER_COUNT}</div>
+                        <div className="text-2xl font-bold">{clients?.length || 0}</div>
                         <p className="text-xs text-muted-foreground">+2 पिछले महीने से</p>
                     </CardContent>
                 </Card>
