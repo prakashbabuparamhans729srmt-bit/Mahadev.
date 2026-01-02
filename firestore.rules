@@ -41,8 +41,8 @@ service cloud.firestore {
 
     // A user can only list projects where their UID matches the clientId field.
     match /projects/{projectId} {
-      allow list: if isAuthenticated() && request.query.get("clientId") == request.auth.uid;
-      allow read: if isAuthenticated() && resource.data.clientId == request.auth.uid;
+      // allow list: if isAuthenticated() && request.query.get("clientId") == request.auth.uid;
+      allow read, list: if isAuthenticated() && resource.data.clientId == request.auth.uid;
       // For create, check the incoming document's data.
       allow create: if isAuthenticated() && request.resource.data.clientId == request.auth.uid;
       // For update/delete, check the existing document's data.
