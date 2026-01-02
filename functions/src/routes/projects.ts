@@ -4,7 +4,53 @@ import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 
-// Middleware to ensure user is authenticated for all project routes
+
+// Custom middleware to check for admin role
+const requireAdmin = async (req: any, res: express.Response, next: express.NextFunction) => {
+    const adminEmail = 'divyahanssuperpower@gmail.com';
+    if (req.user.email !== adminEmail) {
+        return res.status(403).json({ error: "Forbidden: Admin access required." });
+    }
+    next();
+};
+
+// GET /projects/all - Get all projects for all users (ADMIN ONLY)
+router.get("/all", authenticate, requireAdmin, async (req, res) => {
+    try {
+        const db = admin.firestore();
+
+        // Get all projects
+        const projectsSnapshot = await db.collection("projects").get();
+        if (projectsSnapshot.empty) {
+            return res.status(200).json({ success: true, data: [] });
+        }
+
+        // Get all clients to enrich project data
+        const clientsSnapshot = await db.collection("clients").get();
+        const clientsMap = new Map(clientsSnapshot.docs.map(doc => [doc.id, doc.data()]));
+
+        const projects = projectsSnapshot.docs.map(doc => {
+            const projectData = doc.data();
+            const clientData = clientsMap.get(projectData.clientId);
+            return {
+                id: doc.id,
+                ...projectData,
+                client: {
+                    name: clientData?.companyName || `${clientData?.firstName} ${clientData?.lastName}`,
+                    email: clientData?.email
+                }
+            };
+        });
+
+        res.status(200).json({ success: true, data: projects });
+    } catch (error) {
+        console.error("Error fetching all projects:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
+// Middleware to ensure user is authenticated for all subsequent project routes
 router.use(authenticate);
 
 // GET /projects - Get all projects for the authenticated user
@@ -48,9 +94,12 @@ router.get("/:id", async (req: any, res) => {
     }
 
     const projectData = doc.data();
+    
+    // Admin check: Admin can access any project
+    const isAdmin = req.user.email === 'divyahanssuperpower@gmail.com';
 
-    // Security Check: Ensure the user is the owner of the project
-    if (projectData?.clientId !== userId) {
+    // Security Check: Ensure the user is the owner of the project OR is an admin
+    if (projectData?.clientId !== userId && !isAdmin) {
       return res.status(403).json({ error: "Forbidden: You do not have access to this project." });
     }
 
