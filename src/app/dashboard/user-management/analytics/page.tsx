@@ -27,6 +27,7 @@ import { useToast } from '@/hooks/use-toast';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
 import { collection } from 'firebase/firestore';
 
+// This function now uses the secure API route
 async function getAllProjects(token: string) {
     const API_URL = `/api/projects/all`;
     return firebaseWithRetry(async () => {
@@ -52,12 +53,15 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
     const [projectsLoading, setProjectsLoading] = useState(true);
     const [globalError, setGlobalError] = useState<Error | null>(null);
 
+    // This hook fetches client data, but we'll get the count from it.
+    // It's secured by the layout check and the `isAuthorized` prop.
     const { data: clients, isLoading: clientsLoading, error: clientsError } = useCollection(
         isAuthorized && firestore ? collection(firestore, 'clients') : null
     );
 
     useEffect(() => {
         const fetchProjects = async () => {
+            // Only fetch if authorized
             if (isAuthorized && auth?.currentUser) {
                 setProjectsLoading(true);
                 try {
@@ -74,7 +78,7 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
                 } finally {
                     setProjectsLoading(false);
                 }
-            } else if (isAuthorized) {
+            } else if (!isAuthorized) {
                 setProjectsLoading(false);
             }
         };
@@ -85,6 +89,7 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
 
     useEffect(() => {
         if (clientsError) {
+            // Combine errors from different sources
             setGlobalError(clientsError);
         }
     }, [clientsError]);

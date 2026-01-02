@@ -36,6 +36,7 @@ import Link from 'next/link';
 import { useAuth } from '@/firebase';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
 
+// This function now uses the secure API route
 async function getAllProjects(token: string) {
     const API_URL = `/api/projects/all`;
     return firebaseWithRetry(async () => {
@@ -64,6 +65,7 @@ export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolea
 
   useEffect(() => {
     const fetchProjects = async () => {
+      // Only fetch if the user is authorized (checked by layout) and auth is ready
       if (isAuthorized && auth?.currentUser) {
         setIsLoading(true);
         setError(null);
@@ -82,6 +84,7 @@ export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolea
           setIsLoading(false);
         }
       } else if (!isAuthorized) {
+          // If not authorized, stop loading and show nothing. The layout should redirect.
           setIsLoading(false);
       }
     };

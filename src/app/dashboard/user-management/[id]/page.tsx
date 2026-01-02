@@ -36,13 +36,12 @@ import { useAuth, useDoc, useFirestore } from '@/firebase';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
 import { doc } from 'firebase/firestore';
 
+// API call to get all projects (admin only)
 async function getAllProjects(token: string) {
-    const API_URL = `/api/projects/all`;
+    const API_URL = '/api/projects/all';
     return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
+            headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) {
             const errorData = await response.json();
@@ -71,6 +70,7 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
       return doc(firestore, 'clients', id);
   }, [firestore, id, isAuthorized]);
 
+  // We can still use useDoc for the single client, as the rule allows admin to get it.
   const { data: user, isLoading: userLoading, error: userError } = useDoc(clientRef);
 
   useEffect(() => {
@@ -79,8 +79,10 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
         setIsLoading(true);
         setError(null);
         try {
+          // Use the secure API route to fetch all projects
           const token = await auth.currentUser.getIdToken(true);
           const allProjects = await getAllProjects(token);
+          // Filter projects for the specific client on the frontend
           setProjects(allProjects.filter((p:any) => p.clientId === user.id));
         } catch (err: any) {
           setError(err);
@@ -92,12 +94,17 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
         } finally {
           setIsLoading(false);
         }
-      } else if (isAuthorized) {
+      } else if (!isAuthorized) {
         setIsLoading(false);
       }
     };
-    if (!userLoading) { 
+    
+    // Fetch projects only after we've confirmed the user exists
+    if (!userLoading && user) { 
         fetchProjects();
+    } else if (!userLoading && !user) {
+        // If user is not found, no need to fetch projects
+        setIsLoading(false);
     }
   }, [isAuthorized, auth, user, userLoading, toast]);
   
@@ -126,11 +133,11 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
       )
   }
 
-  if (!user) {
+  if (!user && !isAuthorized) {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center text-muted-foreground">
           <ShieldAlert className="h-8 w-8 mx-auto mb-2"/>
-          <p>ग्राहक नहीं मिला। हो सकता है कि यह मौजूद न हो या आपके पास इसे देखने की अनुमति न हो।</p>
+          <p>ग्राहक नहीं मिला या आपके पास इसे देखने की अनुमति नहीं है।</p>
       </div>
     );
   }
