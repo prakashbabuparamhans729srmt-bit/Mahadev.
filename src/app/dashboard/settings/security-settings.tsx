@@ -7,15 +7,25 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
-import { KeyRound, Smartphone, LogOut, Trash2, Loader2, ShieldAlert } from 'lucide-react';
-import { useAuth } from '@/firebase';
+import { KeyRound, Smartphone, LogOut, Trash2, Loader2, ShieldAlert, UserCog, ArrowRight } from 'lucide-react';
+import { useAuth, type User } from '@/firebase';
 import { EmailAuthProvider, reauthenticateWithCredential, updatePassword, deleteUser } from 'firebase/auth';
 import { useState } from 'react';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export function SecuritySettings() {
+// This is a placeholder for a real admin check. 
+// In a production app, this should be a custom claim on the Firebase user token.
+const checkIsAdmin = (uid: string | undefined): boolean => {
+    if (!uid) return false;
+    // Replace this with your actual Admin User ID
+    const ADMIN_UID = 'h2bT0WkxL3bA0YVzJ5f4Z6yI3oE2';
+    return uid === ADMIN_UID;
+}
+
+export function SecuritySettings({ user }: { user: User | null }) {
   const { toast } = useToast();
   const auth = useAuth();
   const router = useRouter();
@@ -26,6 +36,8 @@ export function SecuritySettings() {
   const [isDeleteConfirmationOpen, setIsDeleteConfirmationOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const isAdmin = checkIsAdmin(user?.uid);
 
   const handlePasswordSave = async () => {
     if (!auth || !auth.currentUser) {
@@ -131,6 +143,32 @@ export function SecuritySettings() {
 
   return (
     <div className="space-y-6">
+      {isAdmin && (
+          <Card className="border-primary bg-primary/5">
+            <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-primary">
+                    <UserCog />
+                    मास्टर एडमिन पैनल
+                </CardTitle>
+                <CardDescription>
+                    यह एक गुप्त क्षेत्र है जो केवल एडमिन के लिए है। यहां से आप सभी उपयोगकर्ताओं और प्रोजेक्ट्स का प्रबंधन कर सकते हैं।
+                </CardDescription>
+            </CardHeader>
+            <CardContent>
+                <p className="text-sm text-muted-foreground">
+                    उपयोगकर्ता प्रबंधन डैशबोर्ड तक पहुंचने के लिए नीचे दिए गए बटन पर क्लिक करें।
+                </p>
+            </CardContent>
+            <CardFooter className="border-t border-primary/20 px-6 py-4">
+                <Button asChild>
+                    <Link href="/dashboard/user-management">
+                        उपयोगकर्ता प्रबंधन पर जाएं <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                </Button>
+            </CardFooter>
+        </Card>
+      )}
+
       <Card>
         <CardHeader>
           <CardTitle>पासवर्ड बदलें</CardTitle>

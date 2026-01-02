@@ -6,9 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useUser, useFirebaseApp, useAuth } from '@/firebase';
-import { updateProfile } from 'firebase/auth';
+import { updateProfile, type User } from 'firebase/auth';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { Loader2, User, Shield, Bell, CreditCard, Camera, ArrowLeft } from 'lucide-react';
+import { Loader2, User as UserIcon, Shield, Bell, CreditCard, Camera, ArrowLeft } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from 'next/link';
@@ -118,7 +118,7 @@ export default function SettingsPage() {
       <Tabs defaultValue="profile" orientation="vertical" className="grid grid-cols-1 md:grid-cols-[250px_1fr] gap-10">
         <TabsList className="flex-col h-auto justify-start items-stretch gap-2 bg-transparent p-0 border-none">
           <TabsTrigger value="profile" className="justify-start p-4 text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">
-            <User className="mr-3"/> प्रोफ़ाइल
+            <UserIcon className="mr-3"/> प्रोफ़ाइल
           </TabsTrigger>
           <TabsTrigger value="security" className="justify-start p-4 text-base data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg">
              <Shield className="mr-3"/> सुरक्षा
@@ -152,7 +152,7 @@ export default function SettingsPage() {
                     <div className="space-y-2">
                         <Label htmlFor="displayName">पूरा नाम</Label>
                         <div className="relative">
-                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                             <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input
                                 id="displayName"
                                 value={displayName}
@@ -165,7 +165,7 @@ export default function SettingsPage() {
                     <div className="space-y-2">
                         <Label htmlFor="email">ईमेल एड्रेस</Label>
                          <div className="relative">
-                             <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                             <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input id="email" value={user?.email || ''} disabled  className="pl-10 h-12 bg-background"/>
                         </div>
                     </div>
@@ -179,7 +179,7 @@ export default function SettingsPage() {
             </div>
         </TabsContent>
         <TabsContent value="security" className="mt-0">
-            <SecuritySettings />
+            <SecuritySettings user={user} />
         </TabsContent>
         <TabsContent value="billing" className="mt-0">
             <BillingSettings />
