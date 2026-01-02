@@ -30,7 +30,7 @@ import { Icons } from '@/components/icons';
 import { UserNav } from '@/components/layout/user-nav';
 import { SearchInput } from '@/components/layout/search-input';
 import { useUser } from '@/firebase';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 
 // This is a placeholder. In a real app, this should be determined from a secure source like a custom claim.
@@ -50,32 +50,50 @@ export default function UserManagementLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   // This effect acts as a route guard.
   useEffect(() => {
-    if (!isUserLoading && !checkIsAdmin(user)) {
-      // If the user is loaded and they are NOT an admin, redirect them.
-      router.replace('/dashboard');
+    // Wait until auth state is determined
+    if (isUserLoading) {
+      return;
     }
-  }, [user, isUserLoading, router]);
 
-  if (isUserLoading || !checkIsAdmin(user)) {
-    // While loading, or if the user is not an admin, show a loading/access-denied screen.
-    // This prevents any part of the admin layout from rendering for non-admins.
+    const isAdmin = checkIsAdmin(user);
+
+    // If user is not admin, redirect them immediately.
+    if (!isAdmin) {
+      router.replace('/dashboard');
+      return;
+    }
+
+    // If the path is not the auth page, check for re-authentication flag
+    if (pathname !== '/dashboard/user-management/auth') {
+      const isReauthenticated = sessionStorage.getItem('isAdminReauthenticated') === 'true';
+      if (!isReauthenticated) {
+        router.replace('/dashboard/user-management/auth');
+      } else {
+        setIsAuthorized(true);
+      }
+    } else {
+      // If on the auth page, they are considered "authorized" to see that page.
+      setIsAuthorized(true);
+    }
+  }, [user, isUserLoading, router, pathname]);
+
+  if (!isAuthorized) {
+    // Show a loading screen while authorization checks are in progress.
+    // This prevents rendering content before redirection/authorization is complete.
     return (
        <div className="flex h-screen w-full items-center justify-center bg-background text-center p-4">
-        {isUserLoading ? (
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-        ) : (
-             <div className="flex flex-col items-center gap-4 text-destructive">
-                <ShieldAlert className="h-12 w-12" />
-                <h1 className="text-xl font-bold">एक्सेस प्रतिबंधित</h1>
-                <p className="text-muted-foreground">आपके पास इस सेक्शन को देखने की अनुमति नहीं है।</p>
-                <Button onClick={() => router.replace('/dashboard')}>डैशबोर्ड पर वापस जाएं</Button>
-            </div>
-        )}
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
       </div>
     );
+  }
+
+  // If on the auth page, render it without the main layout
+  if (pathname === '/dashboard/user-management/auth') {
+    return <>{children}</>;
   }
 
 
