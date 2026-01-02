@@ -67,7 +67,6 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
   const [error, setError] = useState<Error | null>(null);
 
   const clientRef = useMemo(() => {
-      // Only create the query if authorization has been confirmed by the layout.
       if (!firestore || !id || !isAuthorized) return null;
       return doc(firestore, 'clients', id);
   }, [firestore, id, isAuthorized]);
@@ -76,14 +75,12 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
 
   useEffect(() => {
     const fetchProjects = async () => {
-      // Fetch projects only if authorized, and we have a user object.
       if (isAuthorized && auth?.currentUser && user) {
         setIsLoading(true);
         setError(null);
         try {
           const token = await auth.currentUser.getIdToken(true);
           const allProjects = await getAllProjects(token);
-          // Filter projects for the specific user being viewed
           setProjects(allProjects.filter((p:any) => p.clientId === user.id));
         } catch (err: any) {
           setError(err);
@@ -96,11 +93,10 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
           setIsLoading(false);
         }
       } else if (isAuthorized) {
-        // If authorized but no user, we can stop loading projects.
         setIsLoading(false);
       }
     };
-    if (!userLoading) { // Wait for the user doc to load first
+    if (!userLoading) { 
         fetchProjects();
     }
   }, [isAuthorized, auth, user, userLoading, toast]);
@@ -118,7 +114,7 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
     );
   }
   
-  if (combinedError) {
+  if (combinedError && !user) {
       return (
           <div className="p-8">
               <Card className="text-center p-8 bg-destructive/10 text-destructive">
@@ -133,7 +129,8 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
   if (!user) {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center text-muted-foreground">
-          <p>ग्राहक नहीं मिला।</p>
+          <ShieldAlert className="h-8 w-8 mx-auto mb-2"/>
+          <p>ग्राहक नहीं मिला। हो सकता है कि यह मौजूद न हो या आपके पास इसे देखने की अनुमति न हो।</p>
       </div>
     );
   }
@@ -179,7 +176,7 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
                 <AvatarImage src={user.photoURL} />
                 <AvatarFallback>{(user.firstName?.[0] || 'U').toUpperCase()}</AvatarFallback>
               </Avatar>
-              <h2 className="text-xl font-bold">{`${user.firstName || ''} ${user.lastName || ''}`.trim()}</h2>
+              <h2 className="text-xl font-bold">{`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email}</h2>
               {user.companyName && <p className="text-muted-foreground">{user.companyName}</p>}
               <Badge variant={'default'} className={`mt-2 bg-green-500/20 text-green-700`}>सक्रिय</Badge>
             </CardContent>
@@ -198,14 +195,16 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
             <CardHeader className="flex flex-row items-center justify-between">
                 <div>
                     <CardTitle className="flex items-center gap-2"><Briefcase />ग्राहक के प्रोजेक्ट्स</CardTitle>
-                    <CardDescription>{user.firstName} के सभी प्रोजेक्ट्स की सूची।</CardDescription>
+                    <CardDescription>{user.firstName || 'ग्राहक'} के सभी प्रोजेक्ट्स की सूची।</CardDescription>
                 </div>
                  <Button variant="outline" size="sm" onClick={() => toast({ description: 'यह सुविधा जल्द ही उपलब्ध होगी।' })}>
                     <Plus className="mr-2 h-4 w-4" /> नया प्रोजेक्ट
                 </Button>
             </CardHeader>
             <CardContent>
-                {projects.length > 0 ? (
+                {isLoading && <div className="flex justify-center items-center h-40"><Loader2 className="h-8 w-8 animate-spin" /></div>}
+                {error && <div className="text-destructive text-center p-4"><ShieldAlert className="mx-auto h-8 w-8 mb-2" />{error.message}</div>}
+                {!isLoading && !error && projects.length > 0 ? (
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -226,7 +225,7 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
                             ))}
                         </TableBody>
                     </Table>
-                ) : (
+                ) : !isLoading && !error && (
                     <div className="text-center py-20 text-muted-foreground">
                         <Briefcase className="h-12 w-12 mx-auto mb-4" />
                         <h3 className="font-semibold text-lg">इस ग्राहक के पास अभी कोई प्रोजेक्ट नहीं है</h3>

@@ -49,29 +49,33 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
     const firestore = useFirestore();
     const { toast } = useToast();
     const [projects, setProjects] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
+    const [projectsLoading, setProjectsLoading] = useState(true);
+    const [globalError, setGlobalError] = useState<Error | null>(null);
 
     const { data: clients, isLoading: clientsLoading, error: clientsError } = useCollection(
-        // Only fetch if authorized by the layout
         isAuthorized && firestore ? collection(firestore, 'clients') : null
     );
 
     useEffect(() => {
         const fetchProjects = async () => {
             if (isAuthorized && auth?.currentUser) {
+                setProjectsLoading(true);
                 try {
                     const token = await auth.currentUser.getIdToken(true);
                     const allProjects = await getAllProjects(token);
                     setProjects(allProjects);
                 } catch (err: any) {
-                    setError(err);
+                    setGlobalError(err);
                     toast({
                         variant: "destructive",
                         title: "त्रुटि",
-                        description: "विश्लेषण डेटा लोड करने में विफल: " + err.message,
+                        description: "विश्लेषण प्रोजेक्ट्स लोड करने में विफल: " + err.message,
                     });
+                } finally {
+                    setProjectsLoading(false);
                 }
+            } else if (isAuthorized) {
+                setProjectsLoading(false);
             }
         };
 
@@ -80,31 +84,19 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
     }, [isAuthorized, auth, toast]);
 
     useEffect(() => {
-        if (!isAuthorized) {
-            setIsLoading(true);
-            return;
+        if (clientsError) {
+            setGlobalError(clientsError);
         }
-        
-        const anyError = error || clientsError;
-        if (anyError) {
-          setError(anyError);
-          setIsLoading(false);
-          return;
-        }
-
-        // We are loading until both clients and projects are done.
-        if (!clientsLoading && projects) {
-          setIsLoading(false);
-        }
-
-    }, [isAuthorized, clientsLoading, projects, error, clientsError]);
+    }, [clientsError]);
 
 
-    const totalProjects = projects.length;
-    const totalRevenue = projects.reduce((acc, p) => acc + (p.budget || 0), 0);
+    const isLoading = clientsLoading || projectsLoading;
+
+    const totalProjects = projects?.length ?? 0;
+    const totalRevenue = projects?.reduce((acc, p) => acc + (p.budget || 0), 0) ?? 0;
     
     const projectStatusData = React.useMemo(() => {
-        if (isLoading || error || !projects) return [];
+        if (!projects) return [];
         const statusCounts: { [key: string]: { status: string, count: number, fill: string } } = {
             'जारी': { status: 'जारी', count: 0, fill: 'hsl(var(--chart-2))' },
             'पूर्ण': { status: 'पूर्ण', count: 0, fill: 'hsl(var(--chart-1))' },
@@ -116,13 +108,13 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
         projects.forEach(p => {
             if (statusCounts[p.status]) {
                 statusCounts[p.status].count++;
-            } else if (p.status) { // handle unknown statuses
+            } else if (p.status) {
                  statusCounts[p.status] = { status: p.status, count: 1, fill: 'hsl(var(--muted))' };
             }
         });
 
         return Object.values(statusCounts).filter(s => s.count > 0);
-    }, [projects, isLoading, error]);
+    }, [projects]);
 
 
   return (
@@ -146,10 +138,10 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
                 <Card><CardHeader><CardTitle className="text-sm font-medium">कुल राजस्व</CardTitle></CardHeader><CardContent><Loader2 className="animate-spin"/></CardContent></Card>
                 <Card><CardHeader><CardTitle className="text-sm font-medium">ग्राहक संतुष्टि</CardTitle></CardHeader><CardContent><Loader2 className="animate-spin"/></CardContent></Card>
             </div>
-        ) : error ? (
+        ) : globalError ? (
             <Card className="p-4 text-center text-destructive bg-destructive/10">
                 <ShieldAlert className="mx-auto h-8 w-8 mb-2" />
-                <p>डेटा लोड करने में विफल: {error.message}</p>
+                <p>एनालिटिक्स डेटा लोड करने में विफल: {globalError.message}</p>
             </Card>
         ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -160,7 +152,7 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{clients?.length || 0}</div>
-                        <p className="text-xs text-muted-foreground">+2 पिछले महीने से</p>
+                        <p className="text-xs text-muted-foreground">लाइव डेटा</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -170,7 +162,7 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">{totalProjects}</div>
-                        <p className="text-xs text-muted-foreground">+3 पिछले महीने से</p>
+                        <p className="text-xs text-muted-foreground">लाइव डेटा</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -180,7 +172,7 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
                     </CardHeader>
                     <CardContent>
                         <div className="text-2xl font-bold">₹{totalRevenue.toLocaleString('en-IN')}</div>
-                        <p className="text-xs text-muted-foreground">+18.2% पिछले महीने से</p>
+                        <p className="text-xs text-muted-foreground">सभी प्रोजेक्ट्स से</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -208,9 +200,9 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
             </CardHeader>
             <CardContent className="h-[350px]">
                 {isLoading ? <div className="flex h-full items-center justify-center"><Loader2 className="animate-spin" /></div> : 
-                 error ? (
+                 globalError ? (
                     <div className="flex h-full items-center justify-center text-destructive-foreground bg-destructive/10 rounded-md">
-                        <ShieldAlert className="mr-2" /> डेटा लोड करने में विफल: {error.message}
+                        <ShieldAlert className="mr-2" /> प्रोजेक्ट डेटा लोड करने में विफल।
                     </div>
                  ) :
                  projectStatusData.length > 0 ? (

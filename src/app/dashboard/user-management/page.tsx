@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -18,7 +19,7 @@ import {
   UserCheck,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useUser, type User, useFirestore, useCollection } from '@/firebase';
+import { useFirestore, useCollection } from '@/firebase';
 import {
   Table,
   TableBody,
@@ -40,46 +41,19 @@ import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { collection, query } from 'firebase/firestore';
 
-// This is a placeholder. In a real app, this would be determined from a secure source like a custom claim.
-const checkIsAdmin = (user: User | null): boolean => {
-  if (!user) return false;
-  // Using email for identification as requested by the user.
-  const ADMIN_EMAIL = 'divyahanssuperpower@gmail.com';
-  return user.email === ADMIN_EMAIL;
-}
 
 export default function UserManagementPage({ isAuthorized }: { isAuthorized: boolean }) {
-  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
 
-  useEffect(() => {
-    if (!isUserLoading) {
-      setIsAdmin(checkIsAdmin(user));
-    }
-  }, [user, isUserLoading]);
-
   const clientsQuery = useMemo(() => {
-      // Only create the query if authorization has been confirmed by the layout.
       if (!firestore || !isAuthorized) return null;
       return query(collection(firestore, 'clients'));
   }, [firestore, isAuthorized]);
 
-  const { data: clients, isLoading: clientsLoading, error: clientsError } = useCollection(clientsQuery);
+  const { data: clients, isLoading, error } = useCollection(clientsQuery);
   
-  // This effect will properly manage the overall loading state
-  useEffect(() => {
-    if (!isAuthorized) {
-        setIsLoading(true); // Keep loading if not authorized yet
-        return;
-    }
-    // If authorized, the loading state depends on the clients query
-    setIsLoading(clientsLoading);
-  }, [isAuthorized, clientsLoading]);
-
   const filteredClients = useMemo(() => {
     if (!clients) return [];
     return clients.filter(client => 
@@ -88,26 +62,11 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
     );
   }, [clients, searchQuery]);
 
-
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="ml-4">अनुमतियों और ग्राहकों की जाँच हो रही है...</p>
-      </div>
-    );
-  }
-
-  if (!isAdmin) {
-    return (
-      <div className="p-4 md:p-6 lg:p-8">
-        <div className="flex flex-col items-center justify-center h-96 text-center text-destructive bg-destructive/10 rounded-lg border border-dashed border-destructive/30">
-          <ShieldAlert className="h-10 w-10 mb-4 text-destructive" />
-          <h3 className="text-xl font-semibold text-foreground">अपर्याप्त अनुमतियाँ</h3>
-          <p className="text-sm max-w-sm mt-2 text-muted-foreground">
-            यह पेज केवल एडमिनिस्ट्रेटर्स के लिए उपलब्ध है। यदि आपको लगता है कि यह एक गलती है, तो कृपया समर्थन से संपर्क करें।
-          </p>
-        </div>
+        <p className="ml-4">ग्राहकों की सूची लोड हो रही है...</p>
       </div>
     );
   }
@@ -147,8 +106,8 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
               </div>
           </CardHeader>
           <CardContent>
-              {clientsError && <p className="text-destructive text-center">त्रुटि: {clientsError.message}</p>}
-              {!clientsLoading && filteredClients.length > 0 ? (
+              {error && <div className="text-destructive text-center p-4 bg-destructive/10 rounded-md"><ShieldAlert className="inline-block mr-2" />त्रुटि: {error.message}</div>}
+              {!isLoading && !error && filteredClients.length > 0 ? (
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -164,10 +123,10 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
                                 <Link href={`/dashboard/user-management/${client.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">
                                         <Avatar>
                                             <AvatarImage src={client.photoURL} />
-                                            <AvatarFallback>{(client.firstName?.[0] || 'U').toUpperCase()}</AvatarFallback>
+                                            <AvatarFallback>{(client.firstName?.[0] || client.email?.[0] || 'U').toUpperCase()}</AvatarFallback>
                                         </Avatar>
                                         <div>
-                                            <p className="font-medium">{`${client.firstName || ''} ${client.lastName || ''}`.trim()}</p>
+                                            <p className="font-medium">{`${client.firstName || ''} ${client.lastName || ''}`.trim() || client.email}</p>
                                             <p className="text-xs text-muted-foreground">{client.email}</p>
                                         </div>
                                     </Link>
@@ -185,8 +144,8 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
                                             <DropdownMenuItem asChild>
                                             <Link href={`/dashboard/user-management/${client.id}`}>विवरण देखें</Link>
                                             </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => toast({ description: `ग्राहक ${client.firstName} को संपादित किया गया।` })}>संपादित करें</DropdownMenuItem>
-                                            <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: `ग्राहक ${client.firstName} को हटा दिया गया।`, variant: 'destructive' })}>हटाएं</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => toast({ description: `ग्राहक ${client.firstName || client.email} को संपादित किया गया।` })}>संपादित करें</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: `ग्राहक ${client.firstName || client.email} को हटा दिया गया।`, variant: 'destructive' })}>हटाएं</DropdownMenuItem>
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </TableCell>
@@ -194,13 +153,15 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
                         ))}
                     </TableBody>
                 </Table>
-              ) : (
-                !clientsLoading && <div className="text-center py-20 text-muted-foreground">
+              ) : !isLoading && !error && (
+                <div className="text-center py-20 text-muted-foreground">
                     <Users className="h-12 w-12 mx-auto mb-4" />
                     <h3 className="font-semibold text-lg">
                       {searchQuery ? `"${searchQuery}" के लिए कोई ग्राहक नहीं मिला` : 'अभी कोई ग्राहक नहीं है'}
                     </h3>
-                    <p className="text-sm">जब नए ग्राहक साइन अप करेंगे, तो वे यहां दिखाई देंगे।</p>
+                    <p className="text-sm">
+                      {searchQuery ? 'कृपया अपनी खोज बदलें।' : 'जब नए ग्राहक साइन अप करेंगे, तो वे यहां दिखाई देंगे।'}
+                    </p>
                 </div>
               )}
           </CardContent>

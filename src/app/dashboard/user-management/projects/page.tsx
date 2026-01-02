@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -36,7 +37,6 @@ import { useAuth } from '@/firebase';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
 
 async function getAllProjects(token: string) {
-    // This new endpoint will be created to fetch all projects, admin only.
     const API_URL = `/api/projects/all`;
     return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
@@ -68,7 +68,7 @@ export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolea
         setIsLoading(true);
         setError(null);
         try {
-          const token = await auth.currentUser.getIdToken(true); // Force refresh token for admin check
+          const token = await auth.currentUser.getIdToken(true);
           const allProjects = await getAllProjects(token);
           setProjects(allProjects);
         } catch (err: any) {
@@ -81,6 +81,8 @@ export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolea
         } finally {
           setIsLoading(false);
         }
+      } else if (!isAuthorized) {
+          setIsLoading(false);
       }
     };
     fetchProjects();
@@ -88,8 +90,8 @@ export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolea
 
 
   const filteredProjects = projects.filter(p => 
-    p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (p.client?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) // assuming client is populated
+    (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (p.client?.name || '').toLowerCase().includes(searchQuery.toLowerCase())
   );
   
   const getStatusBadge = (status: string) => {
@@ -99,7 +101,7 @@ export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolea
       case 'योजना': return <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-500">{status}</Badge>;
       case 'रुका हुआ': return <Badge variant="destructive">{status}</Badge>;
       case 'प्रारंभिक': return <Badge variant="secondary">{status}</Badge>;
-      default: return <Badge variant="outline">{status}</Badge>;
+      default: return <Badge variant="outline">{status || 'N/A'}</Badge>;
     }
   }
 

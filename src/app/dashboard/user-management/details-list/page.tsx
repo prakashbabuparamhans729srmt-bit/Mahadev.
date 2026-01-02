@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useMemo, useEffect } from 'react';
@@ -35,7 +36,6 @@ export default function UserDetailsListPage({ isAuthorized }: { isAuthorized: bo
   const [searchQuery, setSearchQuery] = useState('');
   
   const clientsQuery = useMemo(() => {
-      // Only create the query if authorization has been confirmed by the layout.
       if (!firestore || !isAuthorized) return null;
       return query(collection(firestore, 'clients'));
   }, [firestore, isAuthorized]);
@@ -47,7 +47,7 @@ export default function UserDetailsListPage({ isAuthorized }: { isAuthorized: bo
     return clients.filter(u => {
       const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim().toLowerCase();
       const email = (u.email || '').toLowerCase();
-      const phone = u.phone || '';
+      const phone = (u.phone || '').toLowerCase();
       const lowerCaseQuery = searchQuery.toLowerCase();
       
       return fullName.includes(lowerCaseQuery) ||
@@ -57,13 +57,6 @@ export default function UserDetailsListPage({ isAuthorized }: { isAuthorized: bo
   }, [clients, searchQuery]);
 
 
-  const handleAction = (message: string) => {
-    toast({
-      title: 'सुविधा जल्द ही उपलब्ध होगी',
-      description: message,
-    });
-  };
-  
   const copyToClipboard = () => {
     if (!clients || clients.length === 0) return;
     const csvContent = [
@@ -128,7 +121,7 @@ export default function UserDetailsListPage({ isAuthorized }: { isAuthorized: bo
           <CardContent>
               {isLoading && <div className="flex justify-center items-center h-60"><Loader2 className="h-8 w-8 animate-spin" /></div>}
               {error && <div className="text-center text-destructive p-4"><ShieldAlert className="mx-auto h-8 w-8 mb-2" />{error.message}</div>}
-              {!isLoading && filteredUsers.length > 0 ? (
+              {!isLoading && !error && filteredUsers.length > 0 ? (
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -141,7 +134,7 @@ export default function UserDetailsListPage({ isAuthorized }: { isAuthorized: bo
                     <TableBody>
                         {filteredUsers.map(user => (
                             <TableRow key={user.id}>
-                                <TableCell className="font-medium">{`${user.firstName || ''} ${user.lastName || ''}`.trim()}</TableCell>
+                                <TableCell className="font-medium">{`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email}</TableCell>
                                 <TableCell>{user.email}</TableCell>
                                 <TableCell>{user.phone || 'N/A'}</TableCell>
                                 <TableCell>{user.companyName || 'N/A'}</TableCell>
@@ -149,8 +142,8 @@ export default function UserDetailsListPage({ isAuthorized }: { isAuthorized: bo
                         ))}
                     </TableBody>
                 </Table>
-              ) : (
-                !isLoading && <div className="text-center py-20 text-muted-foreground">
+              ) : !isLoading && !error && (
+                <div className="text-center py-20 text-muted-foreground">
                     <Users className="h-12 w-12 mx-auto mb-4" />
                     <h3 className="font-semibold text-lg">
                         {searchQuery ? `"${searchQuery}" के लिए कोई यूज़र नहीं मिला` : 'अभी कोई यूज़र डेटा नहीं है'}
