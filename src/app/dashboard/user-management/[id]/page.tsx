@@ -155,12 +155,14 @@ export default function UserDetailPage() {
                         </TableBody>
                     </Table>
                 ) : (
-                    <div className="text-center py-10 text-muted-foreground">
-                        <p>इस ग्राहक के पास अभी कोई प्रोजेक्ट नहीं है।</p>
+                    <div className="text-center py-20 text-muted-foreground">
+                        <Briefcase className="h-12 w-12 mx-auto mb-4" />
+                        <h3 className="font-semibold text-lg">इस ग्राहक के पास अभी कोई प्रोजेक्ट नहीं है</h3>
+                        <p className="text-sm">आप ऊपर दिए गए "नया प्रोजेक्ट" बटन का उपयोग करके एक नया प्रोजेक्ट बना सकते हैं।</p>
                     </div>
                 )}
             </CardContent>
-             <CardFooter className="justify-end">
+             <CardFooter className="justify-end border-t pt-4">
                 <p className="text-sm text-muted-foreground">कुल {userProjects.length} प्रोजेक्ट्स</p>
             </CardFooter>
           </Card>

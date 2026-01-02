@@ -142,68 +142,77 @@ export default function AllProjectsPage() {
                 </div>
               )}
               {!isLoading && !error && (
-                  <Table>
-                      <TableHeader>
-                          <TableRow>
-                              <TableHead>प्रोजेक्ट</TableHead>
-                              <TableHead>ग्राहक</TableHead>
-                              <TableHead>बजट</TableHead>
-                              <TableHead>प्रगति</TableHead>
-                              <TableHead>स्थिति</TableHead>
-                              <TableHead className="text-right">कार्रवाई</TableHead>
-                          </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                          {filteredProjects.map(project => (
-                              <TableRow key={project.id}>
-                                  <TableCell>
+                  <>
+                  {filteredProjects.length > 0 ? (
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>प्रोजेक्ट</TableHead>
+                                <TableHead>ग्राहक</TableHead>
+                                <TableHead>बजट</TableHead>
+                                <TableHead>प्रगति</TableHead>
+                                <TableHead>स्थिति</TableHead>
+                                <TableHead className="text-right">कार्रवाई</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredProjects.map(project => (
+                                <TableRow key={project.id}>
+                                    <TableCell>
                                     <Link href={`/dashboard/project/${project.id}`} className="font-medium hover:text-primary transition-colors">{project.name}</Link>
                                     <div className="text-xs text-muted-foreground flex items-center gap-1.5 mt-1">
                                         <Calendar className="h-3 w-3" />
                                         {project.startDate ? new Date(project.startDate).toLocaleDateString('hi-IN', { year: 'numeric', month: 'short', day: 'numeric' }) : '-'}
                                     </div>
-                                  </TableCell>
-                                  <TableCell>
+                                    </TableCell>
+                                    <TableCell>
                                     <div className="flex items-center gap-2">
-                                      <User className="h-3 w-3 text-muted-foreground"/>
-                                      {project.client?.name || project.clientId.slice(0, 8)}
+                                        <User className="h-3 w-3 text-muted-foreground"/>
+                                        {project.client?.name || project.clientId.slice(0, 8)}
                                     </div>
-                                  </TableCell>
-                                  <TableCell>
+                                    </TableCell>
+                                    <TableCell>
                                     <div className="flex items-center gap-2">
                                         <DollarSign className="h-3 w-3 text-muted-foreground"/>
                                         {project.budget ? `₹${project.budget.toLocaleString('en-IN')}`: 'N/A'}
                                     </div>
-                                  </TableCell>
-                                  <TableCell>
+                                    </TableCell>
+                                    <TableCell>
                                     <Progress value={project.progress} className="w-24 h-2" />
-                                  </TableCell>
-                                  <TableCell>
-                                      {getStatusBadge(project.status)}
-                                  </TableCell>
-                                  <TableCell className="text-right">
-                                      <DropdownMenu>
-                                          <DropdownMenuTrigger asChild>
-                                              <Button variant="ghost" size="icon"><MoreHorizontal /></Button>
-                                          </DropdownMenuTrigger>
-                                          <DropdownMenuContent>
-                                              <DropdownMenuLabel>कार्रवाई</DropdownMenuLabel>
-                                              <DropdownMenuItem asChild><Link href={`/dashboard/project/${project.id}`}>विवरण देखें</Link></DropdownMenuItem>
-                                              <DropdownMenuItem onClick={() => toast({ description: 'यह सुविधा जल्द ही उपलब्ध होगी।' })}>संपादित करें</DropdownMenuItem>
-                                              <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: 'यह सुविधा जल्द ही उपलब्ध होगी।', variant: 'destructive' })}>हटाएं</DropdownMenuItem>
-                                          </DropdownMenuContent>
-                                      </DropdownMenu>
-                                  </TableCell>
-                              </TableRow>
-                          ))}
-                      </TableBody>
-                  </Table>
+                                    </TableCell>
+                                    <TableCell>
+                                        {getStatusBadge(project.status)}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon"><MoreHorizontal /></Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent>
+                                                <DropdownMenuLabel>कार्रवाई</DropdownMenuLabel>
+                                                <DropdownMenuItem asChild><Link href={`/dashboard/project/${project.id}`}>विवरण देखें</Link></DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => toast({ description: 'यह सुविधा जल्द ही उपलब्ध होगी।' })}>संपादित करें</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: 'यह सुविधा जल्द ही उपलब्ध होगी।', variant: 'destructive' })}>हटाएं</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                  ) : (
+                    <div className="text-center py-20 text-muted-foreground">
+                       <Briefcase className="h-12 w-12 mx-auto mb-4" />
+                       <h3 className="font-semibold text-lg">
+                           {searchQuery ? `"${searchQuery}" के लिए कोई प्रोजेक्ट नहीं मिला` : 'अभी कोई प्रोजेक्ट नहीं है'}
+                       </h3>
+                       <p className="text-sm">
+                           {searchQuery ? 'कृपया अपनी खोज बदलें।' : 'जब नए प्रोजेक्ट बनाए जाएंगे, तो वे यहां दिखाई देंगे।'}
+                       </p>
+                   </div>
+                  )}
+                  </>
               )}
-               {!isLoading && !error && filteredProjects.length === 0 && (
-                 <div className="text-center py-20 text-muted-foreground">
-                    <p>कोई प्रोजेक्ट नहीं मिला।</p>
-                 </div>
-               )}
           </CardContent>
       </Card>
     </div>

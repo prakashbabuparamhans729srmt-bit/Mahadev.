@@ -133,55 +133,63 @@ export default function UserManagementPage() {
               </div>
           </CardHeader>
           <CardContent>
-              <Table>
-                  <TableHeader>
-                      <TableRow>
-                          <TableHead>ग्राहक</TableHead>
-                          <TableHead>स्थिति</TableHead>
-                          <TableHead>प्रोजेक्ट्स</TableHead>
-                          <TableHead>कुल खर्च</TableHead>
-                          <TableHead className="text-right">कार्रवाई</TableHead>
-                      </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                      {mockUsers.map(user => (
-                          <TableRow key={user.id}>
-                              <TableCell>
+              {mockUsers.length > 0 ? (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>ग्राहक</TableHead>
+                            <TableHead>स्थिति</TableHead>
+                            <TableHead>प्रोजेक्ट्स</TableHead>
+                            <TableHead>कुल खर्च</TableHead>
+                            <TableHead className="text-right">कार्रवाई</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {mockUsers.map(user => (
+                            <TableRow key={user.id}>
+                                <TableCell>
                                 <Link href={`/dashboard/user-management/${user.id}`} className="flex items-center gap-3 hover:text-primary transition-colors">
-                                      <Avatar>
-                                          <AvatarImage src={user.avatar} />
-                                          <AvatarFallback>{user.name[0]}</AvatarFallback>
-                                      </Avatar>
-                                      <div>
-                                          <p className="font-medium">{user.name}</p>
-                                          <p className="text-xs text-muted-foreground">{user.email}</p>
-                                      </div>
-                                  </Link>
-                              </TableCell>
-                              <TableCell>
-                                  <Badge variant={user.status === 'सक्रिय' ? 'default' : 'destructive'} className={user.status === 'सक्रिय' ? 'bg-green-500/20 text-green-700' : ''}>{user.status}</Badge>
-                              </TableCell>
-                              <TableCell>{user.projects}</TableCell>
-                              <TableCell>₹{user.totalSpent.toLocaleString('en-IN')}</TableCell>
-                              <TableCell className="text-right">
-                                  <DropdownMenu>
-                                      <DropdownMenuTrigger asChild>
-                                          <Button variant="ghost" size="icon"><MoreHorizontal /></Button>
-                                      </DropdownMenuTrigger>
-                                      <DropdownMenuContent>
-                                          <DropdownMenuLabel>कार्रवाई</DropdownMenuLabel>
-                                          <DropdownMenuItem asChild>
+                                        <Avatar>
+                                            <AvatarImage src={user.avatar} />
+                                            <AvatarFallback>{user.name[0]}</AvatarFallback>
+                                        </Avatar>
+                                        <div>
+                                            <p className="font-medium">{user.name}</p>
+                                            <p className="text-xs text-muted-foreground">{user.email}</p>
+                                        </div>
+                                    </Link>
+                                </TableCell>
+                                <TableCell>
+                                    <Badge variant={user.status === 'सक्रिय' ? 'default' : 'destructive'} className={user.status === 'सक्रिय' ? 'bg-green-500/20 text-green-700' : ''}>{user.status}</Badge>
+                                </TableCell>
+                                <TableCell>{user.projects}</TableCell>
+                                <TableCell>₹{user.totalSpent.toLocaleString('en-IN')}</TableCell>
+                                <TableCell className="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button variant="ghost" size="icon"><MoreHorizontal /></Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent>
+                                            <DropdownMenuLabel>कार्रवाई</DropdownMenuLabel>
+                                            <DropdownMenuItem asChild>
                                             <Link href={`/dashboard/user-management/${user.id}`}>विवरण देखें</Link>
-                                          </DropdownMenuItem>
-                                          <DropdownMenuItem onClick={() => toast({ description: `ग्राहक ${user.name} को संपादित किया गया।` })}>संपादित करें</DropdownMenuItem>
-                                          <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: `ग्राहक ${user.name} को हटा दिया गया।`, variant: 'destructive' })}>हटाएं</DropdownMenuItem>
-                                      </DropdownMenuContent>
-                                  </DropdownMenu>
-                              </TableCell>
-                          </TableRow>
-                      ))}
-                  </TableBody>
-              </Table>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => toast({ description: `ग्राहक ${user.name} को संपादित किया गया।` })}>संपादित करें</DropdownMenuItem>
+                                            <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: `ग्राहक ${user.name} को हटा दिया गया।`, variant: 'destructive' })}>हटाएं</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-20 text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-4" />
+                    <h3 className="font-semibold text-lg">अभी कोई ग्राहक नहीं है</h3>
+                    <p className="text-sm">जब नए ग्राहक साइन अप करेंगे, तो वे यहां दिखाई देंगे।</p>
+                </div>
+              )}
           </CardContent>
       </Card>
     </div>

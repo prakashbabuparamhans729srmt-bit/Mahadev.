@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState } from 'react';
@@ -20,7 +21,8 @@ import {
   List,
   Search,
   Download,
-  Copy
+  Copy,
+  Users
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Input } from '@/components/ui/input';
@@ -89,31 +91,38 @@ export default function UserDetailsListPage() {
             </div>
           </CardHeader>
           <CardContent>
-              <Table>
-                  <TableHeader>
-                      <TableRow>
-                          <TableHead>नाम</TableHead>
-                          <TableHead>ईमेल</TableHead>
-                          <TableHead>मोबाइल नंबर</TableHead>
-                          <TableHead>पता</TableHead>
-                          <TableHead>सदस्यता तिथि</TableHead>
-                      </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                      {filteredUsers.map(user => (
-                          <TableRow key={user.id}>
-                              <TableCell className="font-medium">{user.name}</TableCell>
-                              <TableCell>{user.email}</TableCell>
-                              <TableCell>{user.phone}</TableCell>
-                              <TableCell>{user.address}</TableCell>
-                              <TableCell>{user.joined}</TableCell>
-                          </TableRow>
-                      ))}
-                  </TableBody>
-              </Table>
-              {filteredUsers.length === 0 && (
-                <div className="text-center py-10 text-muted-foreground">
-                    <p>"{searchQuery}" के लिए कोई यूज़र नहीं मिला।</p>
+              {filteredUsers.length > 0 ? (
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>नाम</TableHead>
+                            <TableHead>ईमेल</TableHead>
+                            <TableHead>मोबाइल नंबर</TableHead>
+                            <TableHead>पता</TableHead>
+                            <TableHead>सदस्यता तिथि</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {filteredUsers.map(user => (
+                            <TableRow key={user.id}>
+                                <TableCell className="font-medium">{user.name}</TableCell>
+                                <TableCell>{user.email}</TableCell>
+                                <TableCell>{user.phone}</TableCell>
+                                <TableCell>{user.address}</TableCell>
+                                <TableCell>{user.joined}</TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-20 text-muted-foreground">
+                    <Users className="h-12 w-12 mx-auto mb-4" />
+                    <h3 className="font-semibold text-lg">
+                        {searchQuery ? `"${searchQuery}" के लिए कोई यूज़र नहीं मिला` : 'अभी कोई यूज़र डेटा नहीं है'}
+                    </h3>
+                    <p className="text-sm">
+                        {searchQuery ? 'कृपया अपनी खोज बदलें।' : 'जब नए यूज़र जुड़ेंगे, तो उनकी जानकारी यहाँ दिखाई देगी।'}
+                    </p>
                 </div>
               )}
           </CardContent>
