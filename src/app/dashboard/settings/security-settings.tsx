@@ -1,3 +1,4 @@
+
 'use client';
 
 import { Button } from '@/components/ui/button';
@@ -20,7 +21,7 @@ import Link from 'next/link';
 // In a production app, this should be a custom claim on the Firebase user token.
 const checkIsAdmin = (uid: string | undefined): boolean => {
     if (!uid) return false;
-    // Replace this with your actual Admin User ID
+    // This is the actual Admin User ID.
     const ADMIN_UID = 'h2bT0WkxL3bA0YVzJ5f4Z6yI3oE2';
     return uid === ADMIN_UID;
 }
@@ -314,3 +315,5 @@ export function SecuritySettings({ user }: { user: User | null }) {
     </div>
   );
 }
+
+    

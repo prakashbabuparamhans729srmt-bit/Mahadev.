@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -23,10 +24,8 @@ import { useUser } from '@/firebase';
 // This is a placeholder. In a real app, this would be determined from a secure source like a custom claim.
 const checkIsAdmin = (uid: string | undefined): boolean => {
   if (!uid) return false;
-  // For demonstration, let's assume a specific UID is the admin.
-  // In a real application, you would get this from a custom claim on the user's token.
-  // e.g., `user.customClaims.admin === true`
-  const ADMIN_UID = 'REPLACE_WITH_YOUR_ADMIN_UID'; 
+  // This is the actual Admin User ID.
+  const ADMIN_UID = 'h2bT0WkxL3bA0YVzJ5f4Z6yI3oE2';
   return uid === ADMIN_UID;
 }
 
@@ -108,3 +107,5 @@ export default function UserManagementPage() {
     </>
   );
 }
+
+    
