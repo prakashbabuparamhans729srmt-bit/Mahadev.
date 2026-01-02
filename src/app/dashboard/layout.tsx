@@ -34,154 +34,15 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useUser, useAuth } from '@/firebase';
 import { signOut } from 'firebase/auth';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-  DropdownMenuHeader,
-} from "@/components/ui/dropdown-menu";
-import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useEffect } from 'react';
 import { StartProjectDialog } from '@/components/start-project-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Loader2 } from 'lucide-react';
-
-const notifications = [
-    {
-      icon: <CheckCircle className="h-6 w-6 text-green-500" />,
-      title: 'डिज़ाइन स्वीकृत',
-      description: 'प्रोजेक्ट #1042 का डिज़ाइन राहुल द्वारा अपलोड किया गया और क्लाइंट द्वारा अप्रूव हो गया है।',
-      time: '10 मिनट पहले',
-    },
-    {
-      icon: <MessageSquare className="h-6 w-6 text-blue-500" />,
-      title: 'नया मैसेज',
-      description: 'राहुल (TL) ने आपको एक संदेश भेजा है: "कल की मीटिंग के लिए डेमो तैयार है।',
-      time: '1 घंटा पहले',
-    },
-    {
-      icon: <CreditCard className="h-6 w-6 text-orange-500" />,
-      title: 'पेमेंट प्राप्त',
-      description: 'स्मार्ट ERP सिस्टम प्रोजेक्ट के लिए ₹1.2L का भुगतान सफल रहा।',
-      time: '5 घंटे पहले',
-    },
-]
-
-function NotificationsNav() {
-    const { toast } = useToast();
-    const handleAction = (message: string) => {
-        toast({
-            description: message,
-        });
-    }
-
-    return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                 <Button variant="ghost" size="icon">
-                    <Bell />
-                    <span className="sr-only">Notifications</span>
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-96 mr-4" align="end">
-                <DropdownMenuHeader className="flex justify-between items-center">
-                    <DropdownMenuLabel className="text-lg font-headline p-0">सूचनाएं</DropdownMenuLabel>
-                    <Button variant="link" size="sm" className="p-0 h-auto" onClick={() => handleAction('सभी सूचनाएं पढ़ी हुई के रूप में चिह्नित की गईं।')}>सभी पढ़ें</Button>
-                </DropdownMenuHeader>
-                <DropdownMenuSeparator />
-                {notifications.map((n, i) => (
-                    <DropdownMenuItem key={i} className="flex items-start gap-4 p-4 cursor-pointer" onClick={() => handleAction(`'${n.title}' पर नेविगेट किया जा रहा है...`)}>
-                        <div className="bg-secondary p-3 rounded-full">
-                           {n.icon}
-                        </div>
-                        <div className="flex-1 space-y-1">
-                            <p className="font-semibold">{n.title}</p>
-                            <p className="text-xs text-muted-foreground">{n.description}</p>
-                            <p className="text-xs text-muted-foreground/70 pt-1">{n.time}</p>
-                        </div>
-                    </DropdownMenuItem>
-                ))}
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
-}
-
-function UserNav() {
-  const { user, isUserLoading } = useUser();
-  const auth = useAuth();
-  const router = useRouter();
-
-  const handleLogout = async () => {
-    if (auth) {
-        await signOut(auth);
-        router.push('/login');
-    }
-  };
-
-  if (isUserLoading) {
-    return (
-      <div className="flex items-center gap-3">
-        <Skeleton className="h-10 w-10 rounded-full" />
-        <div className="hidden sm:block space-y-1">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-3 w-20" />
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Button onClick={() => router.push('/login')}>लॉग इन</Button>;
-  }
-  
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-3">
-            <Avatar className="h-10 w-10">
-                <AvatarImage src={user.photoURL ?? ""} alt={user.displayName ?? 'User'} />
-                <AvatarFallback>
-                  {user.displayName?.[0]?.toUpperCase() ?? user.email?.[0]?.toUpperCase() ?? 'U'}
-                </AvatarFallback>
-            </Avatar>
-            <div className="text-right hidden sm:block">
-                <p className="font-semibold text-sm">{user.displayName ?? 'उपयोगकर्ता'}</p>
-                <p className="text-xs text-primary">प्रीमियम क्लाइंट</p>
-            </div>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56 mb-2" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user.displayName ?? 'उपयोगकर्ता'}</p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {user.email}
-            </p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <a href="https://idx.google.com/studio-9341424071" target="_blank" rel="noopener noreferrer">
-            <Shield className="mr-2 h-4 w-4" />
-            <span>एडमिन पैनल</span>
-          </a>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleLogout}>
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>लॉग आउट</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-}
+import { UserNav } from '@/components/layout/user-nav';
+import { SearchInput } from '@/components/layout/search-input';
 
 export default function DashboardLayout({
   children,
@@ -189,22 +50,19 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const { user, isUserLoading } = useUser();
-  const [globalSearch, setGlobalSearch] = useState('');
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
+
+  // This layout should not apply to the user-management section, which has its own layout.
+  if (pathname.startsWith('/dashboard/user-management')) {
+    return <>{children}</>;
+  }
 
   const isActive = (path: string) => {
     if (path === '/dashboard' && pathname !== '/dashboard/search') {
       return pathname === path;
     }
     return pathname.startsWith(path) && path !== '/dashboard';
-  }
-
-  const handleGlobalSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && globalSearch.trim()) {
-        router.push(`/dashboard/search?q=${encodeURIComponent(globalSearch.trim())}`);
-    }
   }
   
   if (isUserLoading || !user) {
@@ -410,18 +268,8 @@ export default function DashboardLayout({
                   </Link>
                   <SidebarTrigger className="md:hidden" />
                 </div>
-                <div className="relative flex-1 max-w-xl">
-                    <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="प्रोजेक्ट, फ़ाइलें, और संदेश खोजें..."
-                        className="pl-10 h-11 bg-card/50 border-border/30"
-                        value={globalSearch}
-                        onChange={(e) => setGlobalSearch(e.target.value)}
-                        onKeyDown={handleGlobalSearch}
-                    />
-                </div>
+                <SearchInput />
                  <div className="flex items-center gap-2">
-                    <NotificationsNav />
                     <UserNav />
                  </div>
             </header>

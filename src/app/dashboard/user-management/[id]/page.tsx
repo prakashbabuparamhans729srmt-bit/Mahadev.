@@ -28,7 +28,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { UserActivityCard } from './user-activity-card';
+import { UserActivityCard } from '../user-activity-card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Progress } from '@/components/ui/progress';
 
@@ -60,7 +60,7 @@ export default function UserDetailPage() {
 
   if (!user) {
     return (
-      <div className="flex h-full items-center justify-center">
+      <div className="flex h-full items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin" />
         <p className="ml-4">ग्राहक लोड हो रहा है...</p>
       </div>
@@ -169,5 +169,3 @@ export default function UserDetailPage() {
     </div>
   );
 }
-
-    
