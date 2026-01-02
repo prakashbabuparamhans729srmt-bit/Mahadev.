@@ -67,6 +67,7 @@ export default function AllProjectsPage() {
     const fetchProjects = async () => {
       if (auth?.currentUser) {
         setIsLoading(true);
+        setError(null);
         try {
           const token = await auth.currentUser.getIdToken(true); // Force refresh token for admin check
           const allProjects = await getAllProjects(token);

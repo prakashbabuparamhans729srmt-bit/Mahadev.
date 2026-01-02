@@ -101,17 +101,32 @@ export default function UserDetailPage() {
         fetchProjects();
     }
   }, [auth, user, toast, userLoading]);
+  
+  const combinedLoading = userLoading || isLoading;
+  const combinedError = userError || error;
 
 
-  if (userLoading) {
+  if (combinedLoading) {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="ml-4">ग्राहक लोड हो रहा है...</p>
+        <p className="ml-4">ग्राहक और प्रोजेक्ट लोड हो रहे हैं...</p>
       </div>
     );
   }
   
+  if (combinedError) {
+      return (
+          <div className="p-8">
+              <Card className="text-center p-8 bg-destructive/10 text-destructive">
+                <ShieldAlert className="h-8 w-8 mx-auto mb-2"/>
+                <h3 className="font-semibold">डेटा लोड करने में विफल</h3>
+                <p className="text-sm">{combinedError.message}</p>
+              </Card>
+          </div>
+      )
+  }
+
   if (!user) {
     return (
       <div className="flex h-full items-center justify-center p-8 text-center text-muted-foreground">
@@ -187,15 +202,7 @@ export default function UserDetailPage() {
                 </Button>
             </CardHeader>
             <CardContent>
-                {isLoading && <div className="flex justify-center p-10"><Loader2 className="animate-spin" /></div>}
-                {error && (
-                  <div className="text-center py-10 text-destructive bg-destructive/10 rounded-lg">
-                      <ShieldAlert className="mx-auto h-8 w-8 mb-2"/>
-                      <p className="font-semibold">प्रोजेक्ट्स लोड करने में विफल</p>
-                      <p className="text-sm">{error.message}</p>
-                  </div>
-                )}
-                {!isLoading && !error && projects.length > 0 ? (
+                {projects.length > 0 ? (
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -217,7 +224,7 @@ export default function UserDetailPage() {
                         </TableBody>
                     </Table>
                 ) : (
-                    !isLoading && !error && <div className="text-center py-20 text-muted-foreground">
+                    <div className="text-center py-20 text-muted-foreground">
                         <Briefcase className="h-12 w-12 mx-auto mb-4" />
                         <h3 className="font-semibold text-lg">इस ग्राहक के पास अभी कोई प्रोजेक्ट नहीं है</h3>
                         <p className="text-sm">आप ऊपर दिए गए "नया प्रोजेक्ट" बटन का उपयोग करके एक नया प्रोजेक्ट बना सकते हैं।</p>

@@ -59,7 +59,7 @@ export default function AnalyticsPage() {
     useEffect(() => {
         const fetchProjects = async () => {
             if (auth?.currentUser) {
-                setError(null);
+                // setError(null); // Keep previous error until loading is done
                 try {
                     const token = await auth.currentUser.getIdToken(true);
                     const allProjects = await getAllProjects(token);
@@ -102,6 +102,7 @@ export default function AnalyticsPage() {
     const totalRevenue = projects.reduce((acc, p) => acc + (p.budget || 0), 0);
     
     const projectStatusData = React.useMemo(() => {
+        if (isLoading || error) return [];
         const statusCounts: { [key: string]: { status: string, count: number, fill: string } } = {
             'जारी': { status: 'जारी', count: 0, fill: 'hsl(var(--chart-2))' },
             'पूर्ण': { status: 'पूर्ण', count: 0, fill: 'hsl(var(--chart-1))' },
@@ -119,7 +120,7 @@ export default function AnalyticsPage() {
         });
 
         return Object.values(statusCounts).filter(s => s.count > 0);
-    }, [projects]);
+    }, [projects, isLoading, error]);
 
 
   return (
