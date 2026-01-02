@@ -10,47 +10,52 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    // Checks if the requesting user is the owner of a document.
-    // Used for user-specific documents like their own profile.
+    // Checks if the user is the owner of the document.
     function isOwner(userId) {
       return isAuthenticated() && request.auth.uid == userId;
     }
-
-
-    // --- BACKEND-ONLY ACCESS ---
-
-    // By default, block all direct reads and writes from the client.
-    // All data access should go through the backend (Firebase Functions).
-    // This is the most secure approach.
-    match /{path=**} {
-      allow read, write: if false;
-    }
-
-    // --- CLIENT-ACCESSIBLE COLLECTIONS (Exceptions) ---
-
-    // Publicly readable data (e.g., public templates, general info)
-    // No public data in this app yet, but this is the pattern.
-    // match /public_data/{docId} {
-    //   allow read: if true;
-    //   allow write: if false; // Should be written by backend/admin only
-    // }
-
-    // Allow users to read and write to their OWN client document only.
-    // This is necessary for profile updates from the client-side.
-    match /clients/{clientId} {
-      allow read, write: if isOwner(clientId);
+    
+    // Checks if the user is the admin.
+    function isAdmin() {
+      return isAuthenticated() && request.auth.token.email == 'divyahanssuperpower@gmail.com';
     }
     
-    // Allow users to submit inquiries. This is a write-only entry point for anyone.
+    // Checks if the user is the client associated with a project.
+    function isProjectClient(projectId) {
+      let projectData = get(/databases/$(database)/documents/projects/$(projectId)).data;
+      return isOwner(projectData.clientId);
+    }
+    
+    // --- COLLECTION RULES ---
+
+    // Inquiries: Anyone can create, only admin can read.
     match /inquiries/{inquiryId} {
       allow create: if true;
-      allow read, update, delete: if false; // Readable only by backend/admin
+      allow read, update, delete: if isAdmin();
     }
 
-    // Allow anyone to subscribe to the newsletter.
+    // Subscribers: Anyone can create, only admin can read.
     match /subscribers/{email} {
       allow create: if true;
-      allow read, update, delete: if false; // Readable only by backend/admin
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Clients: Admin can read all. A user can read/write their own document.
+    match /clients/{clientId} {
+      allow get, update: if isOwner(clientId);
+      allow list, create, delete: if isAdmin();
+      allow get: if isAdmin(); // Admin can get any client doc
+    }
+
+    // Projects: Admin can do anything. Clients can only access their own projects.
+    match /projects/{projectId} {
+      allow read, write: if isAdmin() || isProjectClient(projectId);
+      allow list: if isAdmin() || (isAuthenticated() && request.query.get("clientId") == request.auth.uid);
+    }
+
+    // Project Subcollections: Admin or the project's client can access.
+    match /projects/{projectId}/{subcollection}/{docId} {
+       allow read, write: if isAdmin() || isProjectClient(projectId);
     }
   }
 }
