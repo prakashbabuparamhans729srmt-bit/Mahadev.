@@ -62,8 +62,8 @@ export default function UserDetailsListPage() {
   const copyToClipboard = () => {
     if (!clients) return;
     const csvContent = [
-      "Name,Email,Phone",
-      ...clients.map(u => `${u.firstName || ''} ${u.lastName || ''},${u.email},${u.phone || ''}`)
+      "Name,Email,Phone,Company",
+      ...clients.map(u => `"${(u.firstName || '')} ${(u.lastName || '')}",${u.email},${u.phone || ''},"${u.companyName || ''}"`)
     ].join("\n");
     navigator.clipboard.writeText(csvContent);
     toast({ description: "ग्राहक डेटा क्लिपबोर्ड पर कॉपी किया गया।" });
@@ -72,8 +72,8 @@ export default function UserDetailsListPage() {
   const downloadCSV = () => {
     if (!clients) return;
     const csvContent = "data:text/csv;charset=utf-8," + [
-      "Name,Email,Phone",
-      ...clients.map(u => `${u.firstName || ''} ${u.lastName || ''},${u.email},${u.phone || ''}`)
+      "Name,Email,Phone,Company",
+      ...clients.map(u => `"${(u.firstName || '')} ${(u.lastName || '')}",${u.email},${u.phone || ''},"${u.companyName || ''}"`)
     ].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
