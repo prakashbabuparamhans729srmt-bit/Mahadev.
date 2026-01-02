@@ -3,8 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // --- HELPER FUNCTIONS ---
-
+    // Helper functions to check for authentication and ownership.
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -12,8 +11,6 @@ service cloud.firestore {
     function isClientOwner(clientId) {
       return isAuthenticated() && request.auth.uid == clientId;
     }
-
-    // --- PUBLIC & SEMI-PUBLIC COLLECTIONS ---
 
     // Inquiries can be created by anyone (e.g., public contact form).
     // They cannot be read, updated, or deleted by clients.
@@ -28,21 +25,17 @@ service cloud.firestore {
       allow read, update, delete: if false; // Should only be readable by an admin role.
     }
 
-    // --- CLIENT-SPECIFIC DATA ---
-
     // A client can only read or update their own document.
     // They cannot create a client document for another user or delete their own.
     match /clients/{clientId} {
-      allow read, update, write: if isClientOwner(clientId);
-      allow create, delete: if isClientOwner(clientId);
+      allow read, update: if isClientOwner(clientId);
+      allow create, delete: if false;
     }
-
-    // --- PROJECTS AND SUBCOLLECTIONS ---
 
     // A user can only list projects where their UID matches the clientId field.
     match /projects/{projectId} {
-      // allow list: if isAuthenticated() && request.query.get("clientId") == request.auth.uid;
-      allow read, list: if isAuthenticated() && resource.data.clientId == request.auth.uid;
+      allow list: if isAuthenticated() && request.query.get("clientId") == request.auth.uid;
+      allow read: if isAuthenticated() && resource.data.clientId == request.auth.uid;
       // For create, check the incoming document's data.
       allow create: if isAuthenticated() && request.resource.data.clientId == request.auth.uid;
       // For update/delete, check the existing document's data.
