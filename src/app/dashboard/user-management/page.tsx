@@ -170,7 +170,9 @@ export default function UserManagementPage() {
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent>
                                           <DropdownMenuLabel>कार्रवाई</DropdownMenuLabel>
-                                          <DropdownMenuItem asChild><Link href={`/dashboard/user-management/${user.id}`}>विवरण देखें</Link></DropdownMenuItem>
+                                          <DropdownMenuItem asChild>
+                                            <Link href={`/dashboard/user-management/${user.id}`}>विवरण देखें</Link>
+                                          </DropdownMenuItem>
                                           <DropdownMenuItem onClick={() => toast({ description: `ग्राहक ${user.name} को संपादित किया गया।` })}>संपादित करें</DropdownMenuItem>
                                           <DropdownMenuItem className="text-destructive" onClick={() => toast({ description: `ग्राहक ${user.name} को हटा दिया गया।`, variant: 'destructive' })}>हटाएं</DropdownMenuItem>
                                       </DropdownMenuContent>
