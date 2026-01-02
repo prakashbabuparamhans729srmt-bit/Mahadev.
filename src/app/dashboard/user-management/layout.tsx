@@ -140,8 +140,8 @@ export default function UserManagementLayout({
         <div className="flex-1 flex flex-col">
             <header className="sticky top-0 z-20 flex h-20 shrink-0 items-center justify-between gap-4 border-b border-border/20 bg-background px-6">
                 <div className="flex items-center gap-4">
-                  <SidebarTrigger className="hidden md:flex" />
-                   <div className="md:hidden">
+                  <SidebarTrigger className="md:hidden" />
+                  <div className="hidden md:block">
                      <h1 className="font-bold text-lg">Admin Panel</h1>
                   </div>
                 </div>
