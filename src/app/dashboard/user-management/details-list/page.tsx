@@ -44,11 +44,16 @@ export default function UserDetailsListPage() {
 
   const filteredUsers = useMemo(() => {
     if (!clients) return [];
-    return clients.filter(u => 
-      (u.firstName + ' ' + u.lastName).toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (u.phone || '').includes(searchQuery)
-    );
+    return clients.filter(u => {
+      const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim().toLowerCase();
+      const email = (u.email || '').toLowerCase();
+      const phone = u.phone || '';
+      const lowerCaseQuery = searchQuery.toLowerCase();
+      
+      return fullName.includes(lowerCaseQuery) ||
+             email.includes(lowerCaseQuery) ||
+             phone.includes(lowerCaseQuery);
+    });
   }, [clients, searchQuery]);
 
 
@@ -60,20 +65,20 @@ export default function UserDetailsListPage() {
   };
   
   const copyToClipboard = () => {
-    if (!clients) return;
+    if (!clients || clients.length === 0) return;
     const csvContent = [
       "Name,Email,Phone,Company",
-      ...clients.map(u => `"${(u.firstName || '')} ${(u.lastName || '')}",${u.email},${u.phone || ''},"${u.companyName || ''}"`)
+      ...clients.map(u => `"${(u.firstName || '')} ${(u.lastName || '')}",${u.email || ''},${u.phone || ''},"${u.companyName || ''}"`)
     ].join("\n");
     navigator.clipboard.writeText(csvContent);
     toast({ description: "ग्राहक डेटा क्लिपबोर्ड पर कॉपी किया गया।" });
   };
   
   const downloadCSV = () => {
-    if (!clients) return;
+    if (!clients || clients.length === 0) return;
     const csvContent = "data:text/csv;charset=utf-8," + [
       "Name,Email,Phone,Company",
-      ...clients.map(u => `"${(u.firstName || '')} ${(u.lastName || '')}",${u.email},${u.phone || ''},"${u.companyName || ''}"`)
+      ...clients.map(u => `"${(u.firstName || '')} ${(u.lastName || '')}",${u.email || ''},${u.phone || ''},"${u.companyName || ''}"`)
     ].join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
