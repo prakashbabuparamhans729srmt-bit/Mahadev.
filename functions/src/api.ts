@@ -12,9 +12,10 @@ const allowedOrigins = [
     'https://mahadev-eight.vercel.app',
 ];
 
-// Automatically allow cross-origin requests from any origin
+// Automatically allow cross-origin requests from the allowed origins
 app.use(cors({
     origin: function(origin, callback){
+        // Allow requests with no origin (like mobile apps or curl requests)
         if(!origin) return callback(null, true);
         if(allowedOrigins.indexOf(origin) === -1){
             const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
