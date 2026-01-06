@@ -29,7 +29,7 @@ try {
     // If it fails, initialize it. This handles the initial setup.
     try {
         firestore = initializeFirestore(firebaseApp, {
-            cache: persistentLocalCache({})
+            localCache: persistentLocalCache({})
         });
     } catch (err: any) {
         if (err.code === 'failed-precondition') {
