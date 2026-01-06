@@ -2,6 +2,7 @@
 import * as express from "express";
 import * as admin from "firebase-admin";
 import { authenticate } from "../middleware/authenticate";
+import { type Request, type Response } from "express";
 
 const router = express.Router();
 
@@ -10,9 +11,10 @@ router.use(authenticate);
 
 // A very simple search implementation.
 // For a production app, use a dedicated search service like Algolia or Elasticsearch.
-router.get("/", async (req: any, res) => {
+router.get("/", async (req: Request, res: Response) => {
     try {
-        const userId = req.user.uid;
+        const user = (req as any).user;
+        const userId = user.uid;
         const query = (req.query.q as string || "").toLowerCase();
         const db = admin.firestore();
 

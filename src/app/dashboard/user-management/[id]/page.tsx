@@ -188,7 +188,7 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
                 <AvatarImage src={user.photoURL} />
                 <AvatarFallback>{(user.firstName?.[0] || 'U').toUpperCase()}</AvatarFallback>
               </Avatar>
-              <h2 className="text-xl font-bold">{`${'\'\'\''user.firstName || ''}'\'\'\''} ${'\'\'\''user.lastName || ''}'\'\'\''}`.trim() || user.email}</h2>
+              <h2 className="text-xl font-bold">{`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email}</h2>
               {user.companyName && <p className="text-muted-foreground">{user.companyName}</p>}
               <Badge variant={'default'} className={`mt-2 bg-green-500/20 text-green-700`}>सक्रिय</Badge>
             </CardContent>

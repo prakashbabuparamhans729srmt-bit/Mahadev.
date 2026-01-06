@@ -1,3 +1,4 @@
+
 import * as express from "express";
 import * as admin from "firebase-admin";
 
@@ -54,7 +55,7 @@ router.get("/", async (req, res) => {
     // A check is considered healthy if it's an object with a `healthy: true` property
     // or if it's not an object (like the timestamp).
     if (typeof check === 'object' && check !== null && 'healthy' in check) {
-      return check.healthy === true;
+      return (check as {healthy: boolean}).healthy === true;
     }
     // Non-check properties don't affect health status
     return true;

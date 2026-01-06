@@ -1,4 +1,6 @@
 
+
 import { auth } from "@/auth"
 
-export { auth as GET, auth as POST }
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+export const { handlers: { GET, POST }, auth } = auth;
