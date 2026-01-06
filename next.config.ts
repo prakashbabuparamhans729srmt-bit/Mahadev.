@@ -43,7 +43,6 @@ const nextConfig: NextConfig = {
   experimental: {
   },
   // Add the development origin to suppress the cross-origin warning
-  allowedDevOrigins: ["*.cloudworkstations.dev"],
   typescript: {
     ignoreBuildErrors: true,
   },
