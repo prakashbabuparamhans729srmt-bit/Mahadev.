@@ -1,3 +1,4 @@
+
 import * as express from "express";
 import * as admin from "firebase-admin";
 import { authenticate } from "../middleware/authenticate";
@@ -7,9 +8,10 @@ const router = express.Router();
 
 // Custom middleware to check for admin role
 const requireAdmin = async (req: any, res: express.Response, next: express.NextFunction) => {
-    const adminEmail = 'divyahanssuperpower@gmail.com';
-    if (req.user.email !== adminEmail) {
-        return res.status(403).json({ error: "Forbidden: Admin access required." });
+    // In a real app, use custom claims. For now, email is fine for this demo.
+    const adminEmail = 'divyahanssuperpower@gmail.com'; 
+    if (req.user?.email !== adminEmail) {
+        return res.status(403).json({ success: false, error: "Forbidden: Admin access required." });
     }
     next();
 };
@@ -19,13 +21,11 @@ router.get("/all", authenticate, requireAdmin, async (req, res) => {
     try {
         const db = admin.firestore();
 
-        // Get all projects
-        const projectsSnapshot = await db.collection("projects").get();
+        const projectsSnapshot = await db.collection("projects").orderBy("startDate", "desc").get();
         if (projectsSnapshot.empty) {
             return res.status(200).json({ success: true, data: [] });
         }
 
-        // Get all clients to enrich project data
         const clientsSnapshot = await db.collection("clients").get();
         const clientsMap = new Map(clientsSnapshot.docs.map(doc => [doc.id, doc.data()]));
 
@@ -35,17 +35,17 @@ router.get("/all", authenticate, requireAdmin, async (req, res) => {
             return {
                 id: doc.id,
                 ...projectData,
-                client: {
-                    name: clientData?.companyName || `${clientData?.firstName} ${clientData?.lastName}`,
-                    email: clientData?.email
-                }
+                client: clientData ? {
+                    name: clientData.companyName || `${clientData.firstName || ''} ${clientData.lastName || ''}`.trim(),
+                    email: clientData.email
+                } : { name: 'Unknown Client', email: 'N/A' }
             };
         });
 
         res.status(200).json({ success: true, data: projects });
     } catch (error) {
         console.error("Error fetching all projects:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ success: false, error: "Internal Server Error while fetching all projects." });
     }
 });
 
@@ -59,8 +59,7 @@ router.get("/", async (req: any, res) => {
     const userId = req.user.uid;
     const db = admin.firestore();
 
-    // Securely query for projects where the user is the client
-    const projectsSnapshot = await db.collection("projects").where("clientId", "==", userId).get();
+    const projectsSnapshot = await db.collection("projects").where("clientId", "==", userId).orderBy("startDate", "desc").get();
     
     if (projectsSnapshot.empty) {
       return res.status(200).json({ success: true, data: [] });
@@ -73,8 +72,8 @@ router.get("/", async (req: any, res) => {
 
     res.status(200).json({ success: true, data: projects });
   } catch (error) {
-    console.error("Error fetching projects:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error(`Error fetching projects for user ${req.user.uid}:`, error);
+    res.status(500).json({ success: false, error: "Internal Server Error while fetching user projects." });
   }
 });
 
@@ -86,33 +85,31 @@ router.get("/:id", async (req: any, res) => {
     const projectId = req.params.id;
     const db = admin.firestore();
 
+    if (!projectId) {
+        return res.status(400).json({ success: false, error: "Project ID is required." });
+    }
+
     const projectRef = db.collection("projects").doc(projectId);
     const doc = await projectRef.get();
 
     if (!doc.exists) {
-      return res.status(404).json({ error: "Project not found" });
+      return res.status(404).json({ success: false, error: "Project not found." });
     }
 
     const projectData = doc.data();
     
-    // Admin check: Admin can access any project
     const isAdmin = req.user.email === 'divyahanssuperpower@gmail.com';
 
     // Security Check: Ensure the user is the owner of the project OR is an admin
     if (projectData?.clientId !== userId && !isAdmin) {
-      return res.status(403).json({ error: "Forbidden: You do not have access to this project." });
+      return res.status(403).json({ success: false, error: "Forbidden: You do not have access to this project." });
     }
 
     res.status(200).json({ success: true, data: { id: doc.id, ...projectData } });
   } catch (error) {
     console.error(`Error fetching project ${req.params.id}:`, error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ success: false, error: "Internal Server Error while fetching single project." });
   }
 });
-
-
-// You can add POST, PUT, DELETE routes here in the future
-// For example, to create a project:
-// router.post("/", async (req: any, res) => { ... });
 
 export default router;
