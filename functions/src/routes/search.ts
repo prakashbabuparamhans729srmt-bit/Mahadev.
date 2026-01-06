@@ -1,9 +1,11 @@
+
 import * as express from "express";
 import * as admin from "firebase-admin";
 import { authenticate } from "../middleware/authenticate";
 
 const router = express.Router();
 
+// Middleware to ensure user is authenticated for all search routes
 router.use(authenticate);
 
 // A very simple search implementation.
@@ -15,7 +17,7 @@ router.get("/", async (req: any, res) => {
         const db = admin.firestore();
 
         if (!query) {
-            return res.status(400).json({ error: "Search query is required." });
+            return res.status(400).json({ success: false, error: "Search query is required." });
         }
 
         const results: any[] = [];
@@ -62,7 +64,7 @@ router.get("/", async (req: any, res) => {
 
     } catch (error) {
         console.error("Search error:", error);
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ success: false, error: "An internal server error occurred during search." });
     }
 });
 
