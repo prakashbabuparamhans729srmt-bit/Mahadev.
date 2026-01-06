@@ -40,6 +40,7 @@ import { useUser, useAuth } from '@/firebase';
 import React, { useState, useMemo, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { firebaseWithRetry } from '@/lib/firebase-retry';
+import { useRouter } from 'next/navigation';
 
 const BarChart = dynamic(() => import('recharts').then(mod => mod.BarChart), {
     loading: () => <Skeleton className="w-full h-full" />,
@@ -57,25 +58,12 @@ import {
   CartesianGrid,
   Pie,
   Cell,
+  Tooltip as RechartsTooltip,
 } from 'recharts';
 
 
-const budgetData = [
-  { name: 'स्मार्ट ERP सिस्टम', value: 450000, fill: 'hsl(var(--chart-1))' },
-  { name: 'ई-कॉमर्स पोर्टल', value: 300000, fill: 'hsl(var(--chart-2))' },
-  { name: 'मोबाइल ऐप', value: 350000, fill: 'hsl(var(--chart-3))' },
-  { name: 'लैंडिंग पेज', value: 150000, fill: 'hsl(var(--chart-4))' },
-];
-
-const timeData = [
-    { task: 'डिज़ाइन', hours: 120, fill: 'hsl(var(--chart-1))' },
-    { task: 'डेवलपमेंट', hours: 250, fill: 'hsl(var(--chart-2))' },
-    { task: 'मीटिंग्स', hours: 80, fill: 'hsl(var(--chart-3))' },
-    { task: 'टेस्टिंग', hours: 100, fill: 'hsl(var(--chart-4))' },
-    { task: 'अन्य', hours: 50, fill: 'hsl(var(--chart-5))' },
-]
-
 async function getProjects(token: string) {
+    // This is a placeholder for the actual API URL from Firebase Functions
     const API_URL = '/api/projects';
     return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
@@ -97,17 +85,17 @@ export default function ReportsPage() {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const { toast } = useToast();
+  const router = useRouter();
   const [projects, setProjects] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
-      if (!isUserLoading && user && auth) {
+      if (!isUserLoading && user && auth?.currentUser) {
         setIsLoading(true);
         try {
-          const token = await auth.currentUser?.getIdToken();
-          if (!token) throw new Error("Authentication token not available.");
+          const token = await auth.currentUser.getIdToken(true);
           const userProjects = await getProjects(token);
           setProjects(userProjects);
         } catch (err: any) {
@@ -120,15 +108,46 @@ export default function ReportsPage() {
         } finally {
           setIsLoading(false);
         }
-      } else if (!isUserLoading) {
-        setIsLoading(false);
+      } else if (!isUserLoading && !user) {
+        // If user is not logged in, redirect to login
+        router.push('/login');
       }
     };
 
     fetchProjects();
-  }, [user, isUserLoading, auth, toast]);
+  }, [user, isUserLoading, auth, toast, router]);
 
 
+  const { totalBudget, totalSpent } = useMemo(() => {
+    if (!projects) return { totalBudget: 0, totalSpent: 0 };
+    return projects.reduce((acc, project) => {
+        const budget = project.budget || 0;
+        const progress = project.progress || 0;
+        acc.totalBudget += budget;
+        acc.totalSpent += budget * (progress / 100);
+        return acc;
+    }, { totalBudget: 0, totalSpent: 0 });
+  }, [projects]);
+
+
+  const budgetData = useMemo(() => {
+    if (!projects || projects.length === 0) return [];
+    const colors = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))', 'hsl(var(--chart-5))'];
+    return projects.slice(0, 5).map((p, i) => ({
+      name: p.name,
+      value: p.budget || 0,
+      fill: colors[i % colors.length]
+    }));
+  }, [projects]);
+
+  const timeData = [
+    { task: 'डिज़ाइन', hours: 120, fill: 'hsl(var(--chart-1))' },
+    { task: 'डेवलपमेंट', hours: 250, fill: 'hsl(var(--chart-2))' },
+    { task: 'मीटिंग्स', hours: 80, fill: 'hsl(var(--chart-3))' },
+    { task: 'टेस्टिंग', hours: 100, fill: 'hsl(var(--chart-4))' },
+    { task: 'अन्य', hours: 50, fill: 'hsl(var(--chart-5))' },
+  ]
+  
   const healthData = useMemo(() => {
       if (!projects) return [];
       // Dummy health data generation
@@ -166,6 +185,9 @@ export default function ReportsPage() {
                 </CardDescription>
             </CardHeader>
             <CardContent className="h-[400px]">
+                {isLoading ? <div className="flex items-center justify-center h-full"><Loader2 className="animate-spin" /></div> :
+                 error ? <div className="text-destructive">त्रुटि: {error.message}</div> :
+                 budgetData.length > 0 ? (
                  <ChartContainer config={{}} className="w-full h-full">
                      <PieChart>
                          <Pie data={budgetData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} label>
@@ -173,9 +195,10 @@ export default function ReportsPage() {
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
                             ))}
                          </Pie>
-                        <ChartTooltip content={<ChartTooltipContent nameKey="value" hideLabel />} />
+                        <RechartsTooltip content={<ChartTooltipContent nameKey="value" hideLabel />} />
                      </PieChart>
                  </ChartContainer>
+                 ) : <p className="text-center text-muted-foreground">कोई बजट डेटा नहीं।</p>}
             </CardContent>
         </Card>
         <div className="space-y-6">
@@ -187,17 +210,21 @@ export default function ReportsPage() {
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                    <p className="text-3xl font-bold">₹12,50,000</p>
-                    <p className="text-sm text-muted-foreground">कुल खर्च: ₹8,70,000</p>
-                    <p className="text-sm text-green-500">शेष: ₹3,80,000</p>
-                    <Progress value={(870000 / 1250000) * 100} className="h-3" />
+                    {isLoading ? <Skeleton className="h-24" /> : error ? <p className="text-destructive text-sm">{error.message}</p> : (
+                      <>
+                        <p className="text-3xl font-bold">₹{totalBudget.toLocaleString('en-IN')}</p>
+                        <p className="text-sm text-muted-foreground">कुल खर्च: ₹{totalSpent.toLocaleString('en-IN')}</p>
+                        <p className="text-sm text-green-500">शेष: ₹{(totalBudget - totalSpent).toLocaleString('en-IN')}</p>
+                        <Progress value={totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0} className="h-3" />
+                      </>
+                    )}
                 </CardContent>
             </Card>
             <Card>
                 <CardHeader>
                     <CardTitle className="font-headline text-lg flex items-center">
                         <Clock className="mr-2" />
-                        समय ट्रैकिंग
+                        समय ट्रैकिंग (डेमो)
                     </CardTitle>
                 </CardHeader>
                 <CardContent className="h-[180px]">
@@ -206,7 +233,7 @@ export default function ReportsPage() {
                             <XAxis type="number" hide />
                             <YAxis dataKey="task" type="category" tickLine={false} axisLine={false} tick={{ fontSize: 12 }} width={80} />
                             <CartesianGrid horizontal={false} strokeDasharray="3 3" />
-                            <ChartTooltip content={<ChartTooltipContent />} />
+                            <RechartsTooltip content={<ChartTooltipContent />} />
                             <Bar dataKey="hours" radius={5} />
                         </BarChart>
                     </ChartContainer>
@@ -243,7 +270,7 @@ export default function ReportsPage() {
                             <TableRow key={project.id}>
                                 <TableCell className="font-medium">
                                     <p>{project.name}</p>
-                                    <p className="text-xs text-muted-foreground">{project.id}</p>
+                                    <p className="text-xs text-muted-foreground">{project.id.slice(0, 8)}...</p>
                                 </TableCell>
                                 <TableCell><Progress value={project.time} /> <span className="text-xs">{project.time}%</span></TableCell>
                                 <TableCell><Progress value={project.budget} /> <span className="text-xs">{project.budget}%</span></TableCell>
