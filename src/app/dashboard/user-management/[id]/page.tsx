@@ -41,7 +41,7 @@ async function getAllProjects(token: string) {
     const API_URL = '/api/projects/all';
     return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
-            headers: { 'Authorization': `Bearer ${token}` }
+            headers: { 'Authorization': `Bearer ${'\'\'\''token'\'\'\''}` }
         });
         if (!response.ok) {
             const errorData = await response.json();
@@ -70,7 +70,6 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
       return doc(firestore, 'clients', id);
   }, [firestore, id, isAuthorized]);
 
-  // We can still use useDoc for the single client, as the rule allows admin to get it.
   const { data: user, isLoading: userLoading, error: userError } = useDoc(clientRef);
 
   useEffect(() => {
@@ -79,10 +78,8 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
         setIsLoading(true);
         setError(null);
         try {
-          // Use the secure API route to fetch all projects
           const token = await auth.currentUser.getIdToken(true);
           const allProjects = await getAllProjects(token);
-          // Filter projects for the specific client on the frontend
           setProjects(allProjects.filter((p:any) => p.clientId === user.id));
         } catch (err: any) {
           setError(err);
@@ -99,11 +96,9 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
       }
     };
     
-    // Fetch projects only after we've confirmed the user exists
     if (!userLoading && user) { 
         fetchProjects();
     } else if (!userLoading && !user) {
-        // If user is not found, no need to fetch projects
         setIsLoading(false);
     }
   }, [isAuthorized, auth, user, userLoading, toast]);
@@ -192,7 +187,7 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
                 <AvatarImage src={user.photoURL} />
                 <AvatarFallback>{(user.firstName?.[0] || 'U').toUpperCase()}</AvatarFallback>
               </Avatar>
-              <h2 className="text-xl font-bold">{`${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email}</h2>
+              <h2 className="text-xl font-bold">{`${'\'\'\''user.firstName || ''}'\'\'\''} ${'\'\'\''user.lastName || ''}'\'\'\''}`.trim() || user.email}</h2>
               {user.companyName && <p className="text-muted-foreground">{user.companyName}</p>}
               <Badge variant={'default'} className={`mt-2 bg-green-500/20 text-green-700`}>सक्रिय</Badge>
             </CardContent>
@@ -258,3 +253,5 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
     </div>
   );
 }
+
+    
