@@ -41,7 +41,7 @@ async function getAllProjects(token: string) {
     const API_URL = '/api/projects/all';
     return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
-            headers: { 'Authorization': `Bearer ${'\'\'\''token'\'\'\''}` }
+            headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!response.ok) {
             const errorData = await response.json();
@@ -80,7 +80,8 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
         try {
           const token = await auth.currentUser.getIdToken(true);
           const allProjects = await getAllProjects(token);
-          setProjects(allProjects.filter((p:any) => p.clientId === user.id));
+          // Filter projects for the specific client being viewed
+          setProjects(allProjects.filter((p:any) => p.clientId === id));
         } catch (err: any) {
           setError(err);
           toast({
@@ -101,7 +102,7 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
     } else if (!userLoading && !user) {
         setIsLoading(false);
     }
-  }, [isAuthorized, auth, user, userLoading, toast]);
+  }, [isAuthorized, auth, user, userLoading, toast, id]);
   
   const combinedLoading = userLoading || isLoading;
   const combinedError = userError || error;
@@ -253,5 +254,3 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
     </div>
   );
 }
-
-    
