@@ -21,6 +21,7 @@ import {
   List,
   LineChart,
   Loader2,
+  ShieldAlert,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -28,8 +29,9 @@ import { Button } from '@/components/ui/button';
 import { Icons } from '@/components/icons';
 import { UserNav } from '@/components/layout/user-nav';
 import { SearchInput } from '@/components/layout/search-input';
-import { useUser } from '@/firebase';
+import { useUser, useAuth } from '@/firebase';
 import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 // This is a placeholder. In a real app, this should be determined from a secure source like a custom claim.
 const checkIsAdmin = (user: import('firebase/auth').User | null): boolean => {
@@ -48,6 +50,7 @@ export default function UserManagementLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { user, isUserLoading } = useUser();
+  const { toast } = useToast();
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [authChecked, setAuthChecked] = useState(false);
 
@@ -59,42 +62,49 @@ export default function UserManagementLayout({
     }
 
     const isAdmin = checkIsAdmin(user);
-    const isAuthPage = pathname === '/dashboard/user-management/auth';
 
     if (!isAdmin) {
+      toast({
+        variant: "destructive",
+        title: "अनधिकृत पहुंच",
+        description: "आपके पास इस पृष्ठ तक पहुंचने की अनुमति नहीं है।",
+      });
       router.replace('/dashboard');
       return; // Early exit
     }
-
-    if (!isAuthPage) {
-      const isReauthenticated = sessionStorage.getItem('isAdminReauthenticated') === 'true';
-      if (!isReauthenticated) {
-        router.replace('/dashboard/user-management/auth');
-        return; // Early exit
-      }
-    }
-
+    
+    // If admin is verified, they are authorized.
     setIsAuthorized(true);
     setAuthChecked(true);
 
-  }, [user, isUserLoading, router, pathname]);
+  }, [user, isUserLoading, router, pathname, toast]);
 
   // Show a loading screen while all authorization checks are in progress.
   if (!authChecked) {
     return (
        <div className="flex h-screen w-full items-center justify-center bg-background text-center p-4">
-        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <div className="space-y-4">
+            <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
+            <p className="text-muted-foreground">आपकी अनुमतियों का सत्यापन हो रहा है...</p>
+        </div>
       </div>
     );
   }
-
-  // Render the auth page without the main layout, as it has its own simple layout
-  if (pathname === '/dashboard/user-management/auth') {
-    return <>{children}</>;
+  
+  if (!isAuthorized) {
+    // This state could be reached if checks complete but authorization fails.
+    // The useEffect should redirect, but this is a fallback.
+     return (
+       <div className="flex h-screen w-full items-center justify-center bg-background text-center p-4">
+        <div className="space-y-4">
+            <ShieldAlert className="h-12 w-12 text-destructive mx-auto" />
+            <h1 className="text-xl font-bold">पहुंच अस्वीकृत</h1>
+            <p className="text-muted-foreground">आपके पास इस अनुभाग को देखने की अनुमति नहीं है।</p>
+            <Button onClick={() => router.replace('/dashboard')}>डैशबोर्ड पर वापस जाएं</Button>
+        </div>
+      </div>
+    );
   }
-
-  // If we reach here, the user is authorized to see the admin panel.
-  // We can now safely render the layout and its children.
 
   const isActive = (path: string) => {
     if (path === '/dashboard/user-management') {
