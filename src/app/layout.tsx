@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     statusBarStyle: 'default',
     title: 'Hajaro Grahako',
   },
+  keywords: ["software development agency", "web development", "mobile apps", "custom software", "Hajaro Grahako", "digital solutions", "tech solutions"],
+  authors: [{ name: "Hajaro Grahako" }],
 };
 
 export const viewport: Viewport = {
