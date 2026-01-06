@@ -1,7 +1,7 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -38,7 +38,7 @@ import { firebaseWithRetry } from '@/lib/firebase-retry';
 
 // This function now uses the secure API route
 async function getAllProjects(token: string) {
-    const API_URL = `/api/projects/all`;
+    const API_URL = '/api/projects/all';
     return firebaseWithRetry(async () => {
         const response = await fetch(API_URL, {
             headers: {
@@ -92,10 +92,13 @@ export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolea
   }, [isAuthorized, auth, toast]);
 
 
-  const filteredProjects = projects.filter(p => 
-    (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (p.client?.name || '').toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProjects = useMemo(() => {
+    if (!projects) return [];
+    return projects.filter(p => 
+      (p.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (p.client?.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [projects, searchQuery]);
   
   const getStatusBadge = (status: string) => {
     switch(status) {
@@ -180,7 +183,7 @@ export default function AllProjectsPage({ isAuthorized }: { isAuthorized: boolea
                                     </div>
                                     </TableCell>
                                     <TableCell>
-                                    <Progress value={project.progress} className="w-24 h-2" />
+                                    <Progress value={project.progress || 0} className="w-24 h-2" />
                                     </TableCell>
                                     <TableCell>
                                         {getStatusBadge(project.status)}
