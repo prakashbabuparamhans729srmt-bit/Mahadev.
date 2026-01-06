@@ -1,5 +1,6 @@
+
 import * as admin from "firebase-admin";
-import { Request, Response, NextFunction } from "express";
+import { type Request, type Response, type NextFunction } from "express";
 
 // Extend the Express Request type to include the user object
 interface AuthenticatedRequest extends Request {
