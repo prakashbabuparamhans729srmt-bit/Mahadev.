@@ -8,6 +8,7 @@ const app = express();
 
 const allowedOrigins = [
     'http://localhost:3000',
+    'http://localhost:9002', // Development server
     'https://mahadev-app.vercel.app', // Your Vercel production URL
     'https://mahadev-eight.vercel.app',
 ];
