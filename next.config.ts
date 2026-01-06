@@ -12,7 +12,7 @@ const securityHeaders = [
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       img-src 'self' https://images.unsplash.com https://picsum.photos https://fastly.picsum.photos https://*.googleusercontent.com data: blob:;
       font-src 'self' data: https://fonts.gstatic.com;
-      connect-src 'self' https://*.googleusercontent.com https://*.cloudworkstations.dev http://127.0.0.1:5001 wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://www.google-analytics.com *.google-analytics.com https://*.googletagmanager.com;
+      connect-src 'self' https://*.googleusercontent.com https://*.cloudworkstations.dev http://127.0.0.1:5001 wss://*.cloudworkstations.dev *.firebaseapp.com *.googleapis.com https://firestore.googleapis.com https://www.googleapis.com https://securetoken.googleapis.com https://www.google-analytics.com *.google-analytics.com https://*.googletagmanager.com;
       form-action 'self';
       manifest-src 'self';
     `.replace(/\s{2,}/g, ' ').trim()
