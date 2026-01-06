@@ -83,7 +83,9 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
             }
         };
 
-        fetchProjects();
+        if (isAuthorized) {
+            fetchProjects();
+        }
 
     }, [isAuthorized, auth, toast]);
 
@@ -120,6 +122,15 @@ export default function AnalyticsPage({ isAuthorized }: { isAuthorized: boolean 
 
         return Object.values(statusCounts).filter(s => s.count > 0);
     }, [projects]);
+    
+    if (!isAuthorized) {
+        return (
+            <div className="flex h-full items-center justify-center p-8 text-center text-muted-foreground">
+                <ShieldAlert className="h-8 w-8 mx-auto mb-2"/>
+                <p>आपके पास इस पृष्ठ को देखने की अनुमति नहीं है।</p>
+            </div>
+        );
+    }
 
 
   return (
