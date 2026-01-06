@@ -40,8 +40,6 @@ const withPWA = withPWAInit({
 
 
 const nextConfig: NextConfig = {
-  experimental: {
-  },
   // Add the development origin to suppress the cross-origin warning
   typescript: {
     ignoreBuildErrors: true,
