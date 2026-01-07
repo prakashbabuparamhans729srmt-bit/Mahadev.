@@ -1,8 +1,10 @@
+
 import * as express from "express";
 import * as cors from "cors";
 import projectsRouter from "./routes/projects";
 import searchRouter from "./routes/search";
 import healthRouter from "./routes/health";
+import storageRouter from "./routes/storage";
 
 const app = express();
 
@@ -31,6 +33,7 @@ app.use(cors({
 app.use("/projects", projectsRouter);
 app.use("/search", searchRouter);
 app.use("/health", healthRouter);
+app.use("/storage", storageRouter);
 
 
 // Default route for health check

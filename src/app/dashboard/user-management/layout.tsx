@@ -1,3 +1,4 @@
+
 'use client';
 
 import React from 'react';
@@ -22,6 +23,7 @@ import {
   LineChart,
   Loader2,
   ShieldAlert,
+  Archive,
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -189,6 +191,20 @@ export default function UserManagementLayout({
                   <Link href="/dashboard/user-management/projects">
                     <Briefcase />
                     <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">प्रोजेक्ट्स</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive('/dashboard/user-management/storage')}
+                  tooltip="स्टोरेज"
+                  size="lg"
+                  className="!justify-start"
+                >
+                  <Link href="/dashboard/user-management/storage">
+                    <Archive />
+                    <span className="group-data-[state=collapsed]:hidden group-data-[state=collapsed]:group-hover:inline">स्टोरेज</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
