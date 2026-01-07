@@ -1,4 +1,3 @@
-
 import { BrainCircuit, Cloud, Code, Handshake, PenRuler, Rocket } from "lucide-react";
 
 const CoreCompetency = ({ icon, title, children }: { icon: React.ReactNode, title: string, children: React.ReactNode }) => (
