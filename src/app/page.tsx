@@ -9,6 +9,7 @@ import TestimonialsSection from '@/components/sections/testimonials';
 import CtaSection from '@/components/sections/cta';
 import PricingSection from '@/components/sections/pricing';
 import React from 'react';
+import AboutSection from '@/components/sections/about';
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <main className="flex-1">
         <HeroSection />
         <ServicesSection />
+        <AboutSection />
         <PortfolioSection />
         <ProcessSection />
         <TestimonialsSection />
