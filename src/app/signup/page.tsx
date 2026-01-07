@@ -53,6 +53,7 @@ function SignupFormComponent() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
+  const [referralCode, setReferralCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -94,13 +95,19 @@ function SignupFormComponent() {
       });
       
       const clientRef = doc(firestore, 'clients', newUser.uid);
-      await setDoc(clientRef, {
+      const clientData: any = {
         id: newUser.uid,
         firstName,
         lastName,
         email: newUser.email,
         phone,
-      });
+      };
+
+      if (referralCode) {
+        clientData.referredBy = referralCode;
+      }
+
+      await setDoc(clientRef, clientData);
       
       await sendEmailVerification(newUser);
       toast({
@@ -261,6 +268,19 @@ function SignupFormComponent() {
                   className="bg-secondary/50 border-border"
                 />
                 <p className="text-xs text-muted-foreground">कम से कम 8 अक्षर का होना चाहिए।</p>
+              </div>
+
+              <div className="grid gap-2">
+                  <Label htmlFor="referral-code">रेफरल कोड (वैकल्पिक)</Label>
+                  <Input
+                    id="referral-code"
+                    name="referral-code"
+                    type="text"
+                    placeholder="किसी यूट्यूबर या मित्र का कोड"
+                    value={referralCode}
+                    onChange={(e) => setReferralCode(e.target.value)}
+                    className="bg-secondary/50 border-border"
+                  />
               </div>
 
                <div className="flex items-center space-x-2 mt-4">

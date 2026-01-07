@@ -66,6 +66,10 @@
         "companyName": {
           "type": "string",
           "description": "The name of the client's company."
+        },
+        "referredBy": {
+          "type": "string",
+          "description": "The referral code used during signup."
         }
       },
       "required": ["id", "email"]
