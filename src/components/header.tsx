@@ -24,8 +24,7 @@ const navLinks = [
   { href: "/#services", label: "सेवाएं" },
   { href: "/#pricing", label: "मूल्य" },
   { href: "/#portfolio", label: "पोर्टफोलियो" },
-  { href: "/#process", label: "प्रक्रिया" },
-  { href: "/#testimonials", label: "हमारे बारे में" },
+  { href: "/#about", label: "हमारे बारे में" },
   { href: "/contact", label: "संपर्क करें" },
 ];
 
