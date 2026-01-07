@@ -24,6 +24,7 @@ import {
   Loader2,
   Building,
   ShieldAlert,
+  Gift,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
@@ -197,6 +198,12 @@ export default function UserDetailPage({ isAuthorized }: { isAuthorized: boolean
               <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-primary" /> <span>{user.email}</span></div>
               <div className="flex items-center gap-3"><Phone className="h-4 w-4 text-primary" /> <span>{user.phone || 'उपलब्ध नहीं'}</span></div>
               <div className="flex items-center gap-3"><Building className="h-4 w-4 text-primary" /> <span>{user.companyName || 'उपलब्ध नहीं'}</span></div>
+              {user.referredBy && (
+                <div className="flex items-center gap-3 pt-2 border-t mt-2">
+                  <Gift className="h-4 w-4 text-primary" />
+                  <span>रेफरल कोड: <strong>{user.referredBy}</strong></span>
+                </div>
+              )}
             </CardContent>
           </Card>
            <UserActivityCard />
