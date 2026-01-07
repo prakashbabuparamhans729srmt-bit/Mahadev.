@@ -79,7 +79,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/:path*',
+        destination: `http://127.0.0.1:5001/studio-953489467-c7e5b/us-central1/api/:path*`,
       },
     ];
   },
