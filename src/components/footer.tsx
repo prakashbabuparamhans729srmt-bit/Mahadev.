@@ -6,7 +6,7 @@ import { Icons } from "@/components/icons";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, Linkedin, Twitter, Facebook, Instagram } from "lucide-react";
 import React, { useState } from "react";
 import { useFirestore } from "@/firebase";
 import { doc, serverTimestamp, setDoc } from "firebase/firestore";
@@ -98,6 +98,28 @@ export default function Footer() {
             <div className="text-sm text-muted-foreground">
               <p>📞 +91-XXXXXXXXXX</p>
               <p>✉️ info@hajarograhako.com</p>
+            </div>
+            <div className="flex items-center gap-2 mt-2">
+                <Link href="#" passHref>
+                    <Button variant="ghost" size="icon" aria-label="LinkedIn">
+                        <Linkedin className="h-5 w-5" />
+                    </Button>
+                </Link>
+                <Link href="#" passHref>
+                    <Button variant="ghost" size="icon" aria-label="Twitter">
+                        <Twitter className="h-5 w-5" />
+                    </Button>
+                </Link>
+                <Link href="#" passHref>
+                     <Button variant="ghost" size="icon" aria-label="Facebook">
+                        <Facebook className="h-5 w-5" />
+                    </Button>
+                </Link>
+                <Link href="#" passHref>
+                    <Button variant="ghost" size="icon" aria-label="Instagram">
+                        <Instagram className="h-5 w-5" />
+                    </Button>
+                </Link>
             </div>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 md:col-span-2 md:grid-cols-3">
