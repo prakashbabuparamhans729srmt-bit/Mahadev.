@@ -13,7 +13,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { ArrowLeft, Download, HardHat, Rocket, Send, Share2, Video, Wallet, Zap } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { ArrowLeft, Download, HardHat, Rocket, Send, Share2, Video, Wallet, Zap, Link as LinkIcon, MessageCircle, Facebook, Twitter, Linkedin } from 'lucide-react';
 import Header from '@/components/header';
 import Footer from '@/components/footer';
 import { useToast } from '@/hooks/use-toast';
@@ -69,31 +76,13 @@ export default function CaseStudyPage() {
     });
   };
 
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Hajaro Grahako Case Study: ${caseStudy?.title}`,
-          text: `Check out this case study from Hajaro Grahako: ${caseStudy?.description}`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.error('Sharing failed', error);
-        toast({
-          variant: "destructive",
-          title: "शेयरिंग विफल",
-          description: "कुछ तकनीकी समस्या के कारण शेयर नहीं किया जा सका।",
-        });
-      }
-    } else {
+  const copyLink = () => {
       navigator.clipboard.writeText(window.location.href);
       toast({
         title: "लिंक कॉपी किया गया",
         description: "केस स्टडी का लिंक आपके क्लिपबोर्ड पर कॉपी कर लिया गया है।",
       });
-    }
-  };
-
+  }
 
   if (!caseStudy) {
     return (
@@ -113,6 +102,9 @@ export default function CaseStudyPage() {
       </div>
     );
   }
+
+  const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const shareTitle = `Hajaro Grahako केस स्टडी: ${caseStudy.title}`;
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
@@ -139,7 +131,42 @@ export default function CaseStudyPage() {
                 </p>
                  <div className="flex gap-4 justify-center mt-8">
                     <Button onClick={handleDownloadPdf} variant="outline"><Download className="mr-2 h-4 w-4"/> PDF डाउनलोड करें</Button>
-                    <Button onClick={handleShare} variant="outline"><Share2 className="mr-2 h-4 w-4"/> शेयर करें</Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline"><Share2 className="mr-2 h-4 w-4"/> शेयर करें</Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuItem onClick={copyLink}>
+                          <LinkIcon className="mr-2 h-4 w-4" />
+                          <span>लिंक कॉपी करें</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem asChild>
+                          <a href={`https://wa.me/?text=${encodeURIComponent(`${shareTitle}\n${shareUrl}`)}`} target="_blank" rel="noopener noreferrer">
+                            <MessageCircle className="mr-2 h-4 w-4" />
+                            <span>WhatsApp</span>
+                          </a>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                           <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer">
+                            <Facebook className="mr-2 h-4 w-4" />
+                            <span>Facebook</span>
+                          </a>
+                        </DropdownMenuItem>
+                         <DropdownMenuItem asChild>
+                           <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`} target="_blank" rel="noopener noreferrer">
+                            <Twitter className="mr-2 h-4 w-4" />
+                            <span>Twitter</span>
+                          </a>
+                        </DropdownMenuItem>
+                         <DropdownMenuItem asChild>
+                           <a href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(shareTitle)}&summary=${encodeURIComponent(caseStudy.description)}`} target="_blank" rel="noopener noreferrer">
+                            <Linkedin className="mr-2 h-4 w-4" />
+                            <span>LinkedIn</span>
+                          </a>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
         </section>
