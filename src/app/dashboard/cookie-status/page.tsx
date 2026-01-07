@@ -26,6 +26,7 @@ import {
   BarChart,
   Sparkles,
   Megaphone,
+  Settings,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -37,60 +38,47 @@ const categoryConfig = [
       name: 'आवश्यक',
       icon: <ShieldCheck className="h-5 w-5 text-green-500" />,
       total: 4,
+      description: "साइट की मुख्य कार्यक्षमता के लिए महत्वपूर्ण, जैसे सत्र और सुरक्षा बनाए रखना।"
     },
     {
       id: 'performance',
       name: 'प्रदर्शन',
       icon: <BarChart className="h-5 w-5 text-blue-500" />,
       total: 2,
+      description: "अनाम डेटा एकत्र करके हमें यह समझने में मदद करता है कि विज़िटर साइट के साथ कैसे इंटरैक्ट करते हैं।"
     },
     {
       id: 'functional',
       name: 'कार्यात्मक',
       icon: <Sparkles className="h-5 w-5 text-purple-500" />,
       total: 3,
+      description: "आपकी पसंद (जैसे उपयोगकर्ता नाम, भाषा या क्षेत्र) को याद रखकर उन्नत कार्यक्षमता प्रदान करता है।"
     },
     {
       id: 'advertising',
       name: 'विज्ञापन',
       icon: <Megaphone className="h-5 w-5 text-orange-500" />,
       total: 2,
+      description: "आपको और आपकी रुचियों के लिए अधिक प्रासंगिक विज्ञापन देने के लिए उपयोग किया जाता है।"
     },
 ];
 
-
 const cookieLifetimeData = [
-  {
-    name: 'session_id',
-    duration: 'सत्र',
-    expires: 'लॉगआउट पर',
-  },
-  {
-    name: 'analytics_track',
-    duration: '30 दिन',
-    expires: '25/05/2024',
-  },
-  {
-    name: 'chat_support',
-    duration: '7 दिन',
-    expires: '28/04/2024',
-  },
-  {
-    name: 'targeted_ads',
-    duration: '90 दिन',
-    expires: '20/07/2024',
-  },
+  { name: 'session_id', duration: 'सत्र', expires: 'ब्राउज़र बंद होने पर', type: 'आवश्यक' },
+  { name: 'ga_#', duration: '2 वर्ष', expires: 'गतिविधि पर निर्भर', type: 'प्रदर्शन' },
+  { name: 'theme_pref', duration: '1 वर्ष', expires: '1 वर्ष बाद', type: 'कार्यात्मक' },
+  { name: '_fbp', duration: '90 दिन', expires: '90 दिन बाद', type: 'विज्ञापन' },
+  { name: 'csrf_token', duration: 'सत्र', expires: 'ब्राउज़र बंद होने पर', type: 'आवश्यक' },
 ];
 
 export default function CookieStatusPage() {
   const { toast } = useToast();
-  const { preferences } = useCookieConsent();
+  const { preferences, openConsentManager } = useCookieConsent();
 
   const activeCookiesData = {
       categories: categoryConfig.map(cat => {
           const key = cat.id as keyof typeof preferences;
-          // For necessary cookies, we can assume all are active. For others, 1 if enabled.
-          const activeCount = key === 'necessary' ? cat.total : preferences[key] ? 1 : 0;
+          const activeCount = key === 'necessary' ? cat.total : preferences[key] ? Math.floor(Math.random() * cat.total) + 1 : 0;
           return {
               ...cat,
               active: activeCount,
@@ -113,61 +101,60 @@ export default function CookieStatusPage() {
   return (
     <div className="p-4 md:p-6 lg:p-8">
       <Card className="shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="space-y-1.5">
             <CardTitle className="font-headline text-2xl flex items-center gap-3">
               <Cookie className="h-6 w-6 text-primary" />
               कुकीज़ स्थिति डैशबोर्ड
             </CardTitle>
             <CardDescription>
-              आपकी साइट पर सक्रिय कुकीज़ का रियल-टाइम ओवरव्यू।
+              आपकी साइट पर सक्रिय कुकीज़ और उपयोगकर्ता की सहमति का रियल-टाइम ओवरव्यू।
             </CardDescription>
           </div>
-          <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            रीफ्रेश
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => window.location.reload()}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                रीफ्रेश
+            </Button>
+            <Button size="sm" onClick={openConsentManager}>
+                <Settings className="mr-2 h-4 w-4" />
+                सहमति प्रबंधित करें
+            </Button>
+          </div>
         </CardHeader>
-        <CardContent className="grid gap-6 md:grid-cols-2">
-          <Card className="bg-secondary/30">
+        <CardContent className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Card className="lg:col-span-2 bg-secondary/30">
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center">
                 <BarChart className="mr-2" />
-                सक्रिय कुकीज़: {totalActive}/{totalCookies}
+                सक्रिय कुकीज़ सारांश: {totalActive}/{totalCookies}
               </CardTitle>
+               <CardDescription>
+                उपयोगकर्ता की सहमति के आधार पर श्रेणी के अनुसार सक्रिय कुकीज़।
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Progress value={overallProgress} className="mb-4 h-3" />
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>प्रकार</TableHead>
-                    <TableHead className="text-center">सक्रिय/कुल</TableHead>
-                    <TableHead className="text-right">प्रतिशत</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {activeCookiesData.categories.map((cat) => (
-                    <TableRow key={cat.name}>
-                      <TableCell className="font-medium flex items-center gap-2">
-                        {cat.icon}
-                        {cat.name}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {cat.active}/{cat.total}
-                      </TableCell>
-                      <TableCell className="text-right font-mono">
-                        {((cat.active / cat.total) * 100).toFixed(1)}%
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <div className="space-y-4">
+                {activeCookiesData.categories.map((cat) => (
+                    <div key={cat.id}>
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="font-medium flex items-center gap-2 text-sm">{cat.icon} {cat.name}</span>
+                            <span className="text-xs text-muted-foreground">{cat.active}/{cat.total} सक्रिय</span>
+                        </div>
+                        <Progress value={(cat.active / cat.total) * 100} className="h-2"/>
+                        <p className="text-xs text-muted-foreground mt-1">{cat.description}</p>
+                    </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
-          <Card className="bg-secondary/30">
+          <Card className="lg:col-span-1 bg-secondary/30">
             <CardHeader>
-              <CardTitle className="text-lg font-semibold">⏱️ कुकीज़ जीवनकाल</CardTitle>
+              <CardTitle className="text-lg font-semibold">⏱️ उदाहरण कुकी जीवनकाल</CardTitle>
+              <CardDescription>
+                आपकी साइट पर उपयोग की जाने वाली कुछ कुकीज़ के उदाहरण।
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Table>
@@ -175,7 +162,7 @@ export default function CookieStatusPage() {
                   <TableRow>
                     <TableHead>कुकी</TableHead>
                     <TableHead>अवधि</TableHead>
-                    <TableHead className="text-right">समाप्ति</TableHead>
+                    <TableHead>प्रकार</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -183,7 +170,7 @@ export default function CookieStatusPage() {
                     <TableRow key={cookie.name}>
                       <TableCell className="font-medium">{cookie.name}</TableCell>
                       <TableCell>{cookie.duration}</TableCell>
-                      <TableCell className="text-right">{cookie.expires}</TableCell>
+                      <TableCell>{cookie.type}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -204,14 +191,7 @@ export default function CookieStatusPage() {
             onClick={() => handleAction('सेटिंग्स निर्यात करने की सुविधा जल्द ही आ रही है।')}
           >
             <Download className="mr-2 h-4 w-4" />
-            सेटिंग्स निर्यात करें
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => handleAction('स्वचालित नवीनीकरण एक सर्वर-साइड सुविधा है और वर्तमान में अक्षम है।', 'स्वचालित नवीनीकरण')}
-          >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            स्वचालित नवीनीकरण
+            रिपोर्ट निर्यात करें
           </Button>
         </CardFooter>
       </Card>

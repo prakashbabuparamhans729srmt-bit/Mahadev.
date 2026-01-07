@@ -43,23 +43,22 @@ const consentCategories: {
 ];
 
 export function CookieConsent() {
-  const { preferences, hasMadeChoice, setPreferences } = useCookieConsent();
-  const [isOpen, setIsOpen] = useState(false);
+  const { 
+    preferences, 
+    setPreferences, 
+    isConsentManagerOpen, 
+    setIsConsentManagerOpen 
+  } = useCookieConsent();
+  
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [currentPrefs, setCurrentPrefs] = useState<CookiePreferences>(preferences);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!hasMadeChoice) {
-      setIsOpen(true);
-    }
-  }, [hasMadeChoice]);
-
-  useEffect(() => {
     setCurrentPrefs(preferences);
   }, [preferences]);
 
-  const handleToggle = (category: keyof Omit<CookiePreferences, 'hasMadeChoice'>, checked: boolean) => {
+  const handleToggle = (category: keyof Omit<CookiePreferences, 'hasMadeChoice' | 'necessary'>, checked: boolean) => {
     setCurrentPrefs((prev) => ({ ...prev, [category]: checked }));
   };
 
@@ -69,7 +68,7 @@ export function CookieConsent() {
       title: 'सहेजा गया',
       description: 'आपकी कुकी वरीयताएँ सहेज ली गई हैं।',
     });
-    setIsOpen(false);
+    setIsConsentManagerOpen(false);
     setIsCustomizing(false);
   };
 
@@ -82,7 +81,7 @@ export function CookieConsent() {
       advertising: true,
     };
     setPreferences(allAccepted);
-    setIsOpen(false);
+    setIsConsentManagerOpen(false);
   };
 
   const handleRejectAll = () => {
@@ -94,7 +93,7 @@ export function CookieConsent() {
       advertising: false,
     };
     setPreferences(onlyNecessary);
-    setIsOpen(false);
+    setIsConsentManagerOpen(false);
   };
   
   const handleResetToDefault = () => {
@@ -110,7 +109,10 @@ export function CookieConsent() {
 
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isConsentManagerOpen} onOpenChange={(open) => {
+        setIsConsentManagerOpen(open);
+        if (!open) setIsCustomizing(false);
+    }}>
       <DialogContent className="max-w-xl p-0">
         <DialogHeader className="p-6 pb-4 border-b">
            <DialogTitle className="text-2xl font-headline flex items-center gap-3">
@@ -163,7 +165,7 @@ export function CookieConsent() {
                               {category.title}
                             </h3>
                              <Switch
-                                checked={currentPrefs[category.id]}
+                                checked={currentPrefs[category.id as keyof Omit<CookiePreferences, 'hasMadeChoice' | 'necessary'>]}
                                 onCheckedChange={(checked) => handleToggle(category.id, checked)}
                             />
                         </div>

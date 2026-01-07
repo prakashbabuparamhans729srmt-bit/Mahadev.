@@ -23,6 +23,7 @@ const defaultPreferences: CookiePreferences = {
 export function useCookieConsent() {
   const [preferences, setPreferencesState] = useState<CookiePreferences>(defaultPreferences);
   const [isClient, setIsClient] = useState(false);
+  const [isConsentManagerOpen, setIsConsentManagerOpen] = useState(false);
 
   // This effect runs only on the client, after the initial render.
   useEffect(() => {
@@ -36,10 +37,13 @@ export function useCookieConsent() {
       } else {
         // If no stored preferences, ensure we are using the default state
         setPreferencesState(defaultPreferences);
+        // Automatically open the consent manager if no choice has been made.
+        setIsConsentManagerOpen(true);
       }
     } catch (error) {
       console.error("Failed to parse cookie preferences from localStorage", error);
       setPreferencesState(defaultPreferences);
+      setIsConsentManagerOpen(true);
     }
   }, []);
 
@@ -59,12 +63,19 @@ export function useCookieConsent() {
     }
   }, [preferences]);
 
+  const openConsentManager = () => {
+    setIsConsentManagerOpen(true);
+  };
+
   return {
     preferences,
     // On the server or before the client-side effect has run, always return false.
     // This ensures consistent server and initial client renders to avoid hydration mismatches.
     // The correct value will be available after the component mounts on the client.
     hasMadeChoice: isClient ? preferences.hasMadeChoice : false,
+    isConsentManagerOpen,
+    setIsConsentManagerOpen,
+    openConsentManager,
     setPreferences,
   };
 }

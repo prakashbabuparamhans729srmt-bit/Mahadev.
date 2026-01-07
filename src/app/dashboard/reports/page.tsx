@@ -59,6 +59,7 @@ import {
   Pie,
   Cell,
   Tooltip as RechartsTooltip,
+  Legend,
 } from 'recharts';
 
 
@@ -190,12 +191,22 @@ export default function ReportsPage() {
                  budgetData.length > 0 ? (
                  <ChartContainer config={{}} className="w-full h-full">
                      <PieChart>
-                         <Pie data={budgetData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} label>
+                         <Pie data={budgetData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={120} labelLine={false} label={({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+                            const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+                            const x = cx + radius * Math.cos(-midAngle * (Math.PI / 180));
+                            const y = cy + radius * Math.sin(-midAngle * (Math.PI / 180));
+                            return (
+                                <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+                                {`${(percent * 100).toFixed(0)}%`}
+                                </text>
+                            );
+                            }}>
                             {budgetData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.fill} />
                             ))}
                          </Pie>
-                        <RechartsTooltip content={<ChartTooltipContent nameKey="value" hideLabel />} />
+                        <RechartsTooltip content={<ChartTooltipContent nameKey="name" />} />
+                        <Legend />
                      </PieChart>
                  </ChartContainer>
                  ) : <p className="text-center text-muted-foreground">कोई बजट डेटा नहीं।</p>}
