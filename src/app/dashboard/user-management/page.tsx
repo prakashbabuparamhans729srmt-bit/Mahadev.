@@ -58,7 +58,8 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
     if (!clients) return [];
     return clients.filter(client => 
         (client.firstName + ' ' + client.lastName).toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (client.email || '').toLowerCase().includes(searchQuery.toLowerCase())
+        (client.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (client.referredBy || '').toLowerCase().includes(searchQuery.toLowerCase())
     );
   }, [clients, searchQuery]);
 
@@ -98,7 +99,7 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
               <div className="relative w-full max-w-sm">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input 
-                    placeholder="ग्राहक खोजें (नाम या ईमेल से)..." 
+                    placeholder="ग्राहक खोजें (नाम, ईमेल या रेफरल कोड से)..." 
                     className="pl-9"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -113,6 +114,7 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
                         <TableRow>
                             <TableHead>ग्राहक</TableHead>
                             <TableHead>भूमिका</TableHead>
+                            <TableHead>रेफरल कोड</TableHead>
                             <TableHead className="text-right">कार्रवाई</TableHead>
                         </TableRow>
                     </TableHeader>
@@ -133,6 +135,13 @@ export default function UserManagementPage({ isAuthorized }: { isAuthorized: boo
                                 </TableCell>
                                 <TableCell>
                                     <Badge variant="secondary">ग्राहक</Badge>
+                                </TableCell>
+                                <TableCell>
+                                    {client.referredBy ? (
+                                        <Badge variant="outline">{client.referredBy}</Badge>
+                                    ) : (
+                                        <span className="text-xs text-muted-foreground">N/A</span>
+                                    )}
                                 </TableCell>
                                 <TableCell className="text-right">
                                     <DropdownMenu>
