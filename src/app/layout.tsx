@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
-import React, { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Toaster } from '@/components/ui/toaster';
-import SentryProvider from './sentry-provider';
+import React from 'react';
 
 export const metadata: Metadata = {
   title: 'Hajaro Grahako - Digital Solutions',
