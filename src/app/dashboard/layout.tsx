@@ -82,7 +82,7 @@ export default function DashboardLayout({
               <div className="flex items-center gap-3">
                 <Icons.logo className="h-8 w-8 text-primary" />
                 <div className="text-xl font-bold font-headline group-data-[state=collapsed]:hidden overflow-hidden">
-                  HAJARO PORTAL
+                  MDC
                 </div>
               </div>
             </SidebarGroup>
