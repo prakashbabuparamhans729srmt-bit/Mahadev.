@@ -3,12 +3,23 @@ import Header from '@/components/header';
 import Footer from '@/components/footer';
 import HeroSection from '@/components/sections/hero';
 import ServicesSection from '@/components/sections/services';
-import PortfolioSection from '@/components/sections/portfolio';
-import ProcessSection from '@/components/sections/process';
-import TestimonialsSection from '@/components/sections/testimonials';
-import CtaSection from '@/components/sections/cta';
-import PricingSection from '@/components/sections/pricing';
-import React from 'react';
+import LazySection from '@/components/lazy-section';
+import React, { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+// Dynamically import sections that are below the fold
+const PortfolioSection = React.lazy(() => import('@/components/sections/portfolio'));
+const ProcessSection = React.lazy(() => import('@/components/sections/process'));
+const TestimonialsSection = React.lazy(() => import('@/components/sections/testimonials'));
+const CtaSection = React.lazy(() => import('@/components/sections/cta'));
+const PricingSection = React.lazy(() => import('@/components/sections/pricing'));
+
+const SectionSkeleton = () => (
+  <div className="container py-12 md:py-24 lg:py-32">
+      <Skeleton className="h-[50vh] w-full" />
+  </div>
+);
+
 
 export default function Home() {
   return (
@@ -17,11 +28,31 @@ export default function Home() {
       <main className="flex-1">
         <HeroSection />
         <ServicesSection />
-        <PortfolioSection />
-        <ProcessSection />
-        <TestimonialsSection />
-        <CtaSection />
-        <PricingSection />
+        <LazySection>
+            <Suspense fallback={<SectionSkeleton />}>
+                <PortfolioSection />
+            </Suspense>
+        </LazySection>
+        <LazySection>
+            <Suspense fallback={<SectionSkeleton />}>
+                <ProcessSection />
+            </Suspense>
+        </LazySection>
+        <LazySection>
+            <Suspense fallback={<SectionSkeleton />}>
+                <TestimonialsSection />
+            </Suspense>
+        </LazySection>
+        <LazySection>
+            <Suspense fallback={<SectionSkeleton />}>
+                <CtaSection />
+            </Suspense>
+        </LazySection>
+        <LazySection>
+            <Suspense fallback={<SectionSkeleton />}>
+                <PricingSection />
+            </Suspense>
+        </LazySection>
       </main>
       <Footer />
     </div>
