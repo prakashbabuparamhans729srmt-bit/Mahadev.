@@ -6,13 +6,14 @@ import ServicesSection from '@/components/sections/services';
 import LazySection from '@/components/lazy-section';
 import React, { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
+import dynamic from 'next/dynamic';
 
 // Dynamically import sections that are below the fold
-const PortfolioSection = React.lazy(() => import('@/components/sections/portfolio'));
-const ProcessSection = React.lazy(() => import('@/components/sections/process'));
-const TestimonialsSection = React.lazy(() => import('@/components/sections/testimonials'));
-const CtaSection = React.lazy(() => import('@/components/sections/cta'));
-const PricingSection = React.lazy(() => import('@/components/sections/pricing'));
+const PortfolioSection = dynamic(() => import('@/components/sections/portfolio'));
+const ProcessSection = dynamic(() => import('@/components/sections/process'));
+const TestimonialsSection = dynamic(() => import('@/components/sections/testimonials'));
+const CtaSection = dynamic(() => import('@/components/sections/cta'));
+const PricingSection = dynamic(() => import('@/components/sections/pricing'));
 
 const SectionSkeleton = () => (
   <div className="container py-12 md:py-24 lg:py-32">
