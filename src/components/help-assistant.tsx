@@ -9,13 +9,22 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { HelpCircle, Send, Cpu, Bot, User } from 'lucide-react';
+import { HelpCircle, Send, Cpu, Bot, User, Mic, Paperclip } from 'lucide-react';
 import { assistantFlow } from '@/ai/flows/assistant-flow';
+import { useToast } from '@/hooks/use-toast';
 
 type Message = {
   role: 'user' | 'assistant';
   content: string;
 };
+
+// Declare SpeechRecognition types for window object
+declare global {
+    interface Window {
+        SpeechRecognition: any;
+        webkitSpeechRecognition: any;
+    }
+}
 
 export function HelpAssistant() {
   const [isOpen, setIsOpen] = useState(false);
@@ -23,6 +32,7 @@ export function HelpAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
   // States for dragging functionality
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -31,6 +41,10 @@ export function HelpAssistant() {
   const initialPositionRef = useRef({ x: 0, y: 0 });
   const resetTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // States for speech recognition
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
   useEffect(() => {
     if (scrollAreaRef.current) {
         scrollAreaRef.current.scrollTo({
@@ -38,7 +52,7 @@ export function HelpAssistant() {
             behavior: 'smooth'
         });
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   const clearResetTimer = () => {
     if (resetTimerRef.current) {
@@ -53,6 +67,44 @@ export function HelpAssistant() {
       clearResetTimer();
     };
   }, []);
+
+  // Setup Speech Recognition
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      console.warn("Speech recognition not supported by this browser.");
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'hi-IN'; // Hindi
+    recognition.interimResults = false;
+
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      setIsListening(false);
+    };
+
+    recognition.onerror = (event: any) => {
+      console.error("Speech recognition error:", event.error);
+      toast({
+        variant: 'destructive',
+        title: 'Voice Error',
+        description: `An error occurred: ${event.error}`,
+      });
+      setIsListening(false);
+    };
+    
+    recognition.onend = () => {
+        setIsListening(false);
+    }
+
+    recognitionRef.current = recognition;
+  }, [toast]);
+
 
   const handleSend = async () => {
     if (!input.trim()) return;
@@ -76,6 +128,34 @@ export function HelpAssistant() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleMicClick = () => {
+    clearResetTimer(); // Interaction detected
+    if (!recognitionRef.current) {
+        toast({
+            variant: 'destructive',
+            title: 'Unsupported Browser',
+            description: 'Your browser does not support speech recognition.',
+        });
+        return;
+    }
+    
+    if (isListening) {
+        recognitionRef.current.stop();
+    } else {
+        setInput(''); // Clear input before starting
+        recognitionRef.current.start();
+        setIsListening(true);
+    }
+  };
+  
+  const handleAttachFile = () => {
+      clearResetTimer(); // Interaction detected
+      toast({
+          title: "सुविधा जल्द ही आ रही है",
+          description: "फ़ाइल अटैचमेंट की सुविधा जल्द ही लागू की जाएगी।",
+      });
   };
 
   // Mouse down event to start dragging
@@ -106,7 +186,9 @@ export function HelpAssistant() {
     if (isOpen) {
       clearResetTimer(); // Clear any existing timer
       resetTimerRef.current = setTimeout(() => {
-        setPosition({ x: 0, y: 0 });
+        if (!isDragging) { // Add a check to ensure it's not currently being dragged
+            setPosition({ x: 0, y: 0 });
+        }
         resetTimerRef.current = null;
       }, 10000); // 10 seconds
     }
@@ -136,7 +218,6 @@ export function HelpAssistant() {
       clearResetTimer();
     }
   };
-
 
   return (
     <Popover open={isOpen} onOpenChange={handleOpenChange}>
@@ -217,24 +298,45 @@ export function HelpAssistant() {
           <div className="p-4 border-t">
             <div className="relative">
               <Input
-                placeholder="एक संदेश लिखें..."
+                placeholder={isListening ? "सुन रहा हूँ..." : "एक संदेश लिखें..."}
                 value={input}
                 onChange={(e) => {
                   setInput(e.target.value);
-                  clearResetTimer(); // Interaction detected
+                  clearResetTimer();
                 }}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 disabled={isLoading}
-                className="pr-12 rounded-full"
+                className="pl-12 pr-12 rounded-full"
               />
-              <Button
+               <Button
                 size="icon"
-                className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
-                onClick={handleSend}
+                variant="ghost"
+                className="absolute left-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
+                onClick={handleAttachFile}
                 disabled={isLoading}
               >
-                <Send size={18} />
+                <Paperclip size={18} />
               </Button>
+              {input.trim() ? (
+                <Button
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
+                    onClick={handleSend}
+                    disabled={isLoading}
+                >
+                    <Send size={18} />
+                </Button>
+              ) : (
+                <Button
+                    size="icon"
+                    variant={isListening ? 'destructive' : 'default'}
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full"
+                    onClick={handleMicClick}
+                    disabled={isLoading}
+                >
+                    <Mic size={18} />
+                </Button>
+              )}
             </div>
           </div>
         </div>
