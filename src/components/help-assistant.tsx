@@ -29,6 +29,7 @@ export function HelpAssistant() {
   const [isDragging, setIsDragging] = useState(false);
   const dragStartRef = useRef<{ x: number; y: number } | null>(null);
   const initialPositionRef = useRef({ x: 0, y: 0 });
+  const resetTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -39,8 +40,23 @@ export function HelpAssistant() {
     }
   }, [messages]);
 
+  const clearResetTimer = () => {
+    if (resetTimerRef.current) {
+      clearTimeout(resetTimerRef.current);
+      resetTimerRef.current = null;
+    }
+  };
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      clearResetTimer();
+    };
+  }, []);
+
   const handleSend = async () => {
     if (!input.trim()) return;
+    clearResetTimer(); // Interaction detected
 
     const userMessage: Message = { role: 'user', content: input };
     setMessages((prev) => [...prev, userMessage]);
@@ -64,6 +80,7 @@ export function HelpAssistant() {
 
   // Mouse down event to start dragging
   const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    clearResetTimer(); // Clear timer on new drag
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX, y: e.clientY };
     initialPositionRef.current = { x: position.x, y: position.y };
@@ -84,6 +101,15 @@ export function HelpAssistant() {
   // Mouse up event to stop dragging
   const handleMouseUp = () => {
     setIsDragging(false);
+    
+    // If the popover is open, start a timer to reset its position
+    if (isOpen) {
+      clearResetTimer(); // Clear any existing timer
+      resetTimerRef.current = setTimeout(() => {
+        setPosition({ x: 0, y: 0 });
+        resetTimerRef.current = null;
+      }, 10000); // 10 seconds
+    }
   };
   
   // Effect to add and remove global event listeners for dragging
@@ -105,8 +131,9 @@ export function HelpAssistant() {
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
     if (!open) {
-      // Reset position when popover is closed
+      // Reset position and clear timer when popover is closed
       setPosition({ x: 0, y: 0 });
+      clearResetTimer();
     }
   };
 
@@ -127,6 +154,8 @@ export function HelpAssistant() {
         side="top" 
         align="end"
         style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+        onPointerMove={clearResetTimer} // Clear timer on any interaction with the content
+        onFocusCapture={clearResetTimer} // Clear timer when content gains focus
       >
         <div className="flex flex-col h-[60vh] max-h-[700px] bg-card rounded-2xl">
           <div 
@@ -190,7 +219,10 @@ export function HelpAssistant() {
               <Input
                 placeholder="एक संदेश लिखें..."
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
+                onChange={(e) => {
+                  setInput(e.target.value);
+                  clearResetTimer(); // Interaction detected
+                }}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                 disabled={isLoading}
                 className="pr-12 rounded-full"
