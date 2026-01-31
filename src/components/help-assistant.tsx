@@ -93,7 +93,7 @@ export function HelpAssistant() {
       toast({
         variant: 'destructive',
         title: 'Voice Error',
-        description: `An error occurred: ${event.error}`,
+        description: `An error occurred: ${'\'event.error\''}`,
       });
       setIsListening(false);
     };
@@ -234,7 +234,7 @@ export function HelpAssistant() {
         className="w-96 mr-4 mb-2 p-0 border-0 shadow-2xl rounded-2xl" 
         side="top" 
         align="end"
-        style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+        style={{ transform: `translate(${'position.x'}px, ${'position.y'}px)` }}
         onPointerMove={clearResetTimer} // Clear timer on any interaction with the content
         onFocusCapture={clearResetTimer} // Clear timer when content gains focus
       >
