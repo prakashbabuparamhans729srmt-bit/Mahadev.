@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -24,6 +23,12 @@ export function HelpAssistant() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  // States for dragging functionality
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStartRef = useRef<{ x: number; y: number } | null>(null);
+  const initialPositionRef = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     if (scrollAreaRef.current) {
@@ -57,8 +62,57 @@ export function HelpAssistant() {
     }
   };
 
+  // Mouse down event to start dragging
+  const handleMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    setIsDragging(true);
+    dragStartRef.current = { x: e.clientX, y: e.clientY };
+    initialPositionRef.current = { x: position.x, y: position.y };
+    e.preventDefault();
+  };
+
+  // Mouse move event to update position while dragging
+  const handleMouseMove = (e: MouseEvent) => {
+    if (!isDragging || !dragStartRef.current) return;
+    const dx = e.clientX - dragStartRef.current.x;
+    const dy = e.clientY - dragStartRef.current.y;
+    setPosition({
+      x: initialPositionRef.current.x + dx,
+      y: initialPositionRef.current.y + dy,
+    });
+  };
+
+  // Mouse up event to stop dragging
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+  
+  // Effect to add and remove global event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+    } else {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    }
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isDragging]);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      // Reset position when popover is closed
+      setPosition({ x: 0, y: 0 });
+    }
+  };
+
+
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
           className="fixed bottom-4 right-4 z-50 h-14 w-14 rounded-full shadow-lg transition-transform duration-200 hover:scale-110 hover:shadow-2xl"
@@ -68,9 +122,17 @@ export function HelpAssistant() {
           <span className="sr-only">Help Assistant</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-96 mr-4 mb-2 p-0 border-0 shadow-2xl rounded-2xl" side="top" align="end">
+      <PopoverContent 
+        className="w-96 mr-4 mb-2 p-0 border-0 shadow-2xl rounded-2xl" 
+        side="top" 
+        align="end"
+        style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+      >
         <div className="flex flex-col h-[60vh] max-h-[700px] bg-card rounded-2xl">
-          <div className="p-4 border-b text-center bg-secondary/30 rounded-t-2xl">
+          <div 
+            onMouseDown={handleMouseDown}
+            className="p-4 border-b text-center bg-secondary/30 rounded-t-2xl cursor-grab active:cursor-grabbing"
+          >
             <h4 className="font-bold leading-none flex items-center justify-center">
               <Cpu className="mr-2 text-primary" />
               AI सहायक
