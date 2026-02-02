@@ -2,7 +2,7 @@
 
 import React, { createContext, ReactNode, useState, useEffect, useContext, useMemo } from 'react';
 import { FirebaseApp, initializeApp, getApps, getApp } from 'firebase/app';
-import { Firestore, initializeFirestore, persistentLocalCache, getFirestore } from 'firebase/firestore';
+import { Firestore, initializeFirestore, persistentLocalCache, getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { Auth, User, onAuthStateChanged, getAuth } from 'firebase/auth';
 import { getStorage, FirebaseStorage } from 'firebase/storage';
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
@@ -84,8 +84,34 @@ export const FirebaseProvider: React.FC<{
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
-      auth, // Use the already initialized auth instance
-      (firebaseUser) => {
+      auth,
+      async (firebaseUser) => {
+        if (firebaseUser) {
+          // User is signed in, ensure a client doc exists for them.
+          // This is crucial for users signing in with social providers for the first time.
+          const clientRef = doc(firestore, 'clients', firebaseUser.uid);
+          const clientSnap = await getDoc(clientRef);
+
+          if (!clientSnap.exists()) {
+            const [firstName, ...lastNameParts] = (firebaseUser.displayName || '').split(' ');
+            const lastName = lastNameParts.join(' ');
+            
+            try {
+              await setDoc(clientRef, {
+                id: firebaseUser.uid,
+                email: firebaseUser.email,
+                firstName: firstName || '',
+                lastName: lastName || '',
+                phone: firebaseUser.phoneNumber || '',
+                companyName: '',
+                referredBy: '',
+              }, { merge: true });
+            } catch (error) {
+              console.error("FirebaseProvider: Failed to create client document for new user:", error);
+            }
+          }
+        }
+        // Finally, update the auth state for the rest of the app
         setUserAuthState({ user: firebaseUser, isUserLoading: false, userError: null });
       },
       (error) => {
