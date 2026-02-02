@@ -20,5 +20,8 @@
       "firebase-debug.*.log"
     ],
     "runtime": "nodejs18"
+  },
+  "firestore": {
+    "rules": "src/firestore.rules"
   }
 }
