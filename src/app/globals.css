@@ -113,6 +113,21 @@ body {
 }
 
 @layer utilities {
+  .animate-page-enter {
+    animation: page-enter 0.4s ease-out;
+  }
+
+  @keyframes page-enter {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
   .animate-blinking-glow {
     animation: blinking-glow 2.5s ease-in-out infinite;
   }

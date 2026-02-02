@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -250,7 +249,7 @@ export default function UserManagementLayout({
                     <UserNav />
                  </div>
             </header>
-            <main className="flex-1 bg-background/95">
+            <main className="flex-1 bg-background/95 animate-page-enter">
                 {childrenWithProps}
             </main>
         </div>

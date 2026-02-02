@@ -273,7 +273,7 @@ export default function DashboardLayout({
                     <UserNav />
                  </div>
             </header>
-            <main className="flex-1 bg-background">
+            <main className="flex-1 bg-background animate-page-enter">
                 {children}
             </main>
             <footer className="h-14 px-6 flex items-center justify-between text-xs text-muted-foreground border-t border-border/20">
