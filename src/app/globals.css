@@ -2,21 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: var(--font-pt-sans), sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-.main-content {
-  width: 100%;
-}
-
-.app-container {
-  width: 100vw;
-  height: 100vh;
-}
-
 @layer base {
   :root {
     --background: 224 71.4% 4.1%;
@@ -101,11 +86,10 @@ body {
     box-sizing: border-box;
   }
   body {
-    @apply bg-background text-foreground;
-    font-family: var(--font-pt-sans), sans-serif;
+    @apply bg-background text-foreground font-sans;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-playfair-display), serif;
+    @apply font-serif;
   }
   section {
     @apply w-full py-12 md:py-24 lg:py-32;

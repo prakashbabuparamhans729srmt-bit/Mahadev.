@@ -1,7 +1,21 @@
 import type { Metadata, Viewport } from 'next';
+import { Playfair_Display, PT_Sans } from 'next/font/google';
 import './globals.css';
 import { FirebaseClientProvider } from '@/firebase/client-provider';
 import React from 'react';
+
+const pt_sans = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-pt-sans',
+  display: 'swap',
+});
+
+const playfair_display = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair-display',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Hajaro Grahako - Digital Solutions',
@@ -18,7 +32,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#4B0082',
+  themeColor: '#01091A',
 };
 
 export default function RootLayout({
@@ -27,13 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="hi" className="dark">
+    <html lang="hi" className={`${pt_sans.variable} ${playfair_display.variable} dark`}>
       <head>
-        <style>
-          {`
-            @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap');
-          `}
-        </style>
         <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body>
