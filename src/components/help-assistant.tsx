@@ -90,10 +90,26 @@ export function HelpAssistant() {
 
     recognition.onerror = (event: any) => {
       console.error("Speech recognition error:", event.error);
+      let errorMessage = "एक अप्रत्याशित त्रुटि हुई।";
+      switch (event.error) {
+        case 'not-allowed':
+          errorMessage = "माइक की अनुमति नहीं दी गई। कृपया ब्राउज़र सेटिंग्स में अनुमति दें।";
+          break;
+        case 'no-speech':
+          errorMessage = "कोई आवाज़ नहीं मिली। कृपया पुनः प्रयास करें।";
+          break;
+        case 'network':
+          errorMessage = "नेटवर्क त्रुटि। कृपया अपना कनेक्शन जांचें।";
+          break;
+        case 'service-not-allowed':
+        case 'aborted':
+          errorMessage = "आवाज़ पहचान सेवा बंद कर दी गई।";
+          break;
+      }
       toast({
         variant: 'destructive',
-        title: 'Voice Error',
-        description: `An error occurred: ${event.error}`,
+        title: 'आवाज़ त्रुटि',
+        description: errorMessage,
       });
       setIsListening(false);
     };
@@ -180,6 +196,7 @@ export function HelpAssistant() {
 
   // Mouse up event to stop dragging
   const handleMouseUp = () => {
+    if (!isDragging) return;
     setIsDragging(false);
     
     // If the popover is open, start a timer to reset its position
