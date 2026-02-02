@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -17,9 +18,11 @@ import { signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from "@/components/ui/skeleton";
 import { LogOut, Shield } from "lucide-react";
+import { useAdmin } from '@/hooks/use-admin';
 
 export function UserNav() {
   const { user, isUserLoading } = useUser();
+  const { isAdmin } = useAdmin();
   const auth = useAuth();
   const router = useRouter();
 
@@ -72,13 +75,17 @@ export function UserNav() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <a href="https://idx.google.com/studio-9341424071" target="_blank" rel="noopener noreferrer">
-            <Shield className="mr-2 h-4 w-4" />
-            <span>एडमिन पैनल</span>
-          </a>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
+        {isAdmin && (
+            <>
+                <DropdownMenuItem asChild>
+                    <Link href="/dashboard/user-management">
+                        <Shield className="mr-2 h-4 w-4" />
+                        <span>एडमिन पैनल</span>
+                    </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+            </>
+        )}
         <DropdownMenuItem onClick={handleLogout}>
           <LogOut className="mr-2 h-4 w-4" />
           <span>लॉग आउट</span>

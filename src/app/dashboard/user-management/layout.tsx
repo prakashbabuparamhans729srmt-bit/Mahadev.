@@ -34,14 +34,7 @@ import { SearchInput } from '@/components/layout/search-input';
 import { useUser, useAuth } from '@/firebase';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
-
-// This is a placeholder. In a real app, this should be determined from a secure source like a custom claim.
-const checkIsAdmin = (user: import('firebase/auth').User | null): boolean => {
-  if (!user) return false;
-  // Using email for identification as requested by the user.
-  const ADMIN_EMAIL = 'divyahanssuperpower@gmail.com';
-  return user.email === ADMIN_EMAIL;
-}
+import { checkIsAdmin } from '@/hooks/use-admin';
 
 
 export default function UserManagementLayout({

@@ -16,15 +16,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-
-// This is a placeholder for a real admin check. 
-// In a production app, this should be a custom claim on the Firebase user token.
-const checkIsAdmin = (user: User | null): boolean => {
-    if (!user) return false;
-    // Using email for identification as requested by the user.
-    const ADMIN_EMAIL = 'divyahanssuperpower@gmail.com';
-    return user.email === ADMIN_EMAIL;
-}
+import { checkIsAdmin } from '@/hooks/use-admin';
 
 export function SecuritySettings({ user }: { user: User | null }) {
   const { toast } = useToast();
@@ -315,5 +307,3 @@ export function SecuritySettings({ user }: { user: User | null }) {
     </div>
   );
 }
-
-    
